@@ -190,8 +190,8 @@ async def scrape(browser, team, timezone):
             # object does not expose its venue under a predictable field name.
             page_location = location_by_match_id.get(source_id, "")
             if page_location:
-            venue = page_location
-            field = ""
+                venue = page_location
+                field = ""
 
             found.append(
                 {
