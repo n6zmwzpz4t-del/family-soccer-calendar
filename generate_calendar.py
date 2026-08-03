@@ -760,10 +760,17 @@ def build_calendar(
             )
         )
 
+        kickoff_time = (
+        start.strftime("%I:%M%p")
+        .lstrip("0")
+        .lower()
+        )
+        
         title = (
             f"⚽ {fixture['label']} | "
             f"{short_team_name(fixture['home'])} "
-            f"vs {short_team_name(fixture['away'])}"
+            f"vs {short_team_name(fixture['away'])} "
+            f"| KO {kickoff_time}"
         )
 
         event_lines = [
