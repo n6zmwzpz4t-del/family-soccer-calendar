@@ -395,6 +395,31 @@ def maps_search_url(location: str) -> str:
         f"q={query}&navigate=yes"
     )
 
+    def squadi_match_url(
+        team: dict[str, Any],
+        match_id: str,
+    ) -> str:
+        """
+        Return the specific Squadi match page.
+    
+        Fall back to the team's fixture page if no match ID is available.
+        """
+    
+        if not match_id:
+            return team["url"]
+    
+        competition_id = team.get("competition_id")
+        competition_key = team.get("competition_unique_key")
+    
+        if not competition_id or not competition_key:
+            return team["url"]
+    
+        return (
+            "https://registration.squadi.com/matchSummary"
+            f"?matchId={match_id}"
+            f"&competitionId={competition_id}"
+            f"&competitionUniqueKey={competition_key}"
+        )
 
 def short_team_name(team: str) -> str:
     """
@@ -577,7 +602,11 @@ async def scrape_team(
                     ID_KEYS,
                 )
             )
-
+            
+            match_url = squadi_match_url(
+                team,
+                source_id,
+            )
             venue = normalise_location(
                 clean(
                     first(
@@ -623,7 +652,7 @@ async def scrape_team(
                     ),
                     "source_id": source_id,
                     "label": team["name"],
-                    "source_url": team["url"],
+                    "source_url": match_url,
                 }
             )
 
