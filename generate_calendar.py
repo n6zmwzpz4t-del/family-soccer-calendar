@@ -7,7 +7,7 @@ import re
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
-from urllib.parse import quote_plus
+from urllib.parse import parse_qs, quote_plus, urlparse
 from zoneinfo import ZoneInfo
 
 from dateutil import parser as dateparser
@@ -16,10 +16,8 @@ from playwright.async_api import async_playwright
 
 ROOT = Path(__file__).resolve().parent
 CONFIG = json.loads((ROOT / "config.json").read_text(encoding="utf-8"))
-
 OUTPUT = ROOT / "docs" / "fixtures.ics"
 DEBUG = ROOT / "docs" / "debug.json"
-
 
 DATE_KEYS = (
     "fixtureDate",
@@ -84,7 +82,6 @@ ID_KEYS = (
     "uniqueKey",
     "id",
 )
-
 
 VENUE_WORDS = re.compile(
     r"\b("
@@ -223,10 +220,6 @@ def normalise_location(location: str) -> str:
         " ",
     )
 
-    # Example:
-    # Hossack Reserve-Pitch A
-    # becomes:
-    # Hossack Reserve — Pitch A
     location = re.sub(
         r"\s*[-–—]\s*(Field|Pitch|Court)\s*",
         r" — \1 ",
@@ -351,11 +344,6 @@ def escape_ics(text: str) -> str:
 
 
 def fold_ics_line(line: str) -> str:
-    """
-    Split long iCalendar lines so Calendar apps can read them
-    reliably.
-    """
-
     if len(line) <= 73:
         return line
 
@@ -376,7 +364,8 @@ def maps_search_url(location: str) -> str:
     if not location:
         return ""
 
-    # Remove pitch, field or court so Waze searches for the reserve.
+    # Remove the pitch, field or court so Waze searches for
+    # the reserve itself.
     reserve_name = re.sub(
         r"\s*[-–—]\s*(Pitch|Field|Court)\b.*$",
         "",
@@ -395,31 +384,92 @@ def maps_search_url(location: str) -> str:
         f"q={query}&navigate=yes"
     )
 
-    def squadi_match_url(
-        team: dict[str, Any],
-        match_id: str,
-    ) -> str:
-        """
-        Return the specific Squadi match page.
-    
-        Fall back to the team's fixture page if no match ID is available.
-        """
-    
-        if not match_id:
-            return team["url"]
-    
-        competition_id = team.get("competition_id")
-        competition_key = team.get("competition_unique_key")
-    
-        if not competition_id or not competition_key:
-            return team["url"]
-    
-        return (
-            "https://registration.squadi.com/matchSummary"
-            f"?matchId={match_id}"
-            f"&competitionId={competition_id}"
-            f"&competitionUniqueKey={competition_key}"
+
+def competition_details(
+    team: dict[str, Any],
+    responses: list[dict[str, Any]],
+) -> tuple[str, str]:
+    """
+    Read competition details from config.json when provided.
+
+    Otherwise derive the unique key from the team's fixture URL
+    and the numeric competition ID from Squadi's API response URL.
+    """
+
+    competition_id = clean(
+        team.get("competition_id")
+    )
+
+    competition_key = clean(
+        team.get("competition_unique_key")
+    )
+
+    if not competition_key:
+        team_query = parse_qs(
+            urlparse(
+                team["url"]
+            ).query
         )
+
+        competition_key = clean(
+            team_query.get(
+                "competitionUniqueKey",
+                [""],
+            )[0]
+        )
+
+    if not competition_id:
+        for response in responses:
+            response_query = parse_qs(
+                urlparse(
+                    response.get(
+                        "url",
+                        "",
+                    )
+                ).query
+            )
+
+            possible_id = clean(
+                response_query.get(
+                    "competitionId",
+                    [""],
+                )[0]
+            )
+
+            if possible_id:
+                competition_id = possible_id
+                break
+
+    return competition_id, competition_key
+
+
+def squadi_match_url(
+    team: dict[str, Any],
+    match_id: str,
+    competition_id: str,
+    competition_key: str,
+) -> str:
+    """
+    Create a link to the individual Squadi match.
+
+    Fall back to the team's complete fixture page if the match
+    information required for a specific link is unavailable.
+    """
+
+    if (
+        not match_id
+        or not competition_id
+        or not competition_key
+    ):
+        return team["url"]
+
+    return (
+        "https://registration.squadi.com/matchSummary"
+        f"?matchId={match_id}"
+        f"&competitionId={competition_id}"
+        f"&competitionUniqueKey={competition_key}"
+    )
+
 
 def short_team_name(team: str) -> str:
     """
@@ -450,14 +500,6 @@ def short_team_name(team: str) -> str:
 
 
 def format_round_text(round_value: str) -> str:
-    """
-    Examples:
-
-    14 -> Round 14
-    Round 14 -> Round 14
-    Round: Round 14 -> Round 14
-    """
-
     round_text = clean(round_value)
 
     round_text = re.sub(
@@ -473,9 +515,17 @@ def format_round_text(round_value: str) -> str:
     return f"Round {round_text}"
 
 
+def format_kickoff_time(start: datetime) -> str:
+    return (
+        start.strftime("%I:%M%p")
+        .lstrip("0")
+        .lower()
+    )
+
+
 async def scrape_team(
     browser,
-    team: dict[str, str],
+    team: dict[str, Any],
     timezone: ZoneInfo,
 ) -> tuple[
     list[dict[str, Any]],
@@ -552,6 +602,13 @@ async def scrape_team(
         )
     )
 
+    competition_id, competition_key = (
+        competition_details(
+            team,
+            responses,
+        )
+    )
+
     fixtures: list[
         dict[str, Any]
     ] = []
@@ -602,11 +659,14 @@ async def scrape_team(
                     ID_KEYS,
                 )
             )
-            
+
             match_url = squadi_match_url(
                 team,
                 source_id,
+                competition_id,
+                competition_key,
             )
+
             venue = normalise_location(
                 clean(
                     first(
@@ -660,6 +720,8 @@ async def scrape_team(
 
     debug = {
         "team": team["name"],
+        "competition_id": competition_id,
+        "competition_unique_key": competition_key,
         "responses": responses,
         "locations_found": (
             location_by_match_id
@@ -701,7 +763,7 @@ def build_calendar(
         "VERSION:2.0",
         (
             "PRODID:"
-            "-//Family Soccer Calendar//EN"
+            "-//Finn and Tate Soccer Calendar//EN"
         ),
         "CALSCALE:GREGORIAN",
         "METHOD:PUBLISH",
@@ -771,9 +833,6 @@ def build_calendar(
             fixture["round"]
         )
 
-        # The teams are already in the title and the venue is
-        # already in Location, so Notes contains only useful
-        # extra information.
         description_lines = [
             round_text,
             (
@@ -789,12 +848,10 @@ def build_calendar(
             )
         )
 
-        kickoff_time = (
-        start.strftime("%I:%M%p")
-        .lstrip("0")
-        .lower()
+        kickoff_time = format_kickoff_time(
+            start
         )
-        
+
         title = (
             f"⚽ {fixture['label']} | "
             f"{short_team_name(fixture['home'])} "
@@ -818,15 +875,19 @@ def build_calendar(
             ),
             (
                 "SUMMARY:"
-                + escape_ics(title)
+                + escape_ics(
+                    title
+                )
             ),
             (
                 "LOCATION:"
-                + escape_ics(location)
+                + escape_ics(
+                    location
+                )
             ),
         ]
 
-        # Calendar displays this as the event's Open link.
+        # Apple Calendar displays this as the Waze Open button.
         if maps_url:
             event_lines.append(
                 f"URL:{maps_url}"
