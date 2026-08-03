@@ -46,7 +46,7 @@ def parse_dt(v,tz):
     try:
         if isinstance(v,(int,float)):
             return datetime.fromtimestamp(v/1000 if v>10_000_000_000 else v,tz)
-        d=dateparser.parse(clean(v),dayfirst=True)
+        d=dateparser.parse(clean(v),dayfirst=False)
         if not d: return None
         if d.tzinfo is None: d=d.replace(tzinfo=tz)
         return d.astimezone(tz)
