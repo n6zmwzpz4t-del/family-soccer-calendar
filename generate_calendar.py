@@ -382,12 +382,7 @@ def maps_search_url(location: str) -> str:
     if not location:
         return ""
 
-    # Remove the pitch, field or court so Apple Maps searches for
-    # the reserve itself.
-    #
-    # Hossack Reserve — Pitch A
-    # becomes:
-    # Hossack Reserve
+    # Remove pitch, field or court so Waze searches for the reserve.
     reserve_name = re.sub(
         r"\s*[-–—]\s*(Pitch|Field|Court)\b.*$",
         "",
@@ -402,7 +397,8 @@ def maps_search_url(location: str) -> str:
     )
 
     return (
-        f"https://maps.apple.com/?q={query}"
+        f"https://waze.com/ul?"
+        f"q={query}&navigate=yes"
     )
 
 
@@ -704,7 +700,7 @@ def build_calendar(
                 f"vs {fixture['away']}"
             ),
             (
-                "Open in Apple Maps: "
+                "Open in Waze: "
                 + maps_url
                 if maps_url
                 else ""
