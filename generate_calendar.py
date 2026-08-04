@@ -84,6 +84,45 @@ ID_KEYS = (
     "id",
 )
 
+HOME_SCORE_KEYS = (
+    "homeScore",
+    "homeTeamScore",
+    "homeGoals",
+    "homeTeamGoals",
+    "homePoints",
+    "homeTeamPoints",
+    "team1Score",
+    "teamOneScore",
+    "team1Goals",
+    "team1Points",
+    "scoreHome",
+    "homeResult",
+)
+
+AWAY_SCORE_KEYS = (
+    "awayScore",
+    "awayTeamScore",
+    "awayGoals",
+    "awayTeamGoals",
+    "awayPoints",
+    "awayTeamPoints",
+    "team2Score",
+    "teamTwoScore",
+    "team2Goals",
+    "team2Points",
+    "scoreAway",
+    "awayResult",
+)
+
+NESTED_SCORE_KEYS = (
+    "score",
+    "goals",
+    "points",
+    "result",
+    "total",
+    "value",
+)
+
 LATITUDE_KEYS = (
     "latitude",
     "lat",
@@ -721,6 +760,87 @@ def format_kickoff_time(start: datetime) -> str:
     return start.strftime("%I:%M%p").lstrip("0").lower()
 
 
+def normalise_score(value: Any) -> str:
+    """Return a clean numeric score, or an empty string when unavailable."""
+    if value is None or isinstance(value, bool):
+        return ""
+
+    if isinstance(value, dict):
+        return normalise_score(first(value, NESTED_SCORE_KEYS))
+
+    if isinstance(value, (int, float)):
+        numeric = float(value)
+        return str(int(numeric)) if numeric.is_integer() else str(numeric)
+
+    text = clean(value)
+
+    if re.fullmatch(r"\d+(?:\.\d+)?", text):
+        numeric = float(text)
+        return str(int(numeric)) if numeric.is_integer() else text
+
+    return ""
+
+
+def extract_score_pair(obj: dict[str, Any]) -> tuple[str, str]:
+    """
+    Extract home and away scores from Squadi's match JSON.
+
+    Squadi has used several score field names across endpoints, so this
+    checks direct score fields and common nested result containers.
+    """
+    home_score = normalise_score(first(obj, HOME_SCORE_KEYS))
+    away_score = normalise_score(first(obj, AWAY_SCORE_KEYS))
+
+    if home_score and away_score:
+        return home_score, away_score
+
+    lower = {str(key).lower(): value for key, value in obj.items()}
+
+    for home_key, away_key in (
+        ("hometeam", "awayteam"),
+        ("home", "away"),
+        ("team1", "team2"),
+        ("teamone", "teamtwo"),
+    ):
+        home_container = lower.get(home_key)
+        away_container = lower.get(away_key)
+
+        if isinstance(home_container, dict) and isinstance(away_container, dict):
+            home_score = normalise_score(
+                first(home_container, NESTED_SCORE_KEYS)
+            )
+            away_score = normalise_score(
+                first(away_container, NESTED_SCORE_KEYS)
+            )
+
+            if home_score and away_score:
+                return home_score, away_score
+
+    for result_key in ("score", "scores", "result", "matchresult", "finalscore"):
+        result_container = lower.get(result_key)
+
+        if not isinstance(result_container, dict):
+            continue
+
+        home_score = normalise_score(first(result_container, HOME_SCORE_KEYS))
+        away_score = normalise_score(first(result_container, AWAY_SCORE_KEYS))
+
+        if not home_score:
+            home_score = normalise_score(
+                first(result_container, ("home", "team1", "teamOne"))
+            )
+
+        if not away_score:
+            away_score = normalise_score(
+                first(result_container, ("away", "team2", "teamTwo"))
+            )
+
+        if home_score and away_score:
+            return home_score, away_score
+
+    return "", ""
+
+
 def load_manual_fixtures(
     timezone: ZoneInfo,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
@@ -819,6 +939,8 @@ def load_manual_fixtures(
                     )
                 ),
                 "notes": clean(item.get("notes")),
+                "home_score": normalise_score(item.get("home_score")),
+                "away_score": normalise_score(item.get("away_score")),
             }
         )
 
@@ -912,6 +1034,7 @@ async def scrape_team(
 
             latitude = coordinates[0] if coordinates else None
             longitude = coordinates[1] if coordinates else None
+            home_score, away_score = extract_score_pair(obj)
 
             fixtures.append(
                 {
@@ -927,6 +1050,9 @@ async def scrape_team(
                     "latitude": latitude,
                     "longitude": longitude,
                     "coordinate_source": coordinate_source,
+                    "home_score": home_score,
+                    "away_score": away_score,
+                    "sport_name": "Soccer",
                 }
             )
 
@@ -1001,8 +1127,16 @@ def build_calendar(
         round_text = format_round_text(fixture["round"])
         source_url = clean(fixture.get("source_url"))
         notes = clean(fixture.get("notes"))
+        home_score = clean(fixture.get("home_score"))
+        away_score = clean(fixture.get("away_score"))
+        result_text = (
+            f"Result: {home_score}-{away_score}"
+            if home_score and away_score
+            else ""
+        )
         description_lines = [
             round_text,
+            result_text,
             notes,
             ("Open in Squadi: " + source_url) if source_url else "",
         ]
@@ -1025,7 +1159,21 @@ def build_calendar(
             f"DTEND;TZID={timezone_name}:{end.strftime('%Y%m%dT%H%M%S')}",
             "SUMMARY:" + escape_ics(title),
             "LOCATION:" + escape_ics(location),
+            "X-PERSON:" + escape_ics(clean(fixture.get("label"))),
+            "X-SPORT:" + escape_ics(
+                clean(fixture.get("sport_name")) or "Soccer"
+            ),
+            "X-HOME-TEAM:" + escape_ics(short_team_name(fixture["home"])),
+            "X-AWAY-TEAM:" + escape_ics(short_team_name(fixture["away"])),
         ]
+
+        if home_score and away_score:
+            event_lines.extend(
+                [
+                    "X-HOME-SCORE:" + escape_ics(home_score),
+                    "X-AWAY-SCORE:" + escape_ics(away_score),
+                ]
+            )
 
         coordinates = valid_coordinates(latitude, longitude)
         if coordinates:
