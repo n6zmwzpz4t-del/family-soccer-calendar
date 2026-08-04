@@ -1,8 +1,6 @@
 name: Refresh family soccer calendar
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "42 * * * *"
   push:
     branches: ["main"]
 permissions:
