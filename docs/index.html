@@ -1,79 +1,995 @@
-name: Refresh Finn and Tate sports calendar
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1736">
+  <title>Finn &amp; Tate's Sports Matches</title>
 
-on:
-  workflow_dispatch:
+  <style>
+    :root {
+      --navy: #0b1736;
+      --navy-2: #14275a;
+      --blue: #2c66e4;
+      --sky: #eaf1ff;
+      --orange: #ef7b32;
+      --orange-soft: #fff1e8;
+      --ink: #172033;
+      --muted: #667085;
+      --surface: #ffffff;
+      --background: #f5f7fb;
+      --border: #e4e8f0;
+      --success: #14866d;
+      --shadow: 0 12px 32px rgba(15, 23, 42, 0.10);
+      --radius: 22px;
+    }
 
-  push:
-    branches: ["main"]
-    paths-ignore:
-      - "docs/fixtures.ics"
-      - "docs/debug.json"
+    * {
+      box-sizing: border-box;
+    }
 
-permissions:
-  contents: write
+    html {
+      scroll-behavior: smooth;
+    }
 
-concurrency:
-  group: finn-tate-sports-calendar-refresh
-  cancel-in-progress: true
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top right, rgba(44, 102, 228, 0.12), transparent 34rem),
+        var(--background);
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Helvetica,
+        Arial,
+        sans-serif;
+    }
 
-jobs:
-  refresh:
-    runs-on: ubuntu-latest
+    a {
+      color: inherit;
+    }
 
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v5
-        with:
-          ref: main
-          fetch-depth: 0
+    .shell {
+      width: min(1040px, calc(100% - 28px));
+      margin: 0 auto;
+    }
 
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.12"
-          cache: "pip"
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 30px 0 54px;
+      color: white;
+      background:
+        linear-gradient(135deg, rgba(11, 23, 54, 0.98), rgba(20, 39, 90, 0.96));
+    }
 
-      - name: Install Python requirements
-        run: pip install -r requirements.txt
+    .hero::before,
+    .hero::after {
+      position: absolute;
+      content: "";
+      border-radius: 50%;
+      pointer-events: none;
+    }
 
-      - name: Install Playwright
-        run: playwright install --with-deps chromium
+    .hero::before {
+      width: 320px;
+      height: 320px;
+      top: -170px;
+      right: -80px;
+      background: rgba(255, 255, 255, 0.07);
+    }
 
-      - name: Generate and publish calendar
-        shell: bash
-        run: |
-          set -euo pipefail
+    .hero::after {
+      width: 170px;
+      height: 170px;
+      right: 120px;
+      bottom: -110px;
+      background: rgba(239, 123, 50, 0.22);
+    }
 
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+    .topbar {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
 
-          for attempt in 1 2 3; do
-            echo "Publish attempt $attempt"
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
 
-            # Start from the latest version currently on GitHub.
-            git fetch origin main
-            git reset --hard origin/main
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 46px;
+      height: 46px;
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.12);
+      font-size: 1.35rem;
+      backdrop-filter: blur(8px);
+    }
 
-            # Regenerate the output using the latest script and fixture data.
-            python generate_calendar.py
+    .brand small {
+      display: block;
+      margin-top: 2px;
+      color: rgba(255, 255, 255, 0.70);
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
 
-            git add docs/fixtures.ics docs/debug.json
+    .subscribe-top {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 10px 15px;
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      border-radius: 14px;
+      color: white;
+      background: rgba(255, 255, 255, 0.10);
+      font-weight: 750;
+      text-decoration: none;
+      backdrop-filter: blur(8px);
+    }
 
-            if git diff --cached --quiet; then
-              echo "Calendar is already current."
-              exit 0
-            fi
+    .hero-copy {
+      position: relative;
+      z-index: 1;
+      max-width: 720px;
+      padding-top: 48px;
+    }
 
-            git commit -m "Refresh Finn and Tate sports fixtures"
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      color: #bdd0ff;
+      font-size: 0.85rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
 
-            if git push origin HEAD:main; then
-              echo "Calendar successfully published."
-              exit 0
-            fi
+    h1 {
+      margin: 0;
+      font-size: clamp(2.35rem, 8vw, 4.8rem);
+      line-height: 0.98;
+      letter-spacing: -0.055em;
+    }
 
-            echo "Repository changed during this attempt. Retrying..."
-            sleep 5
-          done
+    .hero-copy p {
+      max-width: 620px;
+      margin: 20px 0 0;
+      color: rgba(255, 255, 255, 0.78);
+      font-size: clamp(1rem, 2.5vw, 1.18rem);
+      line-height: 1.6;
+    }
 
-          echo "Unable to publish calendar after three attempts."
-          exit 1
+    main {
+      position: relative;
+      z-index: 2;
+      margin-top: -28px;
+      padding-bottom: 54px;
+    }
+
+    .next-panel {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 20px;
+      min-height: 150px;
+      padding: 24px;
+      border: 1px solid rgba(228, 232, 240, 0.85);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+
+    .next-label {
+      margin: 0 0 8px;
+      color: var(--blue);
+      font-size: 0.78rem;
+      font-weight: 850;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+
+    .next-title {
+      margin: 0;
+      font-size: clamp(1.35rem, 4vw, 2rem);
+      line-height: 1.2;
+      letter-spacing: -0.035em;
+    }
+
+    .next-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 16px;
+      margin-top: 13px;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    .next-actions {
+      display: grid;
+      gap: 10px;
+      min-width: 150px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 46px;
+      padding: 10px 16px;
+      border: 0;
+      border-radius: 14px;
+      font: inherit;
+      font-weight: 800;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .button-primary {
+      color: white;
+      background: var(--blue);
+      box-shadow: 0 8px 18px rgba(44, 102, 228, 0.22);
+    }
+
+    .button-secondary {
+      color: var(--navy);
+      background: var(--sky);
+    }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 20px;
+      margin: 34px 0 15px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: 1.55rem;
+      letter-spacing: -0.035em;
+    }
+
+    .section-head p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .updated {
+      color: var(--muted);
+      font-size: 0.82rem;
+      text-align: right;
+    }
+
+    .filters {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 18px;
+      padding-bottom: 4px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .filters::-webkit-scrollbar {
+      display: none;
+    }
+
+    .filter {
+      flex: 0 0 auto;
+      min-height: 40px;
+      padding: 8px 14px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--muted);
+      background: var(--surface);
+      font: inherit;
+      font-size: 0.9rem;
+      font-weight: 750;
+      cursor: pointer;
+    }
+
+    .filter.active {
+      color: white;
+      border-color: var(--navy);
+      background: var(--navy);
+    }
+
+    .fixture-groups {
+      display: grid;
+      gap: 28px;
+    }
+
+    .month-heading {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0 0 12px;
+      color: var(--navy);
+      font-size: 0.92rem;
+      font-weight: 850;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .month-heading::after {
+      flex: 1;
+      height: 1px;
+      content: "";
+      background: var(--border);
+    }
+
+    .fixture-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .fixture {
+      display: grid;
+      grid-template-columns: 88px minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: center;
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: var(--surface);
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.055);
+    }
+
+    .date-card {
+      display: grid;
+      place-items: center;
+      align-content: center;
+      min-height: 86px;
+      border-radius: 16px;
+      color: white;
+      background: linear-gradient(145deg, var(--navy), var(--navy-2));
+      text-align: center;
+    }
+
+    .fixture.softball .date-card {
+      background: linear-gradient(145deg, #a84416, var(--orange));
+    }
+
+    .date-card .weekday {
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      opacity: 0.80;
+    }
+
+    .date-card .day {
+      margin: 2px 0;
+      font-size: 2rem;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .date-card .month {
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .fixture-main {
+      min-width: 0;
+    }
+
+    .sport-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 7px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      color: #2751b3;
+      background: var(--sky);
+      font-size: 0.76rem;
+      font-weight: 850;
+    }
+
+    .fixture.softball .sport-pill {
+      color: #963b11;
+      background: var(--orange-soft);
+    }
+
+    .fixture-title {
+      margin: 0;
+      font-size: 1.12rem;
+      line-height: 1.32;
+      letter-spacing: -0.025em;
+    }
+
+    .fixture-details {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px 16px;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.91rem;
+    }
+
+    .fixture-details span {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .fixture-actions {
+      display: grid;
+      gap: 8px;
+      min-width: 118px;
+    }
+
+    .fixture-actions a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 40px;
+      padding: 8px 12px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .waze {
+      color: white;
+      background: var(--blue);
+    }
+
+    .squadi {
+      color: var(--navy);
+      background: var(--sky);
+    }
+
+    .empty,
+    .error {
+      padding: 34px 20px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+
+    .empty-icon {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 2rem;
+    }
+
+    .error {
+      color: #a41f1f;
+    }
+
+    footer {
+      padding: 30px 0 42px;
+      color: var(--muted);
+      font-size: 0.85rem;
+      text-align: center;
+    }
+
+    @media (max-width: 720px) {
+      .hero {
+        padding-top: 20px;
+      }
+
+      .subscribe-top {
+        display: none;
+      }
+
+      .hero-copy {
+        padding-top: 38px;
+      }
+
+      .next-panel {
+        grid-template-columns: 1fr;
+      }
+
+      .next-actions {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .fixture {
+        grid-template-columns: 68px minmax(0, 1fr);
+        gap: 13px;
+      }
+
+      .date-card {
+        min-height: 74px;
+      }
+
+      .date-card .day {
+        font-size: 1.65rem;
+      }
+
+      .fixture-actions {
+        grid-column: 1 / -1;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .fixture-actions a:only-child {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 440px) {
+      .shell {
+        width: min(100% - 20px, 1040px);
+      }
+
+      .brand-name {
+        font-size: 0.92rem;
+      }
+
+      .next-panel {
+        padding: 18px;
+      }
+
+      .next-actions {
+        grid-template-columns: 1fr;
+      }
+
+      .section-head {
+        align-items: start;
+        flex-direction: column;
+      }
+
+      .updated {
+        text-align: left;
+      }
+
+      .fixture {
+        padding: 12px;
+        border-radius: 17px;
+      }
+
+      .fixture-title {
+        font-size: 1rem;
+      }
+
+      .fixture-details {
+        display: grid;
+        gap: 6px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="hero">
+    <div class="shell">
+      <div class="topbar">
+        <div class="brand">
+          <div class="brand-mark">🏟️</div>
+          <div class="brand-name">
+            Finn &amp; Tate
+            <small>Match calendar</small>
+          </div>
+        </div>
+
+        <a
+          class="subscribe-top"
+          href="webcal://n6zmwzpz4t-del.github.io/family-soccer-calendar/fixtures.ics"
+        >
+          ＋ Subscribe
+        </a>
+      </div>
+
+      <div class="hero-copy">
+        <div class="eyebrow">⚽ Soccer &nbsp; • &nbsp; 🥎 Softball</div>
+        <h1>Come and watch us play.</h1>
+        <p>
+          One place for Finn and Tate’s upcoming matches, kick-off times,
+          venues and directions.
+        </p>
+      </div>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section id="next-panel" class="next-panel" aria-live="polite">
+      <div>
+        <p class="next-label">Next match</p>
+        <h2 class="next-title">Loading the latest fixture…</h2>
+        <div class="next-meta"></div>
+      </div>
+      <div class="next-actions"></div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>Upcoming fixtures</h2>
+          <p id="fixture-count">Loading matches…</p>
+        </div>
+        <div id="last-updated" class="updated"></div>
+      </div>
+
+      <div class="filters" aria-label="Filter fixtures">
+        <button class="filter active" data-filter="all">All matches</button>
+        <button class="filter" data-filter="finn">Finn</button>
+        <button class="filter" data-filter="tate">Tate</button>
+        <button class="filter" data-filter="soccer">⚽ Soccer</button>
+        <button class="filter" data-filter="softball">🥎 Softball</button>
+      </div>
+
+      <div id="fixture-groups" class="fixture-groups"></div>
+    </section>
+  </main>
+
+  <footer class="shell">
+    Fixtures update automatically. Please confirm any late changes with the team.
+  </footer>
+
+  <script>
+    const TIME_ZONE = "Australia/Perth";
+    const ICS_URL = "fixtures.ics";
+    let allFixtures = [];
+    let activeFilter = "all";
+
+    function unfoldIcs(text) {
+      return text.replace(/\r?\n[ \t]/g, "");
+    }
+
+    function property(block, name) {
+      const match = block.match(
+        new RegExp("^" + name + "(?:;[^:]*)?:(.*)$", "mi")
+      );
+      return match ? match[1].trim() : "";
+    }
+
+    function decodeIcs(value) {
+      return value
+        .replace(/\\n/gi, "\n")
+        .replace(/\\,/g, ",")
+        .replace(/\\;/g, ";")
+        .replace(/\\\\/g, "\\");
+    }
+
+    function parseDate(block, name) {
+      const value = property(block, name);
+      if (!value) return null;
+
+      if (/^\d{8}T\d{6}Z$/.test(value)) {
+        const y = Number(value.slice(0, 4));
+        const m = Number(value.slice(4, 6)) - 1;
+        const d = Number(value.slice(6, 8));
+        const h = Number(value.slice(9, 11));
+        const min = Number(value.slice(11, 13));
+        const s = Number(value.slice(13, 15));
+        return new Date(Date.UTC(y, m, d, h, min, s));
+      }
+
+      if (/^\d{8}T\d{6}$/.test(value)) {
+        const y = Number(value.slice(0, 4));
+        const m = Number(value.slice(4, 6)) - 1;
+        const d = Number(value.slice(6, 8));
+        const h = Number(value.slice(9, 11));
+        const min = Number(value.slice(11, 13));
+        const s = Number(value.slice(13, 15));
+
+        // Perth is UTC+8 and does not use daylight saving time.
+        return new Date(Date.UTC(y, m, d, h - 8, min, s));
+      }
+
+      return null;
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function extractSquadiUrl(description) {
+      const match = description.match(
+        /https:\/\/registration\.squadi\.com\/[^\s]+/i
+      );
+      return match ? match[0] : "";
+    }
+
+    function parseCalendar(text) {
+      return unfoldIcs(text)
+        .split("BEGIN:VEVENT")
+        .slice(1)
+        .map(section => {
+          const block = section.split("END:VEVENT")[0];
+          const summary = decodeIcs(property(block, "SUMMARY"));
+          const description = decodeIcs(property(block, "DESCRIPTION"));
+          const start = parseDate(block, "DTSTART");
+          const end = parseDate(block, "DTEND");
+          const lower = summary.toLowerCase();
+          const person = lower.includes("finn") ? "finn" : "tate";
+          const sport =
+            summary.includes("🥎") || lower.includes("softball")
+              ? "softball"
+              : "soccer";
+
+          return {
+            summary,
+            description,
+            start,
+            end,
+            person,
+            sport,
+            location: decodeIcs(property(block, "LOCATION")),
+            wazeUrl: property(block, "URL"),
+            squadiUrl: extractSquadiUrl(description)
+          };
+        })
+        .filter(item => item.start)
+        .sort((a, b) => a.start - b.start);
+    }
+
+    function dateParts(date) {
+      const options = { timeZone: TIME_ZONE };
+      return {
+        weekday: new Intl.DateTimeFormat("en-AU", {
+          ...options,
+          weekday: "short"
+        }).format(date),
+        day: new Intl.DateTimeFormat("en-AU", {
+          ...options,
+          day: "numeric"
+        }).format(date),
+        month: new Intl.DateTimeFormat("en-AU", {
+          ...options,
+          month: "short"
+        }).format(date)
+      };
+    }
+
+    function monthKey(date) {
+      return new Intl.DateTimeFormat("en-AU", {
+        timeZone: TIME_ZONE,
+        month: "long",
+        year: "numeric"
+      }).format(date);
+    }
+
+    function formatTime(date) {
+      return new Intl.DateTimeFormat("en-AU", {
+        timeZone: TIME_ZONE,
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true
+      })
+        .format(date)
+        .replace(" am", "am")
+        .replace(" pm", "pm");
+    }
+
+    function formatFullDate(date) {
+      return new Intl.DateTimeFormat("en-AU", {
+        timeZone: TIME_ZONE,
+        weekday: "long",
+        day: "numeric",
+        month: "long"
+      }).format(date);
+    }
+
+    function roundText(description) {
+      const line = description
+        .split("\n")
+        .find(value => /^Round\b/i.test(value.trim()));
+      return line ? line.trim() : "";
+    }
+
+    function cleanedTitle(summary) {
+      return summary
+        .replace(/^⚽\s*/, "")
+        .replace(/^🥎\s*/, "")
+        .replace(/\s*\|\s*(?:KO|Start)\s+\d{1,2}:\d{2}(?:am|pm)$/i, "");
+    }
+
+    function actionLinks(event, compact = false) {
+      const links = [];
+
+      if (event.wazeUrl) {
+        links.push(
+          `<a class="${compact ? "button button-primary" : "waze"}"
+              href="${escapeHtml(event.wazeUrl)}"
+              target="_blank"
+              rel="noopener">Open Waze</a>`
+        );
+      }
+
+      if (event.squadiUrl) {
+        links.push(
+          `<a class="${compact ? "button button-secondary" : "squadi"}"
+              href="${escapeHtml(event.squadiUrl)}"
+              target="_blank"
+              rel="noopener">View match</a>`
+        );
+      }
+
+      return links.join("");
+    }
+
+    function renderNext(fixtures) {
+      const panel = document.getElementById("next-panel");
+      const event = fixtures[0];
+
+      if (!event) {
+        panel.innerHTML = `
+          <div>
+            <p class="next-label">Next match</p>
+            <h2 class="next-title">No upcoming matches listed</h2>
+          </div>
+          <div class="next-actions">
+            <a class="button button-primary"
+               href="webcal://n6zmwzpz4t-del.github.io/family-soccer-calendar/fixtures.ics">
+               Subscribe
+            </a>
+          </div>`;
+        return;
+      }
+
+      panel.innerHTML = `
+        <div>
+          <p class="next-label">Next match</p>
+          <h2 class="next-title">${escapeHtml(cleanedTitle(event.summary))}</h2>
+          <div class="next-meta">
+            <span>📅 ${escapeHtml(formatFullDate(event.start))}</span>
+            <span>🕒 ${escapeHtml(formatTime(event.start))}</span>
+            ${event.location ? `<span>📍 ${escapeHtml(event.location)}</span>` : ""}
+          </div>
+        </div>
+        <div class="next-actions">
+          ${actionLinks(event, true)}
+          <a class="button button-secondary"
+             href="webcal://n6zmwzpz4t-del.github.io/family-soccer-calendar/fixtures.ics">
+             Subscribe
+          </a>
+        </div>`;
+    }
+
+    function fixtureCard(event) {
+      const parts = dateParts(event.start);
+      const round = roundText(event.description);
+      const sportName = event.sport === "softball" ? "Softball" : "Soccer";
+      const sportIcon = event.sport === "softball" ? "🥎" : "⚽";
+      const timeRange = event.end
+        ? `${formatTime(event.start)} – ${formatTime(event.end)}`
+        : formatTime(event.start);
+
+      return `
+        <article class="fixture ${event.sport}">
+          <div class="date-card">
+            <span class="weekday">${escapeHtml(parts.weekday)}</span>
+            <span class="day">${escapeHtml(parts.day)}</span>
+            <span class="month">${escapeHtml(parts.month)}</span>
+          </div>
+
+          <div class="fixture-main">
+            <div class="sport-pill">${sportIcon} ${sportName}</div>
+            <h3 class="fixture-title">${escapeHtml(cleanedTitle(event.summary))}</h3>
+            <div class="fixture-details">
+              <span>🕒 ${escapeHtml(timeRange)}</span>
+              ${event.location ? `<span>📍 ${escapeHtml(event.location)}</span>` : ""}
+              ${round ? `<span>🏆 ${escapeHtml(round)}</span>` : ""}
+            </div>
+          </div>
+
+          <div class="fixture-actions">
+            ${actionLinks(event)}
+          </div>
+        </article>`;
+    }
+
+    function renderFixtures() {
+      const now = new Date();
+      const upcoming = allFixtures.filter(event => (event.end || event.start) >= now);
+      renderNext(upcoming);
+
+      const filtered = upcoming.filter(event => {
+        if (activeFilter === "all") return true;
+        return event.person === activeFilter || event.sport === activeFilter;
+      });
+
+      document.getElementById("fixture-count").textContent =
+        `${filtered.length} upcoming ${filtered.length === 1 ? "match" : "matches"}`;
+
+      const container = document.getElementById("fixture-groups");
+
+      if (!filtered.length) {
+        container.innerHTML = `
+          <div class="empty">
+            <span class="empty-icon">📅</span>
+            No upcoming matches in this category.
+          </div>`;
+        return;
+      }
+
+      const groups = new Map();
+      for (const event of filtered) {
+        const key = monthKey(event.start);
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key).push(event);
+      }
+
+      container.innerHTML = [...groups.entries()]
+        .map(([month, fixtures]) => `
+          <section>
+            <h3 class="month-heading">${escapeHtml(month)}</h3>
+            <div class="fixture-list">
+              ${fixtures.map(fixtureCard).join("")}
+            </div>
+          </section>`)
+        .join("");
+    }
+
+    async function loadFixtures() {
+      const container = document.getElementById("fixture-groups");
+
+      try {
+        const response = await fetch(
+          `${ICS_URL}?v=${Date.now()}`,
+          { cache: "no-store" }
+        );
+
+        if (!response.ok) {
+          throw new Error(`Calendar feed returned ${response.status}`);
+        }
+
+        allFixtures = parseCalendar(await response.text());
+        document.getElementById("last-updated").textContent =
+          `Viewed ${new Intl.DateTimeFormat("en-AU", {
+            timeZone: TIME_ZONE,
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true
+          }).format(new Date())}`;
+
+        renderFixtures();
+      } catch (error) {
+        console.error(error);
+        document.getElementById("fixture-count").textContent = "";
+        container.innerHTML = `
+          <div class="error">
+            The fixture list could not be loaded. Please refresh the page.
+          </div>`;
+      }
+    }
+
+    document.querySelectorAll(".filter").forEach(button => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".filter").forEach(item =>
+          item.classList.remove("active")
+        );
+        button.classList.add("active");
+        activeFilter = button.dataset.filter;
+        renderFixtures();
+      });
+    });
+
+    loadFixtures();
+  </script>
+</body>
+</html>
