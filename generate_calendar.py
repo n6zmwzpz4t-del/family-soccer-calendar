@@ -18,6 +18,7 @@ ROOT = Path(__file__).resolve().parent
 CONFIG = json.loads((ROOT / "config.json").read_text(encoding="utf-8"))
 OUTPUT = ROOT / "docs" / "fixtures.ics"
 DEBUG = ROOT / "docs" / "debug.json"
+MANUAL_FIXTURES = ROOT / "manual_fixtures.json"
 
 DATE_KEYS = (
     "fixtureDate",
@@ -634,7 +635,7 @@ def waze_url(
 
     # Coordinate fallback: search for the reserve rather than a specific pitch.
     reserve_name = re.sub(
-        r"\s*[-–—]\s*(Pitch|Field|Court)\b.*$",
+        r"\s*[-–—]\s*(Pitch|Field|Court|Diamond)\b.*$",
         "",
         location,
         flags=re.IGNORECASE,
@@ -718,6 +719,115 @@ def format_round_text(round_value: str) -> str:
 
 def format_kickoff_time(start: datetime) -> str:
     return start.strftime("%I:%M%p").lstrip("0").lower()
+
+
+def load_manual_fixtures(
+    timezone: ZoneInfo,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Load manually maintained fixtures, such as Tate's softball games."""
+
+    if not MANUAL_FIXTURES.exists():
+        return [], {
+            "file": MANUAL_FIXTURES.name,
+            "file_found": False,
+            "fixture_count": 0,
+            "errors": [],
+        }
+
+    try:
+        payload = json.loads(
+            MANUAL_FIXTURES.read_text(encoding="utf-8")
+        )
+    except (OSError, json.JSONDecodeError) as exc:
+        raise RuntimeError(
+            f"Unable to read {MANUAL_FIXTURES.name}: {exc}"
+        ) from exc
+
+    raw_fixtures = payload.get("fixtures", [])
+    if not isinstance(raw_fixtures, list):
+        raise RuntimeError(
+            f"{MANUAL_FIXTURES.name} must contain a 'fixtures' list."
+        )
+
+    fixtures: list[dict[str, Any]] = []
+    errors: list[str] = []
+
+    for index, item in enumerate(raw_fixtures, start=1):
+        if not isinstance(item, dict):
+            errors.append(f"Fixture {index}: expected an object.")
+            continue
+
+        source_id = clean(item.get("id")) or f"manual-{index}"
+        start_text = clean(item.get("start"))
+        label = clean(item.get("label"))
+        home = clean(item.get("home"))
+        away = clean(item.get("away"))
+
+        try:
+            start = dateparser.isoparse(start_text)
+            if start.tzinfo is None:
+                start = start.replace(tzinfo=timezone)
+            else:
+                start = start.astimezone(timezone)
+        except (TypeError, ValueError, OverflowError):
+            errors.append(
+                f"Fixture {source_id}: invalid start date '{start_text}'."
+            )
+            continue
+
+        if not label or not home or not away:
+            errors.append(
+                f"Fixture {source_id}: label, home and away are required."
+            )
+            continue
+
+        # Do not publish manually entered byes as calendar matches.
+        if home.lower() == "bye" or away.lower() == "bye":
+            continue
+
+        latitude = to_float(item.get("latitude"))
+        longitude = to_float(item.get("longitude"))
+        coordinates = valid_coordinates(latitude, longitude)
+
+        fixtures.append(
+            {
+                "start": start,
+                "home": home,
+                "away": away,
+                "venue": normalise_location(clean(item.get("venue"))),
+                "field": normalise_location(clean(item.get("field"))),
+                "round": clean(item.get("round")),
+                "source_id": source_id,
+                "label": label,
+                "source_url": clean(item.get("source_url")),
+                "latitude": coordinates[0] if coordinates else None,
+                "longitude": coordinates[1] if coordinates else None,
+                "coordinate_source": "manual" if coordinates else "",
+                "sport_icon": clean(item.get("sport_icon")) or "🏅",
+                "sport_name": clean(item.get("sport_name")),
+                "time_label": clean(item.get("time_label")) or "Start",
+                "duration_minutes": int(
+                    item.get(
+                        "duration_minutes",
+                        CONFIG.get("default_match_minutes", 60),
+                    )
+                ),
+                "reminder_minutes": int(
+                    item.get(
+                        "reminder_minutes",
+                        CONFIG.get("reminder_minutes", 90),
+                    )
+                ),
+                "notes": clean(item.get("notes")),
+            }
+        )
+
+    return fixtures, {
+        "file": MANUAL_FIXTURES.name,
+        "file_found": True,
+        "fixture_count": len(fixtures),
+        "errors": errors,
+    }
 
 
 async def scrape_team(
@@ -844,13 +954,13 @@ def build_calendar(
     timezone_name: str,
 ) -> str:
     now = datetime.now(ZoneInfo("UTC")).strftime("%Y%m%dT%H%M%SZ")
-    match_minutes = int(CONFIG.get("default_match_minutes", 60))
-    reminder_minutes = int(CONFIG.get("reminder_minutes", 90))
+    default_match_minutes = int(CONFIG.get("default_match_minutes", 60))
+    default_reminder_minutes = int(CONFIG.get("reminder_minutes", 90))
 
     lines = [
         "BEGIN:VCALENDAR",
         "VERSION:2.0",
-        "PRODID:-//Finn and Tate Soccer Calendar//EN",
+        "PRODID:-//Finn and Tate Sports Calendar//EN",
         "CALSCALE:GREGORIAN",
         "METHOD:PUBLISH",
         "X-WR-CALNAME:" + escape_ics(CONFIG["calendar_name"]),
@@ -861,7 +971,13 @@ def build_calendar(
 
     for fixture in fixtures:
         start = fixture["start"]
-        end = start + timedelta(minutes=match_minutes)
+        duration_minutes = int(
+            fixture.get("duration_minutes", default_match_minutes)
+        )
+        reminder_minutes = int(
+            fixture.get("reminder_minutes", default_reminder_minutes)
+        )
+        end = start + timedelta(minutes=duration_minutes)
 
         uid_seed = (
             f"{fixture['label']}|{fixture['source_id']}|{start.isoformat()}|"
@@ -883,17 +999,22 @@ def build_calendar(
         navigation_url = waze_url(location, latitude, longitude)
 
         round_text = format_round_text(fixture["round"])
+        source_url = clean(fixture.get("source_url"))
+        notes = clean(fixture.get("notes"))
         description_lines = [
             round_text,
-            "Open in Squadi: " + fixture["source_url"],
+            notes,
+            ("Open in Squadi: " + source_url) if source_url else "",
         ]
         description = "\n".join(filter(None, description_lines))
 
+        sport_icon = clean(fixture.get("sport_icon")) or "⚽"
+        time_label = clean(fixture.get("time_label")) or "KO"
         title = (
-            f"⚽ {fixture['label']} | "
+            f"{sport_icon} {fixture['label']} | "
             f"{short_team_name(fixture['home'])} vs "
             f"{short_team_name(fixture['away'])} | "
-            f"KO {format_kickoff_time(start)}"
+            f"{time_label} {format_kickoff_time(start)}"
         )
 
         event_lines = [
@@ -950,6 +1071,9 @@ async def main() -> None:
 
         await browser.close()
 
+    manual_fixtures, manual_debug = load_manual_fixtures(timezone)
+    all_fixtures.extend(manual_fixtures)
+
     unique: dict[tuple[str, str, str, str], dict[str, Any]] = {}
 
     for fixture in all_fixtures:
@@ -977,6 +1101,8 @@ async def main() -> None:
                     )
                 ),
                 "teams": debug_teams,
+                "manual_fixtures": manual_debug,
+                "manual_fixture_count": len(manual_fixtures),
                 "fixtures": [
                     {
                         **fixture,
