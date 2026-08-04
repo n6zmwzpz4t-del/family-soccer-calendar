@@ -282,6 +282,62 @@
       text-align: right;
     }
 
+
+    .view-tabs {
+      display: inline-grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px;
+      margin: 34px 0 18px;
+      padding: 5px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.88);
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.055);
+    }
+
+    .view-tab {
+      min-height: 44px;
+      padding: 9px 18px;
+      border: 0;
+      border-radius: 12px;
+      color: var(--muted);
+      background: transparent;
+      font: inherit;
+      font-weight: 850;
+      cursor: pointer;
+    }
+
+    .view-tab.active {
+      color: white;
+      background: var(--navy);
+    }
+
+    .result-score {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 12px;
+      padding: 9px 13px;
+      border-radius: 12px;
+      color: var(--navy);
+      background: #eef2f8;
+      font-size: 0.94rem;
+      font-weight: 850;
+    }
+
+    .result-score .score-number {
+      min-width: 24px;
+      font-size: 1.35rem;
+      font-weight: 950;
+      text-align: center;
+    }
+
+    .result-score.unavailable {
+      color: var(--muted);
+      font-size: 0.88rem;
+      font-weight: 750;
+    }
+
     .filters {
       display: flex;
       gap: 8px;
@@ -620,9 +676,29 @@
     </section>
 
     <section>
+      <div class="view-tabs" role="tablist" aria-label="Fixture views">
+        <button
+          class="view-tab active"
+          data-view="upcoming"
+          role="tab"
+          aria-selected="true"
+        >
+          Upcoming
+        </button>
+
+        <button
+          class="view-tab"
+          data-view="results"
+          role="tab"
+          aria-selected="false"
+        >
+          Past results
+        </button>
+      </div>
+
       <div class="section-head">
         <div>
-          <h2>Upcoming fixtures</h2>
+          <h2 id="section-title">Upcoming fixtures</h2>
           <p id="fixture-count">Loading matches…</p>
         </div>
         <div id="last-updated" class="updated"></div>
@@ -649,6 +725,7 @@
     const ICS_URL = "fixtures.ics";
     let allFixtures = [];
     let activeFilter = "all";
+    let activeView = "upcoming";
 
     function unfoldIcs(text) {
       return text.replace(/\r?\n[ \t]/g, "");
@@ -740,7 +817,11 @@
             sport,
             location: decodeIcs(property(block, "LOCATION")),
             wazeUrl: property(block, "URL"),
-            squadiUrl: extractSquadiUrl(description)
+            squadiUrl: extractSquadiUrl(description),
+            homeTeam: decodeIcs(property(block, "X-HOME-TEAM")),
+            awayTeam: decodeIcs(property(block, "X-AWAY-TEAM")),
+            homeScore: property(block, "X-HOME-SCORE"),
+            awayScore: property(block, "X-AWAY-SCORE")
           };
         })
         .filter(item => item.start)
@@ -903,34 +984,138 @@
         </article>`;
     }
 
+    function resultCard(event) {
+      const parts = dateParts(event.start);
+      const round = roundText(event.description);
+      const cleaned = cleanedTitle(event.summary);
+      const titleWithoutName = cleaned.replace(/^(Finn|Tate)\s*\|\s*/i, "");
+      const titleParts = titleWithoutName.split(" vs ");
+      const homeTeam = event.homeTeam || titleParts[0] || "";
+      const awayTeam = event.awayTeam || titleParts[1] || "";
+      const hasScore = event.homeScore !== "" && event.awayScore !== "";
+
+      return `
+        <article class="fixture soccer">
+          <div class="date-card">
+            <span class="weekday">${escapeHtml(parts.weekday)}</span>
+            <span class="day">${escapeHtml(parts.day)}</span>
+            <span class="month">${escapeHtml(parts.month)}</span>
+          </div>
+
+          <div class="fixture-main">
+            <div class="sport-pill">
+              ⚽ ${escapeHtml(event.person === "finn" ? "Finn" : "Tate")}
+            </div>
+
+            <h3 class="fixture-title">
+              ${escapeHtml(homeTeam)} vs ${escapeHtml(awayTeam)}
+            </h3>
+
+            ${
+              hasScore
+                ? `
+                  <div class="result-score" aria-label="Final score">
+                    <span class="score-number">${escapeHtml(event.homeScore)}</span>
+                    <span>–</span>
+                    <span class="score-number">${escapeHtml(event.awayScore)}</span>
+                  </div>
+                `
+                : `
+                  <div class="result-score unavailable">
+                    Score not published
+                  </div>
+                `
+            }
+
+            <div class="fixture-details">
+              ${round ? `<span>🏆 ${escapeHtml(round)}</span>` : ""}
+              ${event.location ? `<span>📍 ${escapeHtml(event.location)}</span>` : ""}
+            </div>
+          </div>
+
+          <div class="fixture-actions">
+            ${
+              event.squadiUrl
+                ? `
+                  <a class="squadi"
+                     href="${escapeHtml(event.squadiUrl)}"
+                     target="_blank"
+                     rel="noopener">
+                    View result
+                  </a>
+                `
+                : ""
+            }
+          </div>
+        </article>`;
+    }
+
+    function updateFilterVisibility() {
+      document
+        .querySelectorAll('[data-filter="soccer"], [data-filter="softball"]')
+        .forEach(button => {
+          button.hidden = activeView === "results";
+        });
+    }
+
     function renderFixtures() {
       const now = new Date();
-      const upcoming = allFixtures.filter(event => (event.end || event.start) >= now);
+      const upcoming = allFixtures.filter(
+        event => (event.end || event.start) >= now
+      );
+
       renderNext(upcoming);
 
-      const filtered = upcoming.filter(event => {
+      const resultsView = activeView === "results";
+      const source = resultsView
+        ? allFixtures
+            .filter(
+              event =>
+                event.sport === "soccer" &&
+                (event.end || event.start) < now
+            )
+            .sort((a, b) => b.start - a.start)
+        : upcoming;
+
+      const filtered = source.filter(event => {
         if (activeFilter === "all") return true;
         return event.person === activeFilter || event.sport === activeFilter;
       });
 
+      document.getElementById("next-panel").hidden = resultsView;
+      document.getElementById("section-title").textContent =
+        resultsView ? "Past soccer results" : "Upcoming fixtures";
+
       document.getElementById("fixture-count").textContent =
-        `${filtered.length} upcoming ${filtered.length === 1 ? "match" : "matches"}`;
+        `${filtered.length} ${resultsView ? "past" : "upcoming"} ` +
+        `${filtered.length === 1 ? "match" : "matches"}`;
+
+      updateFilterVisibility();
 
       const container = document.getElementById("fixture-groups");
 
       if (!filtered.length) {
         container.innerHTML = `
           <div class="empty">
-            <span class="empty-icon">📅</span>
-            No upcoming matches in this category.
+            <span class="empty-icon">${resultsView ? "🏆" : "📅"}</span>
+            ${
+              resultsView
+                ? "No past soccer matches are currently available."
+                : "No upcoming matches in this category."
+            }
           </div>`;
         return;
       }
 
       const groups = new Map();
+
       for (const event of filtered) {
         const key = monthKey(event.start);
-        if (!groups.has(key)) groups.set(key, []);
+
+        if (!groups.has(key)) {
+          groups.set(key, []);
+        }
+
         groups.get(key).push(event);
       }
 
@@ -938,13 +1123,17 @@
         .map(([month, fixtures]) => `
           <section>
             <h3 class="month-heading">${escapeHtml(month)}</h3>
+
             <div class="fixture-list">
-              ${fixtures.map(fixtureCard).join("")}
+              ${
+                fixtures
+                  .map(resultsView ? resultCard : fixtureCard)
+                  .join("")
+              }
             </div>
           </section>`)
         .join("");
     }
-
     async function loadFixtures() {
       const container = document.getElementById("fixture-groups");
 
@@ -977,6 +1166,26 @@
           </div>`;
       }
     }
+
+    document.querySelectorAll(".view-tab").forEach(button => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".view-tab").forEach(item => {
+          item.classList.remove("active");
+          item.setAttribute("aria-selected", "false");
+        });
+
+        button.classList.add("active");
+        button.setAttribute("aria-selected", "true");
+        activeView = button.dataset.view;
+        activeFilter = "all";
+
+        document.querySelectorAll(".filter").forEach(item =>
+          item.classList.toggle("active", item.dataset.filter === "all")
+        );
+
+        renderFixtures();
+      });
+    });
 
     document.querySelectorAll(".filter").forEach(button => {
       button.addEventListener("click", () => {
