@@ -1,16 +1,79 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width">
-    <title>Finn &amp; Tate's Games</title>
-</head>
-<body>
-    <h1>Finn &amp; Tate's Games</h1>
-    <p>
-        <a href="fixtures.ics">
-            Subscribe to Finn and Tate's sporting fixtures
-        </a>
-    </p>
-</body>
-</html>
+name: Refresh Finn and Tate sports calendar
+
+on:
+  workflow_dispatch:
+
+  push:
+    branches: ["main"]
+    paths-ignore:
+      - "docs/fixtures.ics"
+      - "docs/debug.json"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: finn-tate-sports-calendar-refresh
+  cancel-in-progress: true
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install Python requirements
+        run: pip install -r requirements.txt
+
+      - name: Install Playwright
+        run: playwright install --with-deps chromium
+
+      - name: Generate and publish calendar
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          for attempt in 1 2 3; do
+            echo "Publish attempt $attempt"
+
+            # Start from the latest version currently on GitHub.
+            git fetch origin main
+            git reset --hard origin/main
+
+            # Regenerate the output using the latest script and fixture data.
+            python generate_calendar.py
+
+            git add docs/fixtures.ics docs/debug.json
+
+            if git diff --cached --quiet; then
+              echo "Calendar is already current."
+              exit 0
+            fi
+
+            git commit -m "Refresh Finn and Tate sports fixtures"
+
+            if git push origin HEAD:main; then
+              echo "Calendar successfully published."
+              exit 0
+            fi
+
+            echo "Repository changed during this attempt. Retrying..."
+            sleep 5
+          done
+
+          echo "Unable to publish calendar after three attempts."
+          exit 1
