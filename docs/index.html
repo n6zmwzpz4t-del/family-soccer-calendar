@@ -444,6 +444,11 @@
       box-shadow: 0 6px 18px rgba(15, 23, 42, 0.055);
     }
 
+
+    .fixture:not(:has(.fixture-actions)) {
+      grid-template-columns: 88px minmax(0, 1fr);
+    }
+
     .date-card {
       display: grid;
       place-items: center;
@@ -516,6 +521,23 @@
       margin-top: 10px;
       color: var(--muted);
       font-size: 0.91rem;
+    }
+
+
+    .location-link {
+      color: inherit;
+      font-weight: 750;
+      text-decoration-line: underline;
+      text-decoration-style: dotted;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+      text-decoration-color: rgba(44, 102, 228, 0.55);
+    }
+
+    .location-link:hover,
+    .location-link:focus-visible {
+      color: var(--blue);
+      text-decoration-style: solid;
     }
 
     .fixture-details span {
@@ -666,6 +688,11 @@
       .fixture {
         grid-template-columns: 68px minmax(0, 1fr);
         gap: 13px;
+      }
+
+
+      .fixture:not(:has(.fixture-actions)) {
+        grid-template-columns: 68px minmax(0, 1fr);
       }
 
       .date-card {
@@ -1447,17 +1474,34 @@
         .replace(/\s*\|\s*(?:KO|Start)\s+\d{1,2}:\d{2}(?:am|pm)$/i, "");
     }
 
+    function locationMarkup(event) {
+      if (!event.location) {
+        return "";
+      }
+
+      const locationText = escapeHtml(event.location);
+
+      if (!event.wazeUrl) {
+        return `<span>📍 ${locationText}</span>`;
+      }
+
+      return `
+        <span>
+          📍
+          <a
+            class="location-link"
+            href="${escapeHtml(event.wazeUrl)}"
+            target="_blank"
+            rel="noopener"
+            aria-label="Open ${locationText} in Waze"
+          >
+            ${locationText}
+          </a>
+        </span>`;
+    }
+
     function actionLinks(event, compact = false) {
       const links = [];
-
-      if (event.wazeUrl) {
-        links.push(
-          `<a class="${compact ? "button button-primary" : "waze"}"
-              href="${escapeHtml(event.wazeUrl)}"
-              target="_blank"
-              rel="noopener">Open Waze</a>`
-        );
-      }
 
       if (event.squadiUrl) {
         links.push(
@@ -1470,7 +1514,6 @@
 
       return links.join("");
     }
-
     function renderNext(fixtures) {
       const panel = document.getElementById("next-panel");
       const event = fixtures[0];
@@ -1492,13 +1535,19 @@
           <div class="next-meta">
             <span>📅 ${escapeHtml(formatFullDate(event.start))}</span>
             <span>🕒 ${escapeHtml(formatTime(event.start))}</span>
-            ${event.location ? `<span>📍 ${escapeHtml(event.location)}</span>` : ""}
+            ${locationMarkup(event)}
             ${weatherMarkup(event)}
           </div>
         </div>
-        <div class="next-actions">
-          ${actionLinks(event, true)}
-        </div>`;
+        ${
+          actionLinks(event, true)
+            ? `
+              <div class="next-actions">
+                ${actionLinks(event, true)}
+              </div>
+            `
+            : ""
+        }`;
     }
 
     function fixtureCard(event) {
@@ -1523,15 +1572,21 @@
             <h3 class="fixture-title">${escapeHtml(cleanedTitle(event.summary))}</h3>
             <div class="fixture-details">
               <span>🕒 ${escapeHtml(timeRange)}</span>
-              ${event.location ? `<span>📍 ${escapeHtml(event.location)}</span>` : ""}
+              ${locationMarkup(event)}
               ${round ? `<span>🏆 ${escapeHtml(round)}</span>` : ""}
               ${weatherMarkup(event)}
             </div>
           </div>
 
-          <div class="fixture-actions">
-            ${actionLinks(event)}
-          </div>
+          ${
+            actionLinks(event)
+              ? `
+                <div class="fixture-actions">
+                  ${actionLinks(event)}
+                </div>
+              `
+              : ""
+          }
         </article>`;
     }
 
@@ -1580,7 +1635,7 @@
 
             <div class="fixture-details">
               ${round ? `<span>🏆 ${escapeHtml(round)}</span>` : ""}
-              ${event.location ? `<span>📍 ${escapeHtml(event.location)}</span>` : ""}
+              ${locationMarkup(event)}
             </div>
           </div>
 
