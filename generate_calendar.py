@@ -1195,6 +1195,110 @@ def parse_squadi_ladder_payloads(
     return rows
 
 
+def parse_squadi_ladder_body_text(
+    body_text: str,
+) -> list[dict[str, Any]]:
+    """
+    Parse the ladder exactly as Squadi renders it on screen.
+
+    Squadi's ladder is built with divs rather than a real HTML table, so
+    Playwright's body.inner_text() is the most reliable fallback. The
+    rendered order is:
+
+      Rank, Team, MP, W, D, L, GF, GA, PTS, GD, form...
+
+    The form values (W/D/L) are ignored.
+    """
+    lines = [
+        clean(line)
+        for line in body_text.splitlines()
+        if clean(line)
+    ]
+
+    try:
+        rank_index = next(
+            index
+            for index, line in enumerate(lines)
+            if line.lower() == "rank"
+        )
+    except StopIteration:
+        return []
+
+    start = rank_index + 1
+    for index in range(rank_index, min(len(lines), rank_index + 20)):
+        if lines[index].lower() == "next":
+            start = index + 1
+            break
+
+    rows: list[dict[str, Any]] = []
+    index = start
+
+    while index < len(lines):
+        if (
+            lines[index].upper() == "MP"
+            and index + 1 < len(lines)
+            and lines[index + 1] == "="
+        ):
+            break
+
+        if not re.fullmatch(r"\d+", lines[index]):
+            index += 1
+            continue
+
+        position = int(lines[index])
+
+        if index + 1 >= len(lines):
+            break
+
+        team = lines[index + 1]
+        values: list[int] = []
+        cursor = index + 2
+
+        while cursor < len(lines) and len(values) < 8:
+            value = ladder_int(lines[cursor])
+
+            if value is None:
+                break
+
+            values.append(value)
+            cursor += 1
+
+        if len(values) != 8:
+            index += 1
+            continue
+
+        (
+            played,
+            won,
+            drawn,
+            lost,
+            goals_for,
+            goals_against,
+            points,
+            difference,
+        ) = values
+
+        rows.append(
+            {
+                "position": position,
+                "team": team,
+                "played": played,
+                "won": won,
+                "drawn": drawn,
+                "lost": lost,
+                "for": goals_for,
+                "against": goals_against,
+                "difference": difference,
+                "points": points,
+                "percentage": "",
+            }
+        )
+
+        index = cursor
+
+    return rows
+
+
 def parse_squadi_ladder_tables(
     raw_tables: list[list[list[str]]],
 ) -> list[dict[str, Any]]:
@@ -1385,6 +1489,12 @@ async def scrape_squadi_ladder(
                 raw_tables
             )
             source = "html_table"
+
+        if not rows:
+            rows = parse_squadi_ladder_body_text(
+                body_text
+            )
+            source = "rendered_text"
 
         target_key = re.sub(
             r"[^a-z0-9]+",
