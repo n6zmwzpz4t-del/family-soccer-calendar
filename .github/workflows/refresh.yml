@@ -8,6 +8,7 @@ on:
     paths-ignore:
       - "docs/fixtures.ics"
       - "docs/debug.json"
+      - "docs/softball.json"
 
 permissions:
   contents: write
@@ -39,7 +40,7 @@ jobs:
       - name: Install Playwright
         run: playwright install --with-deps chromium
 
-      - name: Generate and publish calendar
+      - name: Generate and publish sports data
         shell: bash
         run: |
           set -euo pipefail
@@ -50,24 +51,25 @@ jobs:
           for attempt in 1 2 3; do
             echo "Publish attempt $attempt"
 
-            # Always start with the latest files from GitHub.
             git fetch origin main
             git reset --hard origin/main
 
-            # Keep a copy of the currently published calendar.
             if [ -f docs/fixtures.ics ]; then
               cp docs/fixtures.ics /tmp/fixtures-before.ics
             else
               touch /tmp/fixtures-before.ics
             fi
 
-            # Check Squadi and regenerate the calendar.
+            if [ -f docs/softball.json ]; then
+              cp docs/softball.json /tmp/softball-before.json
+            else
+              printf '{}\n' > /tmp/softball-before.json
+            fi
+
+            # Check Squadi and DDMSA, then regenerate local published data.
             python generate_calendar.py
 
-            # Create comparison copies that ignore DTSTAMP.
-            #
-            # DTSTAMP changes every run even if the actual fixture
-            # information has not changed.
+            # DTSTAMP changes every run and is not a meaningful fixture change.
             sed '/^DTSTAMP:/d' /tmp/fixtures-before.ics \
               | tr -d '\r' \
               > /tmp/fixtures-before-compare.ics
@@ -76,37 +78,63 @@ jobs:
               | tr -d '\r' \
               > /tmp/fixtures-after-compare.ics
 
-            # If the meaningful calendar information is identical,
-            # restore the existing generated files and finish.
-            if cmp -s \
+            calendar_changed=0
+            softball_changed=0
+
+            if ! cmp -s \
               /tmp/fixtures-before-compare.ics \
               /tmp/fixtures-after-compare.ics
             then
-              echo "No fixture changes detected."
+              calendar_changed=1
+            fi
+
+            if [ -f docs/softball.json ]; then
+              if ! cmp -s \
+                /tmp/softball-before.json \
+                docs/softball.json
+              then
+                softball_changed=1
+              fi
+            fi
+
+            if [ "$calendar_changed" -eq 0 ] \
+              && [ "$softball_changed" -eq 0 ]
+            then
+              echo "No meaningful sports-data changes detected."
               echo "Nothing will be committed or deployed."
 
               git restore docs/fixtures.ics docs/debug.json
 
+              if git ls-files --error-unmatch docs/softball.json >/dev/null 2>&1; then
+                git restore docs/softball.json
+              else
+                rm -f docs/softball.json
+              fi
+
               exit 0
             fi
 
-            echo "Fixture changes detected."
-            echo "Publishing updated calendar..."
+            echo "Sports-data changes detected."
+            echo "Calendar changed: $calendar_changed"
+            echo "DDMSA softball changed: $softball_changed"
 
             git add docs/fixtures.ics docs/debug.json
 
-            git commit -m "Refresh Finn and Tate sports fixtures"
+            if [ -f docs/softball.json ]; then
+              git add docs/softball.json
+            fi
+
+            git commit -m "Refresh Finn and Tate sports data"
 
             if git push origin HEAD:main; then
-              echo "Calendar successfully published."
+              echo "Sports data successfully published."
               exit 0
             fi
 
             echo "Repository changed during this attempt."
             echo "Retrying in 5 seconds..."
-
             sleep 5
           done
 
-          echo "Unable to publish calendar after three attempts."
+          echo "Unable to publish sports data after three attempts."
           exit 1
