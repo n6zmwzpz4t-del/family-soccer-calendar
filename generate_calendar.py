@@ -19,6 +19,12 @@ CONFIG = json.loads((ROOT / "config.json").read_text(encoding="utf-8"))
 OUTPUT = ROOT / "docs" / "fixtures.ics"
 DEBUG = ROOT / "docs" / "debug.json"
 MANUAL_FIXTURES = ROOT / "manual_fixtures.json"
+SOFTBALL_DATA = ROOT / "docs" / "softball.json"
+
+DDMSA_RESULTS_URL = "https://ddmsa.com/resframe.htm"
+DDMSA_HOME_URL = "https://ddmsa.com/"
+DDMSA_TEAM = "Thornlie Hawks (Blue)"
+DDMSA_DIVISION = "Under 13's Mixed"
 
 DATE_KEYS = (
     "fixtureDate",
@@ -841,6 +847,710 @@ def extract_score_pair(obj: dict[str, Any]) -> tuple[str, str]:
     return "", ""
 
 
+
+def ddmsa_clean(value: Any) -> str:
+    """Normalise old DDMSA HTML text without changing team names."""
+    return re.sub(
+        r"\s+",
+        " ",
+        str(value or "").replace("\xa0", " "),
+    ).strip()
+
+
+def ddmsa_key(value: str) -> str:
+    """Loose comparison key for DDMSA headings and team names."""
+    text = ddmsa_clean(value).lower()
+    text = text.replace("’", "'").replace("`", "'")
+    text = re.sub(r"[^a-z0-9]+", "", text)
+    return text
+
+
+def ddmsa_is_u13_heading(value: str) -> bool:
+    key = ddmsa_key(value)
+    return "under13" in key and "mixed" in key
+
+
+def ddmsa_int(value: Any) -> int | None:
+    text = ddmsa_clean(value)
+    match = re.fullmatch(r"-?\d+", text)
+    return int(text) if match else None
+
+
+def ddmsa_extract_updated(text: str) -> str:
+    """Read a DDMSA 'as of' or 'posted up till' date when present."""
+    patterns = (
+        r"LADDERS?\s+AS\s+OF\s+(?:THE\s+)?([0-9]{1,2}\s*[-/ ]\s*[A-Za-z]{3,9}(?:\s*[-/ ]\s*[0-9]{2,4})?)",
+        r"RESULTS?\s+(?:AND\s+LADDER\s+)?POSTED\s+UP\s+TILL\s*[-:]\s*([0-9]{1,2}\s+[A-Za-z]{3,9}(?:\s+[0-9]{2,4})?)",
+        r"RESULTS?\s+(?:AS\s+OF|TO)\s+(?:THE\s+)?([0-9]{1,2}\s*[-/ ]\s*[A-Za-z]{3,9}(?:\s*[-/ ]\s*[0-9]{2,4})?)",
+    )
+
+    for pattern in patterns:
+        match = re.search(pattern, text, flags=re.IGNORECASE)
+        if match:
+            return ddmsa_clean(match.group(1))
+
+    return ""
+
+
+def ddmsa_parse_ladder(
+    tables: list[list[list[str]]],
+) -> list[dict[str, Any]]:
+    """Extract the Under 13's Mixed ladder from DDMSA HTML tables."""
+    best: list[dict[str, Any]] = []
+
+    for table in tables:
+        heading_index = None
+
+        for index, row in enumerate(table):
+            if ddmsa_is_u13_heading(" ".join(row)):
+                heading_index = index
+                break
+
+        if heading_index is None:
+            continue
+
+        ladder: list[dict[str, Any]] = []
+
+        for row in table[heading_index + 1 :]:
+            cells = [ddmsa_clean(cell) for cell in row]
+            cells = [cell for cell in cells if cell]
+
+            if not cells:
+                if ladder:
+                    break
+                continue
+
+            joined = " ".join(cells)
+            key = ddmsa_key(joined)
+
+            if (
+                ladder
+                and (
+                    key.startswith("division")
+                    or ("under" in key and not ddmsa_is_u13_heading(joined))
+                )
+            ):
+                break
+
+            if ddmsa_key(cells[0]).startswith("team"):
+                continue
+
+            # Expected DDMSA order:
+            # Team, Played, Won, Lost, Drawn, For, Against, Ratio, Points, ...
+            if len(cells) < 9:
+                continue
+
+            played = ddmsa_int(cells[1])
+            won = ddmsa_int(cells[2])
+            lost = ddmsa_int(cells[3])
+            drawn = ddmsa_int(cells[4])
+            runs_for = ddmsa_int(cells[5])
+            runs_against = ddmsa_int(cells[6])
+
+            # Points is normally column 9 (index 8). If DDMSA changes the
+            # spreadsheet slightly, take the first integer after Ratio.
+            points = ddmsa_int(cells[8]) if len(cells) > 8 else None
+
+            if played is None or not cells[0]:
+                continue
+
+            ladder.append(
+                {
+                    "position": len(ladder) + 1,
+                    "team": cells[0],
+                    "played": played,
+                    "won": won,
+                    "lost": lost,
+                    "drawn": drawn,
+                    "runs_for": runs_for,
+                    "runs_against": runs_against,
+                    "ratio": cells[7] if len(cells) > 7 else "",
+                    "points": points,
+                    "for_against_percent": cells[10] if len(cells) > 10 else "",
+                }
+            )
+
+        if len(ladder) > len(best):
+            best = ladder
+
+    return best
+
+
+def ddmsa_date_from_cells(cells: list[str], previous: str = "") -> str:
+    month_pattern = (
+        r"(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)"
+    )
+
+    for cell in cells:
+        match = re.search(
+            rf"\b(\d{{1,2}}\s*[-/ ]\s*{month_pattern}"
+            rf"(?:\s*[-/ ]\s*\d{{2,4}})?)\b",
+            cell,
+            flags=re.IGNORECASE,
+        )
+        if match:
+            return ddmsa_clean(match.group(1))
+
+    return previous
+
+
+def ddmsa_matching_team(
+    cell: str,
+    team_names: list[str],
+) -> str | None:
+    cell_key = ddmsa_key(cell)
+
+    for team in team_names:
+        team_key = ddmsa_key(team)
+
+        if team_key and (
+            cell_key == team_key
+            or team_key in cell_key
+            or cell_key in team_key
+        ):
+            return team
+
+    return None
+
+
+def ddmsa_score_near_team(
+    cells: list[str],
+    team_index: int,
+    other_team_index: int,
+) -> int | None:
+    """
+    Find a likely run score adjacent to a team cell.
+
+    Supports common old-HTML result layouts:
+      Team | Score | Team | Score
+      Team | Score | Score | Team
+    """
+    candidates: list[tuple[int, int]] = []
+
+    for index, cell in enumerate(cells):
+        value = ddmsa_int(cell)
+
+        if value is None or value < 0 or value > 99:
+            continue
+
+        # Avoid date/round-style numbers a long way from the team.
+        distance = abs(index - team_index)
+
+        if distance <= 2:
+            candidates.append((distance, index))
+
+    candidates.sort()
+
+    for _, index in candidates:
+        # Prefer the side of the team away from the other team.
+        if team_index < other_team_index and index > team_index:
+            return ddmsa_int(cells[index])
+        if team_index > other_team_index and index < team_index:
+            return ddmsa_int(cells[index])
+
+    return ddmsa_int(cells[candidates[0][1]]) if candidates else None
+
+
+def ddmsa_parse_results(
+    tables: list[list[list[str]]],
+    ladder: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """
+    Extract Tate's Thornlie Hawks (Blue) result rows.
+
+    DDMSA uses legacy spreadsheets converted to HTML, so this parser is
+    intentionally tolerant of slightly different column layouts.
+    """
+    team_names = [
+        ddmsa_clean(item.get("team"))
+        for item in ladder
+        if ddmsa_clean(item.get("team"))
+    ]
+
+    if DDMSA_TEAM not in team_names:
+        team_names.append(DDMSA_TEAM)
+
+    results: list[dict[str, Any]] = []
+    seen: set[tuple[str, str, int | None, int | None]] = set()
+
+    for table in tables:
+        heading_index = None
+
+        for index, row in enumerate(table):
+            if ddmsa_is_u13_heading(" ".join(row)):
+                heading_index = index
+                break
+
+        if heading_index is None:
+            continue
+
+        current_date = ""
+
+        for row in table[heading_index + 1 :]:
+            cells = [ddmsa_clean(cell) for cell in row]
+            cells = [cell for cell in cells if cell]
+
+            if not cells:
+                continue
+
+            joined = " ".join(cells)
+            key = ddmsa_key(joined)
+
+            if (
+                ("under" in key and not ddmsa_is_u13_heading(joined))
+                or key.startswith("division")
+            ):
+                break
+
+            current_date = ddmsa_date_from_cells(cells, current_date)
+
+            team_hits: list[tuple[int, str]] = []
+
+            for index, cell in enumerate(cells):
+                team = ddmsa_matching_team(cell, team_names)
+                if team and all(ddmsa_key(existing[1]) != ddmsa_key(team) for existing in team_hits):
+                    team_hits.append((index, team))
+
+            if len(team_hits) < 2:
+                continue
+
+            target_hit = next(
+                (
+                    hit
+                    for hit in team_hits
+                    if ddmsa_key(hit[1]) == ddmsa_key(DDMSA_TEAM)
+                ),
+                None,
+            )
+
+            if target_hit is None:
+                continue
+
+            opponent_hit = next(
+                (
+                    hit
+                    for hit in team_hits
+                    if ddmsa_key(hit[1]) != ddmsa_key(DDMSA_TEAM)
+                ),
+                None,
+            )
+
+            if opponent_hit is None:
+                continue
+
+            target_index, _ = target_hit
+            opponent_index, opponent = opponent_hit
+
+            target_score = ddmsa_score_near_team(
+                cells,
+                target_index,
+                opponent_index,
+            )
+            opponent_score = ddmsa_score_near_team(
+                cells,
+                opponent_index,
+                target_index,
+            )
+
+            # If both score lookups picked the same integer in a compact
+            # layout, fall back to the two small integers nearest the teams.
+            if (
+                target_score is not None
+                and opponent_score is not None
+                and target_score == opponent_score
+            ):
+                numeric_cells = [
+                    (index, ddmsa_int(cell))
+                    for index, cell in enumerate(cells)
+                    if ddmsa_int(cell) is not None
+                    and 0 <= int(ddmsa_int(cell)) <= 99
+                ]
+
+                near = [
+                    item
+                    for item in numeric_cells
+                    if min(abs(item[0] - target_index), abs(item[0] - opponent_index)) <= 2
+                ]
+
+                distinct = []
+                for item in near:
+                    if item[1] not in [value for _, value in distinct]:
+                        distinct.append(item)
+
+                if len(distinct) >= 2:
+                    target_score = distinct[0][1]
+                    opponent_score = distinct[1][1]
+
+            outcome = ""
+
+            if target_score is not None and opponent_score is not None:
+                if target_score > opponent_score:
+                    outcome = "W"
+                elif target_score < opponent_score:
+                    outcome = "L"
+                else:
+                    outcome = "D"
+
+            record = {
+                "date": current_date,
+                "opponent": opponent,
+                "thornlie_score": target_score,
+                "opponent_score": opponent_score,
+                "result": outcome,
+                "raw": cells,
+            }
+
+            signature = (
+                current_date,
+                ddmsa_key(opponent),
+                target_score,
+                opponent_score,
+            )
+
+            if signature not in seen:
+                seen.add(signature)
+                results.append(record)
+
+    return results
+
+
+async def ddmsa_extract_document(frame) -> dict[str, Any]:
+    """Extract visible text, tables and links from one DDMSA frame/page."""
+    try:
+        body_text = await frame.locator("body").inner_text(timeout=5_000)
+    except Exception:
+        body_text = ""
+
+    try:
+        tables = await frame.locator("table").evaluate_all(
+            """
+            tables => tables.map(table =>
+              Array.from(table.rows).map(row =>
+                Array.from(row.cells).map(cell =>
+                  (cell.innerText || cell.textContent || '').replace(/\\s+/g, ' ').trim()
+                )
+              )
+            )
+            """
+        )
+    except Exception:
+        tables = []
+
+    try:
+        links = await frame.locator("a[href]").evaluate_all(
+            """
+            links => links.map(link => ({
+              text: (link.innerText || link.textContent || '').replace(/\\s+/g, ' ').trim(),
+              href: link.href || ''
+            }))
+            """
+        )
+    except Exception:
+        links = []
+
+    return {
+        "url": frame.url,
+        "body_text": body_text,
+        "tables": tables,
+        "links": links,
+    }
+
+
+async def scrape_ddmsa_softball(browser) -> dict[str, Any]:
+    """
+    Scrape Tate's U13 softball ladder and results from DDMSA's legacy
+    framed results site.
+
+    The frame page changes its dated ladder/result filenames during the
+    season, so links are discovered dynamically instead of hard-coding
+    'Ladder 20 Jul.htm'.
+    """
+    page = await browser.new_page(
+        viewport={"width": 1440, "height": 1200}
+    )
+
+    documents: list[dict[str, Any]] = []
+    visited: set[str] = set()
+
+    try:
+        await page.goto(
+            DDMSA_RESULTS_URL,
+            wait_until="domcontentloaded",
+            timeout=60_000,
+        )
+        await page.wait_for_timeout(3_000)
+
+        # resframe.htm normally contains a navigation frame and a content
+        # frame. Extract every currently loaded frame first.
+        for frame in page.frames:
+            document = await ddmsa_extract_document(frame)
+            if document["url"] and document["url"] not in visited:
+                visited.add(document["url"])
+                documents.append(document)
+
+        candidate_links: list[tuple[int, str]] = []
+
+        for document in documents:
+            for link in document.get("links", []):
+                href = ddmsa_clean(link.get("href"))
+                text = ddmsa_clean(link.get("text"))
+                combined = f"{text} {href}".lower()
+
+                if not href or "ddmsa.com" not in href.lower():
+                    continue
+
+                if not re.search(r"\.html?(?:$|[?#])", href, re.IGNORECASE):
+                    continue
+
+                score = 0
+
+                if "ladder" in combined:
+                    score += 100
+                if "result" in combined:
+                    score += 100
+                if "2026" in combined:
+                    score += 20
+                if "junior" in combined or "u13" in combined:
+                    score += 10
+
+                if score:
+                    candidate_links.append((score, href))
+
+        # The DDMSA homepage may expose the current Season Ladders & Results
+        # link more clearly than the frame navigation, so inspect it too.
+        home = await browser.new_page()
+
+        try:
+            await home.goto(
+                DDMSA_HOME_URL,
+                wait_until="domcontentloaded",
+                timeout=30_000,
+            )
+            await home.wait_for_timeout(1_000)
+            home_document = await ddmsa_extract_document(home)
+
+            for link in home_document.get("links", []):
+                href = ddmsa_clean(link.get("href"))
+                text = ddmsa_clean(link.get("text"))
+                combined = f"{text} {href}".lower()
+
+                if (
+                    href
+                    and "ddmsa.com" in href.lower()
+                    and re.search(r"\.html?(?:$|[?#])", href, re.IGNORECASE)
+                    and ("ladder" in combined or "result" in combined)
+                ):
+                    candidate_links.append((80, href))
+        finally:
+            await home.close()
+
+        # Follow the most promising dated result/ladder links. Old DDMSA
+        # menus can contain historical links, so cap the number inspected.
+        unique_candidates: list[str] = []
+
+        for _, href in sorted(
+            candidate_links,
+            key=lambda item: item[0],
+            reverse=True,
+        ):
+            if href not in visited and href not in unique_candidates:
+                unique_candidates.append(href)
+
+        for href in unique_candidates[:24]:
+            candidate_page = await browser.new_page()
+
+            try:
+                await candidate_page.goto(
+                    href,
+                    wait_until="domcontentloaded",
+                    timeout=30_000,
+                )
+                await candidate_page.wait_for_timeout(600)
+                document = await ddmsa_extract_document(candidate_page)
+                visited.add(href)
+                documents.append(document)
+            except Exception:
+                pass
+            finally:
+                await candidate_page.close()
+
+        ladder_candidates: list[tuple[int, dict[str, Any], list[dict[str, Any]]]] = []
+
+        for document in documents:
+            ladder = ddmsa_parse_ladder(document.get("tables", []))
+
+            if not ladder:
+                continue
+
+            score = len(ladder)
+
+            if "ladder" in document.get("url", "").lower():
+                score += 100
+
+            if "2026" in document.get("url", "").lower():
+                score += 20
+
+            if re.search(
+                r"LADDERS?\s+AS\s+OF",
+                document.get("body_text", ""),
+                flags=re.IGNORECASE,
+            ):
+                score += 50
+
+            ladder_candidates.append((score, document, ladder))
+
+        ladder: list[dict[str, Any]] = []
+        ladder_document: dict[str, Any] | None = None
+
+        if ladder_candidates:
+            _, ladder_document, ladder = max(
+                ladder_candidates,
+                key=lambda item: item[0],
+            )
+
+        result_candidates: list[
+            tuple[int, dict[str, Any], list[dict[str, Any]]]
+        ] = []
+
+        for document in documents:
+            results = ddmsa_parse_results(
+                document.get("tables", []),
+                ladder,
+            )
+
+            if not results:
+                continue
+
+            score = len(results)
+
+            if "result" in document.get("url", "").lower():
+                score += 100
+
+            if "2026" in document.get("url", "").lower():
+                score += 20
+
+            if re.search(
+                r"\bRESULT",
+                document.get("body_text", ""),
+                flags=re.IGNORECASE,
+            ):
+                score += 50
+
+            result_candidates.append((score, document, results))
+
+        results: list[dict[str, Any]] = []
+        results_document: dict[str, Any] | None = None
+
+        if result_candidates:
+            _, results_document, results = max(
+                result_candidates,
+                key=lambda item: item[0],
+            )
+
+        team_row = next(
+            (
+                row
+                for row in ladder
+                if ddmsa_key(row.get("team", ""))
+                == ddmsa_key(DDMSA_TEAM)
+            ),
+            None,
+        )
+
+        updated = ""
+
+        for document in (
+            ladder_document,
+            results_document,
+            *documents,
+        ):
+            if not document:
+                continue
+
+            updated = ddmsa_extract_updated(
+                document.get("body_text", "")
+            )
+
+            if updated:
+                break
+
+        return {
+            "source": "Dale Districts Men's Softball Association",
+            "source_url": DDMSA_RESULTS_URL,
+            "division": DDMSA_DIVISION,
+            "team": DDMSA_TEAM,
+            "updated": updated,
+            "team_summary": team_row,
+            "ladder": ladder,
+            "results": results,
+            "ladder_source_url": (
+                ladder_document.get("url", "")
+                if ladder_document
+                else ""
+            ),
+            "results_source_url": (
+                results_document.get("url", "")
+                if results_document
+                else ""
+            ),
+            "status": (
+                "ok"
+                if ladder
+                else "ladder_not_found"
+            ),
+            # Keep small diagnostics useful if DDMSA changes its old site.
+            "diagnostics": {
+                "documents_checked": len(documents),
+                "candidate_urls": [
+                    document.get("url", "")
+                    for document in documents
+                    if document.get("url")
+                ][:30],
+            },
+        }
+
+    finally:
+        await page.close()
+
+
+def write_ddmsa_softball_data(data: dict[str, Any]) -> bool:
+    """
+    Publish DDMSA data only when a useful ladder was scraped.
+
+    If DDMSA is temporarily unavailable, keep the previously published
+    softball.json instead of replacing it with an empty file.
+    """
+    if not data.get("ladder"):
+        print(
+            "DDMSA warning: U13 ladder was not detected; "
+            "keeping existing docs/softball.json."
+        )
+        return False
+
+    SOFTBALL_DATA.parent.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    SOFTBALL_DATA.write_text(
+        json.dumps(
+            data,
+            indent=2,
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+
+    print(
+        "DDMSA: wrote "
+        f"{len(data.get('ladder', []))} ladder rows and "
+        f"{len(data.get('results', []))} Tate result rows "
+        f"to {SOFTBALL_DATA}."
+    )
+
+    return True
+
+
 def load_manual_fixtures(
     timezone: ZoneInfo,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
@@ -1216,6 +1926,14 @@ async def main() -> None:
             fixtures, debug = await scrape_team(browser, team, timezone)
             all_fixtures.extend(fixtures)
             debug_teams.append(debug)
+
+        try:
+            ddmsa_softball = await scrape_ddmsa_softball(browser)
+            write_ddmsa_softball_data(ddmsa_softball)
+        except Exception as exc:
+            # Do not allow a temporary DDMSA outage to break the soccer
+            # calendar or erase the last successfully published softball data.
+            print(f"DDMSA warning: {exc}")
 
         await browser.close()
 
