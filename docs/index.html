@@ -317,7 +317,7 @@
 
     .view-tabs {
       display: inline-grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(3, 1fr);
       gap: 5px;
       margin: 34px 0 18px;
       padding: 5px;
@@ -368,6 +368,226 @@
       color: var(--muted);
       font-size: 0.88rem;
       font-weight: 750;
+    }
+
+
+    .softball-dashboard {
+      display: grid;
+      gap: 20px;
+    }
+
+    .softball-summary {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 18px;
+      align-items: center;
+      padding: 20px;
+      border: 1px solid #f2d5c3;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #fff8f3, #ffffff);
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.055);
+    }
+
+    .softball-rank {
+      display: grid;
+      place-items: center;
+      width: 82px;
+      height: 82px;
+      border-radius: 20px;
+      color: white;
+      background: linear-gradient(145deg, #a84416, var(--orange));
+      text-align: center;
+    }
+
+    .softball-rank strong {
+      display: block;
+      font-size: 2rem;
+      line-height: 1;
+    }
+
+    .softball-rank span {
+      margin-top: 4px;
+      font-size: 0.72rem;
+      font-weight: 850;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .softball-summary h3 {
+      margin: 0;
+      font-size: 1.25rem;
+      letter-spacing: -0.025em;
+    }
+
+    .softball-record {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.91rem;
+      font-weight: 700;
+    }
+
+    .softball-block {
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: var(--surface);
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.055);
+    }
+
+    .softball-block-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: end;
+      margin-bottom: 13px;
+    }
+
+    .softball-block-head h3 {
+      margin: 0;
+      font-size: 1.13rem;
+      letter-spacing: -0.025em;
+    }
+
+    .softball-block-head span {
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    .ladder-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .ladder {
+      width: 100%;
+      min-width: 650px;
+      border-collapse: collapse;
+      font-size: 0.86rem;
+    }
+
+    .ladder th,
+    .ladder td {
+      padding: 10px 9px;
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .ladder th:nth-child(2),
+    .ladder td:nth-child(2) {
+      text-align: left;
+    }
+
+    .ladder th {
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 850;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .ladder tr.tate-team {
+      color: #7d3012;
+      background: var(--orange-soft);
+      font-weight: 850;
+    }
+
+    .softball-results {
+      display: grid;
+      gap: 9px;
+    }
+
+    .softball-result {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      padding: 12px 13px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #fafbfc;
+    }
+
+    .softball-result-opponent {
+      font-weight: 800;
+    }
+
+    .softball-result-date {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    .softball-result-score {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 1rem;
+      font-weight: 900;
+    }
+
+    .softball-result-badge {
+      display: inline-grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 9px;
+      color: white;
+      font-size: 0.78rem;
+      font-weight: 900;
+    }
+
+    .softball-result-badge.win {
+      background: #14866d;
+    }
+
+    .softball-result-badge.loss {
+      background: #c43d3d;
+    }
+
+    .softball-result-badge.draw {
+      background: #737b8c;
+    }
+
+    .softball-source {
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.5;
+    }
+
+    .softball-source a {
+      color: var(--blue);
+      font-weight: 750;
+    }
+
+    @media (max-width: 560px) {
+      .view-tab {
+        padding-left: 11px;
+        padding-right: 11px;
+        font-size: 0.83rem;
+      }
+
+      .softball-summary {
+        grid-template-columns: 68px minmax(0, 1fr);
+        padding: 15px;
+      }
+
+      .softball-rank {
+        width: 68px;
+        height: 68px;
+        border-radius: 17px;
+      }
+
+      .softball-rank strong {
+        font-size: 1.65rem;
+      }
+
+      .softball-block {
+        padding: 14px;
+      }
     }
 
     .filters {
@@ -823,6 +1043,15 @@
         >
           Past results
         </button>
+
+        <button
+          class="view-tab"
+          data-view="softball"
+          role="tab"
+          aria-selected="false"
+        >
+          Softball
+        </button>
       </div>
 
       <div class="section-head">
@@ -842,6 +1071,7 @@
       </div>
 
       <div id="fixture-groups" class="fixture-groups"></div>
+      <div id="softball-dashboard" class="softball-dashboard" hidden></div>
     </section>
   </main>
 
@@ -858,6 +1088,7 @@
   <script>
     const TIME_ZONE = "Australia/Perth";
     const ICS_URL = "fixtures.ics";
+    const SOFTBALL_URL = "softball.json";
     const WEATHER_FORECAST_DAYS = 7;
     const WEATHER_CACHE_MINUTES = 30;
 
@@ -875,6 +1106,7 @@
     ];
 
     let allFixtures = [];
+    let softballData = null;
     let activeFilter = "all";
     let activeView = "upcoming";
 
@@ -1656,7 +1888,191 @@
         </article>`;
     }
 
+    function softballResultBadge(result) {
+      const value = String(result || "").toUpperCase();
+
+      if (value === "W") {
+        return '<span class="softball-result-badge win">W</span>';
+      }
+
+      if (value === "L") {
+        return '<span class="softball-result-badge loss">L</span>';
+      }
+
+      if (value === "D") {
+        return '<span class="softball-result-badge draw">D</span>';
+      }
+
+      return "";
+    }
+
+    function renderSoftballDashboard() {
+      const container = document.getElementById("softball-dashboard");
+
+      if (!softballData || !Array.isArray(softballData.ladder)) {
+        container.innerHTML = `
+          <div class="empty">
+            <span class="empty-icon">🥎</span>
+            Softball results and ladder are not available yet.
+          </div>`;
+        return;
+      }
+
+      const team = softballData.team_summary;
+      const ladder = softballData.ladder || [];
+      const results = softballData.results || [];
+      const updated = softballData.updated
+        ? `DDMSA data as of ${escapeHtml(softballData.updated)}`
+        : "Latest DDMSA data";
+
+      const summary = team
+        ? `
+          <div class="softball-summary">
+            <div class="softball-rank">
+              <strong>#${escapeHtml(team.position)}</strong>
+              <span>Position</span>
+            </div>
+
+            <div>
+              <h3>🥎 Tate — Thornlie Hawks (Blue)</h3>
+              <div class="softball-record">
+                <span>${escapeHtml(team.played)} played</span>
+                <span>${escapeHtml(team.won)} wins</span>
+                <span>${escapeHtml(team.lost)} losses</span>
+                <span>${escapeHtml(team.drawn)} draws</span>
+                <span>${escapeHtml(team.points)} points</span>
+                <span>${escapeHtml(team.runs_for)} for / ${escapeHtml(team.runs_against)} against</span>
+              </div>
+            </div>
+          </div>`
+        : "";
+
+      const resultsHtml = results.length
+        ? results
+            .slice()
+            .reverse()
+            .map(result => {
+              const hasScore =
+                result.thornlie_score !== null &&
+                result.thornlie_score !== undefined &&
+                result.opponent_score !== null &&
+                result.opponent_score !== undefined;
+
+              return `
+                <div class="softball-result">
+                  <div>
+                    <div class="softball-result-opponent">
+                      vs ${escapeHtml(result.opponent || "Opponent")}
+                    </div>
+                    <div class="softball-result-date">
+                      ${escapeHtml(result.date || "")}
+                    </div>
+                  </div>
+
+                  <div class="softball-result-score">
+                    ${softballResultBadge(result.result)}
+                    ${
+                      hasScore
+                        ? `<span>${escapeHtml(result.thornlie_score)} – ${escapeHtml(result.opponent_score)}</span>`
+                        : `<span>Score unavailable</span>`
+                    }
+                  </div>
+                </div>`;
+            })
+            .join("")
+        : `
+          <div class="empty">
+            DDMSA's ladder is available, but individual Tate result rows
+            have not been detected from the current results page.
+          </div>`;
+
+      const ladderHtml = ladder
+        .map(row => {
+          const isTate =
+            String(row.team || "")
+              .toLowerCase()
+              .includes("thornlie hawks") &&
+            String(row.team || "")
+              .toLowerCase()
+              .includes("blue");
+
+          return `
+            <tr class="${isTate ? "tate-team" : ""}">
+              <td>${escapeHtml(row.position)}</td>
+              <td>${escapeHtml(row.team)}</td>
+              <td>${escapeHtml(row.played)}</td>
+              <td>${escapeHtml(row.won)}</td>
+              <td>${escapeHtml(row.lost)}</td>
+              <td>${escapeHtml(row.drawn)}</td>
+              <td>${escapeHtml(row.runs_for)}</td>
+              <td>${escapeHtml(row.runs_against)}</td>
+              <td>${escapeHtml(row.points)}</td>
+            </tr>`;
+        })
+        .join("");
+
+      container.innerHTML = `
+        ${summary}
+
+        <section class="softball-block">
+          <div class="softball-block-head">
+            <h3>Tate's results</h3>
+            <span>${updated}</span>
+          </div>
+
+          <div class="softball-results">
+            ${resultsHtml}
+          </div>
+        </section>
+
+        <section class="softball-block">
+          <div class="softball-block-head">
+            <h3>Under 13's Mixed ladder</h3>
+            <span>${updated}</span>
+          </div>
+
+          <div class="ladder-wrap">
+            <table class="ladder">
+              <thead>
+                <tr>
+                  <th>Pos</th>
+                  <th>Team</th>
+                  <th>P</th>
+                  <th>W</th>
+                  <th>L</th>
+                  <th>D</th>
+                  <th>For</th>
+                  <th>Ag</th>
+                  <th>Pts</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${ladderHtml}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="softball-source">
+          Source:
+          <a
+            href="${escapeHtml(softballData.source_url || "https://ddmsa.com/resframe.htm")}"
+            target="_blank"
+            rel="noopener"
+          >
+            Dale Districts Men's Softball Association
+          </a>.
+          Data updates when DDMSA publishes new results or ladder information.
+        </div>`;
+    }
+
     function updateFilterVisibility() {
+      const filterBar = document.querySelector(".filters");
+
+      if (filterBar) {
+        filterBar.hidden = activeView === "softball";
+      }
+
       document
         .querySelectorAll('[data-filter="soccer"], [data-filter="softball"]')
         .forEach(button => {
@@ -1673,6 +2089,27 @@
       renderNext(upcoming);
 
       const resultsView = activeView === "results";
+      const softballView = activeView === "softball";
+
+      const fixtureContainer =
+        document.getElementById("fixture-groups");
+      const softballContainer =
+        document.getElementById("softball-dashboard");
+
+      fixtureContainer.hidden = softballView;
+      softballContainer.hidden = !softballView;
+
+      if (softballView) {
+        document.getElementById("next-panel").hidden = true;
+        document.getElementById("section-title").textContent =
+          "Tate's softball";
+        document.getElementById("fixture-count").textContent =
+          "Results and Under 13's Mixed ladder";
+        updateFilterVisibility();
+        renderSoftballDashboard();
+        return;
+      }
+
       const source = resultsView
         ? allFixtures
             .filter(
@@ -1744,16 +2181,30 @@
       const container = document.getElementById("fixture-groups");
 
       try {
-        const response = await fetch(
-          `${ICS_URL}?v=${Date.now()}`,
-          { cache: "no-store" }
-        );
+        const cacheKey = Date.now();
+
+        const [response, softballResponse] = await Promise.all([
+          fetch(
+            `${ICS_URL}?v=${cacheKey}`,
+            { cache: "no-store" }
+          ),
+          fetch(
+            `${SOFTBALL_URL}?v=${cacheKey}`,
+            { cache: "no-store" }
+          )
+        ]);
 
         if (!response.ok) {
           throw new Error(`Calendar feed returned ${response.status}`);
         }
 
         allFixtures = parseCalendar(await response.text());
+
+        if (softballResponse.ok) {
+          softballData = await softballResponse.json();
+        } else {
+          softballData = null;
+        }
         document.getElementById("last-updated").textContent =
           `Viewed ${new Intl.DateTimeFormat("en-AU", {
             timeZone: TIME_ZONE,
