@@ -3,340 +3,190 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0b1736">
-  <title>Finn &amp; Tate's Sports Matches</title>
+  <meta name="theme-color" content="#0a1635">
+  <title>Finn & Tate's Sports</title>
 
   <style>
     :root {
-      --navy: #0b1736;
-      --navy-2: #14275a;
-      --blue: #2c66e4;
-      --sky: #eaf1ff;
-      --orange: #ef7b32;
+      --navy: #0a1635;
+      --navy-2: #172b63;
+      --blue: #2f67e8;
+      --blue-soft: #edf3ff;
+      --orange: #ef7d32;
+      --orange-dark: #a84a18;
       --orange-soft: #fff1e8;
+      --green: #14866d;
+      --red: #c33c3c;
       --ink: #172033;
-      --muted: #667085;
-      --surface: #ffffff;
-      --background: #f5f7fb;
-      --border: #e4e8f0;
-      --success: #14866d;
-      --shadow: 0 12px 32px rgba(15, 23, 42, 0.10);
-      --radius: 22px;
+      --muted: #697386;
+      --surface: #fff;
+      --bg: #f5f7fb;
+      --border: #e3e8f1;
+      --shadow: 0 10px 28px rgba(15,23,42,.08);
+      --radius: 20px;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
-    html {
-      scroll-behavior: smooth;
-    }
+    [hidden] { display: none !important; }
+
+    html { scroll-behavior: smooth; }
 
     body {
       margin: 0;
       min-height: 100vh;
-      color: var(--ink);
       background:
-        radial-gradient(circle at top right, rgba(44, 102, 228, 0.12), transparent 34rem),
-        var(--background);
+        radial-gradient(circle at top right, rgba(47,103,232,.10), transparent 36rem),
+        var(--bg);
+      color: var(--ink);
       font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Roboto,
-        Helvetica,
-        Arial,
-        sans-serif;
+        -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
-    a {
-      color: inherit;
-    }
+    a { color: inherit; }
+
+    button, a { -webkit-tap-highlight-color: transparent; }
 
     .shell {
-      width: min(1040px, calc(100% - 28px));
+      width: min(1040px, calc(100% - 24px));
       margin: 0 auto;
     }
 
     .hero {
       position: relative;
       overflow: hidden;
-      padding: 30px 0 54px;
+      padding: 25px 0 45px;
       color: white;
-      background:
-        linear-gradient(135deg, rgba(11, 23, 54, 0.98), rgba(20, 39, 90, 0.96));
+      background: linear-gradient(135deg, var(--navy), var(--navy-2));
     }
 
-    .hero::before,
     .hero::after {
       position: absolute;
-      content: "";
+      width: 280px;
+      height: 280px;
+      right: -110px;
+      bottom: -180px;
       border-radius: 50%;
-      pointer-events: none;
+      content: "";
+      background: rgba(239,125,50,.22);
     }
 
-    .hero::before {
-      width: 320px;
-      height: 320px;
-      top: -170px;
-      right: -80px;
-      background: rgba(255, 255, 255, 0.07);
-    }
-
-    .hero::after {
-      width: 170px;
-      height: 170px;
-      right: 120px;
-      bottom: -110px;
-      background: rgba(239, 123, 50, 0.22);
-    }
-
-    .topbar {
+    .brand {
       position: relative;
       z-index: 1;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
       gap: 12px;
-      font-weight: 800;
-      letter-spacing: -0.02em;
     }
 
-    .brand-mark {
+    .brand-icon {
       display: grid;
       place-items: center;
-      width: 46px;
-      height: 46px;
-      border: 1px solid rgba(255, 255, 255, 0.24);
+      width: 48px;
+      height: 48px;
+      border: 1px solid rgba(255,255,255,.22);
       border-radius: 16px;
-      background: rgba(255, 255, 255, 0.12);
+      background: rgba(255,255,255,.10);
       font-size: 1.35rem;
-      backdrop-filter: blur(8px);
     }
 
-    .brand small {
+    .brand strong {
+      display: block;
+      font-size: 1rem;
+    }
+
+    .brand span {
       display: block;
       margin-top: 2px;
-      color: rgba(255, 255, 255, 0.70);
-      font-size: 0.78rem;
-      font-weight: 600;
-      letter-spacing: 0.01em;
-    }
-
-    .subscribe-top {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 44px;
-      padding: 10px 15px;
-      border: 1px solid rgba(255, 255, 255, 0.24);
-      border-radius: 14px;
-      color: white;
-      background: rgba(255, 255, 255, 0.10);
-      font-weight: 750;
-      text-decoration: none;
-      backdrop-filter: blur(8px);
+      color: rgba(255,255,255,.67);
+      font-size: .78rem;
+      font-weight: 650;
     }
 
     .hero-copy {
       position: relative;
       z-index: 1;
       max-width: 720px;
-      padding-top: 48px;
+      margin-top: 34px;
     }
 
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 14px;
-      color: #bdd0ff;
-      font-size: 0.85rem;
-      font-weight: 800;
-      letter-spacing: 0.08em;
+    .hero-eyebrow {
+      margin-bottom: 10px;
+      color: #bfd1ff;
+      font-size: .8rem;
+      font-weight: 850;
+      letter-spacing: .09em;
       text-transform: uppercase;
     }
 
-    h1 {
+    .hero h1 {
       margin: 0;
-      font-size: clamp(2.35rem, 8vw, 4.8rem);
-      line-height: 0.98;
-      letter-spacing: -0.055em;
+      font-size: clamp(2.25rem, 8vw, 4.5rem);
+      line-height: .99;
+      letter-spacing: -.055em;
     }
 
-    .hero-copy p {
+    .hero p {
       max-width: 620px;
-      margin: 20px 0 0;
-      color: rgba(255, 255, 255, 0.78);
-      font-size: clamp(1rem, 2.5vw, 1.18rem);
-      line-height: 1.6;
+      margin: 16px 0 0;
+      color: rgba(255,255,255,.76);
+      font-size: 1rem;
+      line-height: 1.55;
     }
-
-    main {
-      position: relative;
-      z-index: 2;
-      margin-top: -28px;
-      padding-bottom: 54px;
-    }
-
 
     .hero-actions {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 12px 16px;
-      margin-top: 26px;
+      gap: 10px 14px;
+      margin-top: 23px;
     }
 
-    .hero-subscribe {
+    .subscribe {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 9px;
-      min-height: 50px;
-      padding: 12px 18px;
-      border: 1px solid rgba(255, 255, 255, 0.30);
-      border-radius: 15px;
+      min-height: 48px;
+      padding: 11px 16px;
+      border-radius: 14px;
       color: var(--navy);
       background: white;
-      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.16);
+      box-shadow: 0 9px 22px rgba(0,0,0,.16);
       font-weight: 850;
       text-decoration: none;
     }
 
-    .hero-subscribe-note {
-      max-width: 310px;
-      color: rgba(255, 255, 255, 0.70);
-      font-size: 0.86rem;
+    .subscribe-note {
+      max-width: 290px;
+      color: rgba(255,255,255,.68);
+      font-size: .8rem;
       line-height: 1.4;
     }
 
-    .next-panel {
+    .primary-nav-wrap {
+      position: sticky;
+      z-index: 20;
+      top: 0;
+      padding: 10px 0;
+      background: rgba(245,247,251,.92);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(227,232,241,.85);
+    }
+
+    .primary-nav {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      align-items: center;
-      gap: 20px;
-      min-height: 150px;
-      padding: 24px;
-      border: 1px solid rgba(228, 232, 240, 0.85);
-      border-radius: var(--radius);
-      background: rgba(255, 255, 255, 0.96);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(12px);
-    }
-
-    .next-label {
-      margin: 0 0 8px;
-      color: var(--blue);
-      font-size: 0.78rem;
-      font-weight: 850;
-      letter-spacing: 0.09em;
-      text-transform: uppercase;
-    }
-
-    .next-title {
-      margin: 0;
-      font-size: clamp(1.35rem, 4vw, 2rem);
-      line-height: 1.2;
-      letter-spacing: -0.035em;
-    }
-
-    .next-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px 16px;
-      margin-top: 13px;
-      color: var(--muted);
-      font-size: 0.96rem;
-    }
-
-    .next-actions {
-      display: grid;
-      gap: 10px;
-      min-width: 150px;
-    }
-
-    .button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      min-height: 46px;
-      padding: 10px 16px;
-      border: 0;
-      border-radius: 14px;
-      font: inherit;
-      font-weight: 800;
-      text-decoration: none;
-      cursor: pointer;
-    }
-
-    .button-primary {
-      color: white;
-      background: var(--blue);
-      box-shadow: 0 8px 18px rgba(44, 102, 228, 0.22);
-    }
-
-    .button-secondary {
-      color: var(--navy);
-      background: var(--sky);
-    }
-
-    .section-head {
-      display: flex;
-      align-items: end;
-      justify-content: space-between;
-      gap: 20px;
-      margin: 34px 0 15px;
-    }
-
-    .section-head h2 {
-      margin: 0;
-      font-size: 1.55rem;
-      letter-spacing: -0.035em;
-    }
-
-    .section-head p {
-      margin: 5px 0 0;
-      color: var(--muted);
-      font-size: 0.95rem;
-    }
-
-    .updated {
-      color: var(--muted);
-      font-size: 0.82rem;
-      text-align: right;
-    }
-
-
-    .view-tabs {
-      display: flex;
-      max-width: 100%;
-      overflow-x: auto;
-      scrollbar-width: none;
-      gap: 5px;
-      margin: 34px 0 18px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
       padding: 5px;
       border: 1px solid var(--border);
-      border-radius: 16px;
-      background: rgba(255, 255, 255, 0.88);
-      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.055);
+      border-radius: 17px;
+      background: white;
+      box-shadow: 0 4px 15px rgba(15,23,42,.04);
     }
 
-    .view-tabs::-webkit-scrollbar {
-      display: none;
-    }
-
-    .view-tab {
-      flex: 0 0 auto;
+    .primary-nav button {
       min-height: 44px;
-      padding: 9px 18px;
+      padding: 9px 10px;
       border: 0;
       border-radius: 12px;
       color: var(--muted);
@@ -346,510 +196,85 @@
       cursor: pointer;
     }
 
-    .view-tab.active {
+    .primary-nav button.active {
       color: white;
       background: var(--navy);
     }
 
-    .result-score {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      margin-top: 12px;
-      padding: 9px 13px;
-      border-radius: 12px;
-      color: var(--navy);
-      background: #eef2f8;
-      font-size: 0.94rem;
-      font-weight: 850;
+    main {
+      padding: 24px 0 55px;
     }
 
-    .result-score .score-number {
-      min-width: 24px;
-      font-size: 1.35rem;
-      font-weight: 950;
-      text-align: center;
-    }
-
-    .result-score.unavailable {
-      color: var(--muted);
-      font-size: 0.88rem;
-      font-weight: 750;
-    }
-
-
-
-    .soccer-ladders-dashboard {
-      display: grid;
-      gap: 20px;
-    }
-
-    .soccer-ladder-card {
-      padding: 18px;
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      background: var(--surface);
-      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.055);
-    }
-
-    .soccer-ladder-head {
+    .page-head {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-      margin-bottom: 14px;
-    }
-
-    .soccer-ladder-head h3 {
-      margin: 0;
-      font-size: 1.13rem;
-      letter-spacing: -0.025em;
-    }
-
-    .soccer-position-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 7px 10px;
-      border-radius: 999px;
-      color: #2751b3;
-      background: var(--sky);
-      font-size: 0.8rem;
-      font-weight: 850;
-      white-space: nowrap;
-    }
-
-    .soccer-ladder-table-wrap {
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .soccer-ladder-table {
-      width: 100%;
-      min-width: 720px;
-      border-collapse: collapse;
-      font-size: 0.86rem;
-    }
-
-    .soccer-ladder-table th,
-    .soccer-ladder-table td {
-      padding: 10px 8px;
-      border-bottom: 1px solid var(--border);
-      text-align: center;
-      white-space: nowrap;
-    }
-
-    .soccer-ladder-table th:nth-child(2),
-    .soccer-ladder-table td:nth-child(2) {
-      text-align: left;
-    }
-
-    .soccer-ladder-table th {
-      color: var(--muted);
-      font-size: 0.72rem;
-      font-weight: 850;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
-
-    .soccer-ladder-table tr.armadale-team {
-      color: #234da8;
-      background: var(--sky);
-      font-weight: 850;
-    }
-
-    .soccer-ladder-source {
-      margin-top: 10px;
-      color: var(--muted);
-      font-size: 0.78rem;
-    }
-
-    .soccer-ladder-source a {
-      color: var(--blue);
-      font-weight: 750;
-    }
-
-    .softball-dashboard {
-      display: grid;
-      gap: 20px;
-    }
-
-    .softball-summary {
-      display: grid;
-      grid-template-columns: auto minmax(0, 1fr);
-      gap: 18px;
-      align-items: center;
-      padding: 20px;
-      border: 1px solid #f2d5c3;
-      border-radius: 20px;
-      background: linear-gradient(135deg, #fff8f3, #ffffff);
-      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.055);
-    }
-
-    .softball-rank {
-      display: grid;
-      place-items: center;
-      width: 82px;
-      height: 82px;
-      border-radius: 20px;
-      color: white;
-      background: linear-gradient(145deg, #a84416, var(--orange));
-      text-align: center;
-    }
-
-    .softball-rank strong {
-      display: block;
-      font-size: 2rem;
-      line-height: 1;
-    }
-
-    .softball-rank span {
-      margin-top: 4px;
-      font-size: 0.72rem;
-      font-weight: 850;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-    }
-
-    .softball-summary h3 {
-      margin: 0;
-      font-size: 1.25rem;
-      letter-spacing: -0.025em;
-    }
-
-    .softball-record {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px 14px;
-      margin-top: 10px;
-      color: var(--muted);
-      font-size: 0.91rem;
-      font-weight: 700;
-    }
-
-    .softball-block {
-      padding: 18px;
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      background: var(--surface);
-      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.055);
-    }
-
-    .softball-block-head {
-      display: flex;
-      justify-content: space-between;
-      gap: 14px;
       align-items: end;
-      margin-bottom: 13px;
+      justify-content: space-between;
+      gap: 16px;
+      margin: 0 0 18px;
     }
 
-    .softball-block-head h3 {
+    .page-head h2 {
       margin: 0;
-      font-size: 1.13rem;
-      letter-spacing: -0.025em;
+      font-size: clamp(1.65rem, 5vw, 2.3rem);
+      letter-spacing: -.045em;
     }
 
-    .softball-block-head span {
+    .page-head p {
+      margin: 5px 0 0;
       color: var(--muted);
-      font-size: 0.78rem;
+      font-size: .93rem;
     }
 
-    .ladder-wrap {
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .ladder {
-      width: 100%;
-      min-width: 650px;
-      border-collapse: collapse;
-      font-size: 0.86rem;
-    }
-
-    .ladder th,
-    .ladder td {
-      padding: 10px 9px;
-      border-bottom: 1px solid var(--border);
-      text-align: center;
-      white-space: nowrap;
-    }
-
-    .ladder th:nth-child(2),
-    .ladder td:nth-child(2) {
-      text-align: left;
-    }
-
-    .ladder th {
+    .viewed {
       color: var(--muted);
-      font-size: 0.72rem;
-      font-weight: 850;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
+      font-size: .78rem;
+      text-align: right;
     }
 
-    .ladder tr.tate-team {
-      color: #7d3012;
-      background: var(--orange-soft);
-      font-weight: 850;
-    }
-
-    .softball-results {
+    .next-card {
       display: grid;
-      gap: 9px;
-    }
-
-    .softball-result {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 12px;
-      align-items: center;
-      padding: 12px 13px;
+      grid-template-columns: minmax(0,1fr);
+      gap: 15px;
+      margin-bottom: 24px;
+      padding: 20px;
       border: 1px solid var(--border);
-      border-radius: 14px;
-      background: #fafbfc;
+      border-radius: 22px;
+      background: white;
+      box-shadow: var(--shadow);
     }
 
-    .softball-result-opponent {
-      font-weight: 800;
-    }
-
-    .softball-result-date {
-      margin-top: 3px;
-      color: var(--muted);
-      font-size: 0.78rem;
-    }
-
-    .softball-result-score {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      font-size: 1rem;
-      font-weight: 900;
-    }
-
-    .softball-result-badge {
-      display: inline-grid;
-      place-items: center;
-      width: 28px;
-      height: 28px;
-      border-radius: 9px;
-      color: white;
-      font-size: 0.78rem;
-      font-weight: 900;
-    }
-
-    .softball-result-badge.win {
-      background: #14866d;
-    }
-
-    .softball-result-badge.loss {
-      background: #c43d3d;
-    }
-
-    .softball-result-badge.draw {
-      background: #737b8c;
-    }
-
-    .softball-source {
-      color: var(--muted);
-      font-size: 0.78rem;
-      line-height: 1.5;
-    }
-
-    .softball-source a {
-      color: var(--blue);
-      font-weight: 750;
-    }
-
-    @media (max-width: 560px) {
-      .view-tab {
-        padding-left: 11px;
-        padding-right: 11px;
-        font-size: 0.83rem;
-      }
-
-      .softball-summary {
-        grid-template-columns: 68px minmax(0, 1fr);
-        padding: 15px;
-      }
-
-      .softball-rank {
-        width: 68px;
-        height: 68px;
-        border-radius: 17px;
-      }
-
-      .softball-rank strong {
-        font-size: 1.65rem;
-      }
-
-      .softball-block {
-        padding: 14px;
-      }
-    }
-
-    .filters {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 18px;
-      padding-bottom: 4px;
-      overflow-x: auto;
-      scrollbar-width: none;
-    }
-
-    .filters::-webkit-scrollbar {
-      display: none;
-    }
-
-    .filter {
-      flex: 0 0 auto;
-      min-height: 40px;
-      padding: 8px 14px;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      color: var(--muted);
-      background: var(--surface);
-      font: inherit;
-      font-size: 0.9rem;
-      font-weight: 750;
-      cursor: pointer;
-    }
-
-    .filter.active {
-      color: white;
-      border-color: var(--navy);
-      background: var(--navy);
-    }
-
-    .fixture-groups {
-      display: grid;
-      gap: 28px;
-    }
-
-    .month-heading {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin: 0 0 12px;
-      color: var(--navy);
-      font-size: 0.92rem;
-      font-weight: 850;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    .month-heading::after {
-      flex: 1;
-      height: 1px;
-      content: "";
-      background: var(--border);
-    }
-
-    .fixture-list {
-      display: grid;
-      gap: 12px;
-    }
-
-    .fixture {
-      display: grid;
-      grid-template-columns: 88px minmax(0, 1fr) auto;
-      gap: 18px;
-      align-items: center;
-      padding: 16px;
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      background: var(--surface);
-      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.055);
-    }
-
-
-    .fixture:not(:has(.fixture-actions)) {
-      grid-template-columns: 88px minmax(0, 1fr);
-    }
-
-    .date-card {
-      display: grid;
-      place-items: center;
-      align-content: center;
-      min-height: 86px;
-      border-radius: 16px;
-      color: white;
-      background: linear-gradient(145deg, var(--navy), var(--navy-2));
-      text-align: center;
-    }
-
-    .fixture.softball .date-card {
-      background: linear-gradient(145deg, #a84416, var(--orange));
-    }
-
-    .date-card .weekday {
-      font-size: 0.75rem;
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      opacity: 0.80;
-    }
-
-    .date-card .day {
-      margin: 2px 0;
-      font-size: 2rem;
-      font-weight: 900;
-      line-height: 1;
-    }
-
-    .date-card .month {
-      font-size: 0.8rem;
-      font-weight: 800;
-      text-transform: uppercase;
-    }
-
-    .fixture-main {
-      min-width: 0;
-    }
-
-    .sport-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
+    .next-label {
       margin-bottom: 7px;
-      padding: 5px 9px;
-      border-radius: 999px;
-      color: #2751b3;
-      background: var(--sky);
-      font-size: 0.76rem;
-      font-weight: 850;
+      color: var(--blue);
+      font-size: .76rem;
+      font-weight: 900;
+      letter-spacing: .09em;
+      text-transform: uppercase;
     }
 
-    .fixture.softball .sport-pill {
-      color: #963b11;
-      background: var(--orange-soft);
-    }
-
-    .fixture-title {
+    .next-title {
       margin: 0;
-      font-size: 1.12rem;
-      line-height: 1.32;
-      letter-spacing: -0.025em;
+      font-size: clamp(1.2rem, 4vw, 1.8rem);
+      line-height: 1.25;
+      letter-spacing: -.035em;
     }
 
-    .fixture-details {
+    .meta {
       display: flex;
       flex-wrap: wrap;
-      gap: 7px 16px;
+      gap: 7px 15px;
       margin-top: 10px;
       color: var(--muted);
-      font-size: 0.91rem;
+      font-size: .9rem;
     }
-
 
     .location-link {
       color: inherit;
       font-weight: 750;
       text-decoration-line: underline;
       text-decoration-style: dotted;
-      text-decoration-thickness: 1px;
       text-underline-offset: 3px;
-      text-decoration-color: rgba(44, 102, 228, 0.55);
+      text-decoration-color: rgba(47,103,232,.55);
     }
 
     .location-link:hover,
@@ -858,217 +283,480 @@
       text-decoration-style: solid;
     }
 
-    .fixture-details span {
+    .weather {
       display: inline-flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-
-    .weather-pill {
-      display: inline-flex;
-      align-items: center;
       flex-wrap: wrap;
+      align-items: center;
       gap: 5px;
       width: fit-content;
       max-width: 100%;
       padding: 7px 10px;
-      border: 1px solid #d8e4ff;
+      border: 1px solid #d6e2ff;
       border-radius: 11px;
       color: #234da8;
       background: #f1f5ff;
-      font-size: 0.84rem;
+      font-size: .82rem;
       font-weight: 800;
       line-height: 1.35;
     }
 
-    .weather-pill strong {
-      color: var(--navy);
-      font-weight: 900;
-    }
+    .weather strong { color: var(--navy); }
 
-    .weather-pill.weather-loading,
-    .weather-pill.weather-unavailable {
+    .weather.loading,
+    .weather.unavailable {
       color: var(--muted);
       border-color: var(--border);
       background: #f7f8fb;
-      font-weight: 700;
     }
 
-    .weather-note {
-      display: block;
-      width: 100%;
-      color: var(--muted);
-      font-size: 0.72rem;
-      font-weight: 650;
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 28px 0 12px;
+      color: var(--navy);
+      font-size: .9rem;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
     }
 
-    .weather-credit {
-      display: block;
-      margin-top: 6px;
-      font-size: 0.78rem;
+    .section-title::after {
+      flex: 1;
+      height: 1px;
+      content: "";
+      background: var(--border);
     }
 
-    .weather-credit a {
-      color: inherit;
+    .fixtures {
+      display: grid;
+      gap: 12px;
+    }
+
+    .fixture {
+      display: grid;
+      grid-template-columns: 76px minmax(0,1fr);
+      gap: 14px;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 19px;
+      background: white;
+      box-shadow: 0 5px 16px rgba(15,23,42,.045);
+    }
+
+    .date-tile {
+      display: grid;
+      place-items: center;
+      align-content: center;
+      min-height: 76px;
+      border-radius: 15px;
+      color: white;
+      background: linear-gradient(145deg,var(--navy),var(--navy-2));
+      text-align: center;
+    }
+
+    .fixture.softball .date-tile {
+      background: linear-gradient(145deg,var(--orange-dark),var(--orange));
+    }
+
+    .date-tile .weekday,
+    .date-tile .month {
+      font-size: .7rem;
+      font-weight: 850;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+    }
+
+    .date-tile .day {
+      margin: 2px 0;
+      font-size: 1.65rem;
+      font-weight: 950;
+      line-height: 1;
+    }
+
+    .sport-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      width: fit-content;
+      margin-bottom: 6px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      color: #2751b3;
+      background: var(--blue-soft);
+      font-size: .72rem;
+      font-weight: 850;
+    }
+
+    .fixture.softball .sport-pill {
+      color: #913c14;
+      background: var(--orange-soft);
+    }
+
+    .fixture h3 {
+      margin: 0;
+      font-size: 1.02rem;
+      line-height: 1.3;
+      letter-spacing: -.02em;
+    }
+
+    .fixture .meta {
+      display: grid;
+      gap: 5px;
+      margin-top: 8px;
     }
 
     .fixture-actions {
-      display: grid;
+      display: flex;
       gap: 8px;
-      min-width: 118px;
+      margin-top: 10px;
     }
 
-    .fixture-actions a {
+    .text-link {
       display: inline-flex;
       align-items: center;
-      justify-content: center;
-      min-height: 40px;
-      padding: 8px 12px;
-      border-radius: 12px;
-      font-size: 0.85rem;
+      min-height: 36px;
+      padding: 7px 10px;
+      border-radius: 10px;
+      color: var(--navy);
+      background: var(--blue-soft);
+      font-size: .8rem;
       font-weight: 800;
       text-decoration: none;
     }
 
-    .waze {
-      color: white;
-      background: var(--blue);
-    }
-
-    .squadi {
-      color: var(--navy);
-      background: var(--sky);
-    }
-
-    .empty,
-    .error {
-      padding: 34px 20px;
+    .person-summary {
+      display: grid;
+      grid-template-columns: 68px minmax(0,1fr);
+      gap: 15px;
+      align-items: center;
+      margin-bottom: 18px;
+      padding: 16px;
       border: 1px solid var(--border);
-      border-radius: var(--radius);
-      background: var(--surface);
+      border-radius: 20px;
+      background: white;
       box-shadow: var(--shadow);
+    }
+
+    .person-avatar {
+      display: grid;
+      place-items: center;
+      width: 68px;
+      height: 68px;
+      border-radius: 19px;
+      color: white;
+      background: linear-gradient(145deg,var(--navy),var(--blue));
+      font-size: 1.55rem;
+      font-weight: 950;
+    }
+
+    .person-summary h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      letter-spacing: -.035em;
+    }
+
+    .person-summary p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: .88rem;
+    }
+
+    .sport-switch,
+    .content-switch {
+      display: flex;
+      gap: 7px;
+      overflow-x: auto;
+      padding-bottom: 3px;
+      scrollbar-width: none;
+    }
+
+    .sport-switch::-webkit-scrollbar,
+    .content-switch::-webkit-scrollbar { display: none; }
+
+    .sport-switch {
+      margin: 0 0 10px;
+    }
+
+    .content-switch {
+      margin: 0 0 20px;
+      padding: 5px;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      background: white;
+    }
+
+    .sport-switch button,
+    .content-switch button {
+      flex: 0 0 auto;
+      border: 0;
+      font: inherit;
+      font-weight: 850;
+      cursor: pointer;
+    }
+
+    .sport-switch button {
+      min-height: 40px;
+      padding: 8px 13px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--muted);
+      background: white;
+    }
+
+    .sport-switch button.active {
+      color: white;
+      border-color: var(--navy);
+      background: var(--navy);
+    }
+
+    .sport-switch button.softball.active {
+      border-color: var(--orange-dark);
+      background: var(--orange-dark);
+    }
+
+    .content-switch button {
+      min-height: 40px;
+      padding: 8px 14px;
+      border-radius: 11px;
+      color: var(--muted);
+      background: transparent;
+    }
+
+    .content-switch button.active {
+      color: white;
+      background: var(--navy);
+    }
+
+    .result-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .result-card {
+      display: grid;
+      grid-template-columns: minmax(0,1fr) auto;
+      gap: 12px;
+      align-items: center;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: white;
+      box-shadow: 0 4px 13px rgba(15,23,42,.04);
+    }
+
+    .result-card h3 {
+      margin: 0;
+      font-size: .98rem;
+    }
+
+    .result-card .sub {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: .78rem;
+    }
+
+    .score {
+      min-width: 76px;
+      padding: 8px 10px;
+      border-radius: 11px;
+      color: var(--navy);
+      background: #eef2f8;
+      font-size: 1.15rem;
+      font-weight: 950;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .score.pending {
+      color: var(--muted);
+      font-size: .75rem;
+      font-weight: 750;
+    }
+
+    .result-badge {
+      display: inline-grid;
+      place-items: center;
+      width: 25px;
+      height: 25px;
+      margin-right: 5px;
+      border-radius: 8px;
+      color: white;
+      font-size: .72rem;
+      font-weight: 950;
+    }
+
+    .win { background: var(--green); }
+    .loss { background: var(--red); }
+    .draw { background: #747d8f; }
+
+    .ladder-card {
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 19px;
+      background: white;
+      box-shadow: var(--shadow);
+    }
+
+    .ladder-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .ladder-head h3 {
+      margin: 0;
+      font-size: 1.05rem;
+    }
+
+    .position-pill {
+      padding: 6px 9px;
+      border-radius: 999px;
+      color: #2751b3;
+      background: var(--blue-soft);
+      font-size: .75rem;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .softball-ladder .position-pill {
+      color: #913c14;
+      background: var(--orange-soft);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+      width: 100%;
+      min-width: 670px;
+      border-collapse: collapse;
+      font-size: .82rem;
+    }
+
+    th, td {
+      padding: 9px 8px;
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    th:nth-child(2),
+    td:nth-child(2) { text-align: left; }
+
+    th {
+      color: var(--muted);
+      font-size: .68rem;
+      font-weight: 900;
+      letter-spacing: .045em;
+      text-transform: uppercase;
+    }
+
+    tr.highlight-soccer {
+      color: #234da8;
+      background: var(--blue-soft);
+      font-weight: 850;
+    }
+
+    tr.highlight-softball {
+      color: #843711;
+      background: var(--orange-soft);
+      font-weight: 850;
+    }
+
+    .source {
+      padding: 11px 15px;
+      color: var(--muted);
+      font-size: .73rem;
+    }
+
+    .source a {
+      color: var(--blue);
+      font-weight: 750;
+    }
+
+    .empty {
+      padding: 30px 18px;
+      border: 1px solid var(--border);
+      border-radius: 19px;
+      background: white;
+      box-shadow: var(--shadow);
+      color: var(--muted);
       text-align: center;
     }
 
-    .empty-icon {
+    .empty .icon {
       display: block;
-      margin-bottom: 8px;
-      font-size: 2rem;
+      margin-bottom: 7px;
+      font-size: 1.8rem;
     }
 
     .error {
-      color: #a41f1f;
+      color: var(--red);
     }
 
     footer {
-      padding: 30px 0 42px;
+      padding: 0 0 38px;
       color: var(--muted);
-      font-size: 0.85rem;
+      font-size: .77rem;
+      line-height: 1.5;
       text-align: center;
     }
 
-    @media (max-width: 720px) {
-      .hero {
-        padding-top: 20px;
+    footer a { color: inherit; }
+
+    @media (min-width: 720px) {
+      .next-card {
+        grid-template-columns: minmax(0,1fr) auto;
+        align-items: center;
       }
 
-      .subscribe-top {
-        display: none;
+      .fixture {
+        grid-template-columns: 84px minmax(0,1fr);
+        padding: 16px;
       }
 
-      .hero-copy {
-        padding-top: 38px;
+      .date-tile { min-height: 84px; }
+
+      .fixture .meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px 15px;
       }
+    }
+
+    @media (max-width: 480px) {
+      .shell { width: calc(100% - 18px); }
+
+      .hero { padding-top: 18px; }
+
+      .hero-copy { margin-top: 30px; }
 
       .hero-actions {
         display: grid;
-        gap: 10px;
       }
 
-      .hero-subscribe {
-        width: 100%;
-      }
+      .subscribe { width: 100%; }
 
-      .hero-subscribe-note {
+      .subscribe-note {
         max-width: none;
         text-align: center;
       }
 
-      .next-panel {
-        grid-template-columns: 1fr;
-      }
-
-      .next-actions {
-        grid-template-columns: 1fr 1fr;
-      }
-
-      .fixture {
-        grid-template-columns: 68px minmax(0, 1fr);
-        gap: 13px;
-      }
-
-
-      .fixture:not(:has(.fixture-actions)) {
-        grid-template-columns: 68px minmax(0, 1fr);
-      }
-
-      .date-card {
-        min-height: 74px;
-      }
-
-      .date-card .day {
-        font-size: 1.65rem;
-      }
-
-      .fixture-actions {
-        grid-column: 1 / -1;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .fixture-actions a:only-child {
-        grid-column: 1 / -1;
-      }
-    }
-
-    @media (max-width: 440px) {
-      .shell {
-        width: min(100% - 20px, 1040px);
-      }
-
-      .brand-name {
-        font-size: 0.92rem;
-      }
-
-      .next-panel {
-        padding: 18px;
-      }
-
-      .next-actions {
-        grid-template-columns: 1fr;
-      }
-
-      .section-head {
+      .page-head {
         align-items: start;
         flex-direction: column;
       }
 
-      .updated {
-        text-align: left;
-      }
+      .viewed { text-align: left; }
 
-      .fixture {
-        padding: 12px;
-        border-radius: 17px;
-      }
-
-      .fixture-title {
-        font-size: 1rem;
-      }
-
-      .fixture-details {
-        display: grid;
-        gap: 6px;
+      .primary-nav button {
+        font-size: .84rem;
       }
     }
   </style>
@@ -1077,124 +765,58 @@
 <body>
   <header class="hero">
     <div class="shell">
-      <div class="topbar">
-        <div class="brand">
-          <div class="brand-mark">🏟️</div>
-          <div class="brand-name">
-            Finn &amp; Tate
-            <small>Match calendar</small>
-          </div>
+      <div class="brand">
+        <div class="brand-icon">🏟️</div>
+        <div>
+          <strong>Finn &amp; Tate</strong>
+          <span>Family sports hub</span>
         </div>
-
       </div>
 
       <div class="hero-copy">
-        <div class="eyebrow">⚽ Soccer &nbsp; • &nbsp; 🥎 Softball</div>
+        <div class="hero-eyebrow">⚽ Soccer &nbsp; • &nbsp; 🥎 Softball</div>
         <h1>Come and watch us play.</h1>
         <p>
-          One place for Finn and Tate’s upcoming matches, kick-off times,
-          venues and directions.
+          Fixtures, results, ladders, match-day weather and directions
+          for Finn and Tate in one place.
         </p>
 
         <div class="hero-actions">
           <a
-            class="hero-subscribe"
+            class="subscribe"
             href="webcal://n6zmwzpz4t-del.github.io/family-soccer-calendar/fixtures.ics"
           >
             📅 Subscribe to the full calendar
           </a>
-
-          <span class="hero-subscribe-note">
-            Adds every Finn and Tate match to your calendar and keeps it updated.
+          <span class="subscribe-note">
+            Adds every Finn and Tate match and keeps the calendar updated.
           </span>
         </div>
       </div>
     </div>
   </header>
 
+  <div class="primary-nav-wrap">
+    <nav class="shell primary-nav" aria-label="Main sports navigation">
+      <button data-page="upcoming" class="active">Upcoming</button>
+      <button data-page="finn">Finn</button>
+      <button data-page="tate">Tate</button>
+    </nav>
+  </div>
+
   <main class="shell">
-    <section id="next-panel" class="next-panel" aria-live="polite">
-      <div>
-        <p class="next-label">Next match</p>
-        <h2 class="next-title">Loading the latest fixture…</h2>
-        <div class="next-meta"></div>
+    <div id="app">
+      <div class="empty">
+        <span class="icon">⏳</span>
+        Loading sports data…
       </div>
-      <div class="next-actions"></div>
-    </section>
-
-    <section>
-      <div class="view-tabs" role="tablist" aria-label="Fixture views">
-        <button
-          class="view-tab active"
-          data-view="upcoming"
-          role="tab"
-          aria-selected="true"
-        >
-          Upcoming
-        </button>
-
-        <button
-          class="view-tab"
-          data-view="results"
-          role="tab"
-          aria-selected="false"
-        >
-          Past results
-        </button>
-
-        <button
-          class="view-tab"
-          data-view="ladders"
-          role="tab"
-          aria-selected="false"
-        >
-          Ladders
-        </button>
-
-        <button
-          class="view-tab"
-          data-view="softball"
-          role="tab"
-          aria-selected="false"
-        >
-          Softball
-        </button>
-      </div>
-
-      <div class="section-head">
-        <div>
-          <h2 id="section-title">Upcoming fixtures</h2>
-          <p id="fixture-count">Loading matches…</p>
-        </div>
-        <div id="last-updated" class="updated"></div>
-      </div>
-
-      <div class="filters" aria-label="Filter fixtures">
-        <button class="filter active" data-filter="all">All matches</button>
-        <button class="filter" data-filter="finn">Finn</button>
-        <button class="filter" data-filter="tate">Tate</button>
-        <button class="filter" data-filter="soccer">⚽ Soccer</button>
-        <button class="filter" data-filter="softball">🥎 Softball</button>
-      </div>
-
-      <div id="fixture-groups" class="fixture-groups"></div>
-      <div
-        id="soccer-ladders-dashboard"
-        class="soccer-ladders-dashboard"
-        hidden
-      ></div>
-      <div id="softball-dashboard" class="softball-dashboard" hidden></div>
-    </section>
+    </div>
   </main>
 
   <footer class="shell">
-    Fixtures update automatically. Please confirm any late changes with the team.
-    <span class="weather-credit">
-      Match-day forecasts supplied by
-      <a href="https://open-meteo.com/" target="_blank" rel="noopener">
-        Open-Meteo
-      </a>.
-    </span>
+    Fixtures and ladders update automatically. Please confirm late changes
+    with the team. Weather forecasts supplied by
+    <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>.
   </footer>
 
   <script>
@@ -1202,15 +824,11 @@
     const ICS_URL = "fixtures.ics";
     const SOFTBALL_URL = "softball.json";
     const SOCCER_LADDERS_URL = "soccer_ladders.json";
-    const WEATHER_FORECAST_DAYS = 7;
+
+    const WEATHER_DAYS = 7;
     const WEATHER_CACHE_MINUTES = 30;
 
-    /*
-     * Manual fixtures do not always contain GEO coordinates.
-     * The City of Gosnells publishes this location for Langford
-     * Park Sporting Complex.
-     */
-    const KNOWN_VENUE_COORDINATES = [
+    const KNOWN_VENUES = [
       {
         pattern: /Langford Park Sporting Complex/i,
         latitude: -32.0464676,
@@ -1218,11 +836,30 @@
       }
     ];
 
-    let allFixtures = [];
-    let softballData = null;
-    let soccerLaddersData = null;
-    let activeFilter = "all";
-    let activeView = "upcoming";
+    const state = {
+      page: "upcoming",
+      personSport: {
+        finn: "soccer",
+        tate: "soccer"
+      },
+      personView: {
+        finn: "fixtures",
+        tate: "fixtures"
+      },
+      fixtures: [],
+      softball: null,
+      ladders: null,
+      loadedAt: null
+    };
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
 
     function unfoldIcs(text) {
       return text.replace(/\r?\n[ \t]/g, "");
@@ -1236,7 +873,7 @@
     }
 
     function decodeIcs(value) {
-      return value
+      return String(value || "")
         .replace(/\\n/gi, "\n")
         .replace(/\\,/g, ",")
         .replace(/\\;/g, ";")
@@ -1247,114 +884,82 @@
       const value = property(block, name);
       if (!value) return null;
 
-      if (/^\d{8}T\d{6}Z$/.test(value)) {
-        const y = Number(value.slice(0, 4));
-        const m = Number(value.slice(4, 6)) - 1;
-        const d = Number(value.slice(6, 8));
-        const h = Number(value.slice(9, 11));
-        const min = Number(value.slice(11, 13));
-        const s = Number(value.slice(13, 15));
-        return new Date(Date.UTC(y, m, d, h, min, s));
+      const local = value.match(
+        /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})$/
+      );
+
+      if (local) {
+        return new Date(
+          Date.UTC(
+            Number(local[1]),
+            Number(local[2]) - 1,
+            Number(local[3]),
+            Number(local[4]) - 8,
+            Number(local[5]),
+            Number(local[6])
+          )
+        );
       }
 
-      if (/^\d{8}T\d{6}$/.test(value)) {
-        const y = Number(value.slice(0, 4));
-        const m = Number(value.slice(4, 6)) - 1;
-        const d = Number(value.slice(6, 8));
-        const h = Number(value.slice(9, 11));
-        const min = Number(value.slice(11, 13));
-        const s = Number(value.slice(13, 15));
+      const utc = value.match(
+        /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z$/
+      );
 
-        // Perth is UTC+8 and does not use daylight saving time.
-        return new Date(Date.UTC(y, m, d, h - 8, min, s));
+      if (utc) {
+        return new Date(
+          Date.UTC(
+            Number(utc[1]),
+            Number(utc[2]) - 1,
+            Number(utc[3]),
+            Number(utc[4]),
+            Number(utc[5]),
+            Number(utc[6])
+          )
+        );
       }
 
       return null;
-    }
-
-    function escapeHtml(value) {
-      return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-    }
-
-    function extractSquadiUrl(description) {
-      const match = description.match(
-        /https:\/\/registration\.squadi\.com\/[^\s]+/i
-      );
-      return match ? match[0] : "";
-    }
-
-    function validCoordinates(latitude, longitude) {
-      return (
-        Number.isFinite(latitude) &&
-        Number.isFinite(longitude) &&
-        latitude >= -90 &&
-        latitude <= 90 &&
-        longitude >= -180 &&
-        longitude <= 180 &&
-        !(latitude === 0 && longitude === 0)
-      );
     }
 
     function parseGeo(block) {
       const value = property(block, "GEO");
+      if (!value) return null;
 
-      if (!value) {
-        return null;
-      }
-
-      const parts = value.split(";").map(Number);
+      const [latitude, longitude] = value.split(";").map(Number);
 
       if (
-        parts.length === 2 &&
-        validCoordinates(parts[0], parts[1])
+        Number.isFinite(latitude) &&
+        Number.isFinite(longitude)
       ) {
-        return {
-          latitude: parts[0],
-          longitude: parts[1]
-        };
+        return { latitude, longitude };
       }
 
       return null;
     }
 
-    function coordinatesFromWaze(url) {
-      if (!url) {
-        return null;
-      }
+    function coordsFromWaze(url) {
+      if (!url) return null;
 
       try {
         const parsed = new URL(url);
         const value = parsed.searchParams.get("ll");
+        if (!value) return null;
 
-        if (!value) {
-          return null;
-        }
-
-        const parts = value.split(",").map(Number);
+        const [latitude, longitude] = value.split(",").map(Number);
 
         if (
-          parts.length === 2 &&
-          validCoordinates(parts[0], parts[1])
+          Number.isFinite(latitude) &&
+          Number.isFinite(longitude)
         ) {
-          return {
-            latitude: parts[0],
-            longitude: parts[1]
-          };
+          return { latitude, longitude };
         }
-      } catch (error) {
-        console.debug("Could not parse Waze coordinates", error);
-      }
+      } catch (_) {}
 
       return null;
     }
 
-    function knownVenueCoordinates(location) {
-      const match = KNOWN_VENUE_COORDINATES.find(item =>
+    function knownCoords(location) {
+      const match = KNOWN_VENUES.find(item =>
         item.pattern.test(location || "")
       );
 
@@ -1366,350 +971,11 @@
         : null;
     }
 
-    function eventCoordinates(block, location, wazeUrl) {
-      return (
-        parseGeo(block) ||
-        coordinatesFromWaze(wazeUrl) ||
-        knownVenueCoordinates(location)
+    function extractSquadiUrl(description) {
+      const match = String(description || "").match(
+        /https:\/\/registration\.squadi\.com\/[^\s]+/i
       );
-    }
-
-    function weatherCodeDetails(code) {
-      const value = Number(code);
-
-      if (value === 0) return { icon: "☀️", label: "Clear" };
-      if (value === 1) return { icon: "🌤️", label: "Mainly clear" };
-      if (value === 2) return { icon: "⛅", label: "Partly cloudy" };
-      if (value === 3) return { icon: "☁️", label: "Overcast" };
-      if ([45, 48].includes(value)) return { icon: "🌫️", label: "Fog" };
-      if ([51, 53, 55, 56, 57].includes(value)) {
-        return { icon: "🌦️", label: "Drizzle" };
-      }
-      if ([61, 63, 65, 66, 67].includes(value)) {
-        return { icon: "🌧️", label: "Rain" };
-      }
-      if ([71, 73, 75, 77].includes(value)) {
-        return { icon: "🌨️", label: "Snow" };
-      }
-      if ([80, 81, 82].includes(value)) {
-        return { icon: "🌦️", label: "Showers" };
-      }
-      if ([85, 86].includes(value)) {
-        return { icon: "🌨️", label: "Snow showers" };
-      }
-      if ([95, 96, 99].includes(value)) {
-        return { icon: "⛈️", label: "Thunderstorm" };
-      }
-
-      return { icon: "🌡️", label: "Forecast" };
-    }
-
-    function perthTimeValue(date) {
-      const parts = new Intl.DateTimeFormat("en-AU", {
-        timeZone: TIME_ZONE,
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        hourCycle: "h23"
-      }).formatToParts(date);
-
-      const values = Object.fromEntries(
-        parts
-          .filter(part => part.type !== "literal")
-          .map(part => [part.type, Number(part.value)])
-      );
-
-      return Date.UTC(
-        values.year,
-        values.month - 1,
-        values.day,
-        values.hour,
-        values.minute
-      );
-    }
-
-    function apiLocalTimeValue(value) {
-      const match = String(value).match(
-        /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/
-      );
-
-      if (!match) {
-        return NaN;
-      }
-
-      return Date.UTC(
-        Number(match[1]),
-        Number(match[2]) - 1,
-        Number(match[3]),
-        Number(match[4]),
-        Number(match[5])
-      );
-    }
-
-    function weatherAtKickoff(payload, kickoff) {
-      const hourly = payload?.hourly;
-
-      if (!hourly || !Array.isArray(hourly.time)) {
-        return null;
-      }
-
-      const target = perthTimeValue(kickoff);
-      let nearestIndex = -1;
-      let nearestDifference = Infinity;
-
-      hourly.time.forEach((time, index) => {
-        const value = apiLocalTimeValue(time);
-        const difference = Math.abs(value - target);
-
-        if (difference < nearestDifference) {
-          nearestDifference = difference;
-          nearestIndex = index;
-        }
-      });
-
-      /*
-       * Do not show a forecast point that is more than 90 minutes
-       * from the scheduled start time.
-       */
-      if (
-        nearestIndex < 0 ||
-        nearestDifference > 90 * 60 * 1000
-      ) {
-        return null;
-      }
-
-      const numberAt = (name) => {
-        const value = hourly[name]?.[nearestIndex];
-        return Number.isFinite(Number(value))
-          ? Number(value)
-          : null;
-      };
-
-      return {
-        temperature: numberAt("temperature_2m"),
-        apparentTemperature: numberAt("apparent_temperature"),
-        rainChance: numberAt("precipitation_probability"),
-        weatherCode: numberAt("weather_code"),
-        windSpeed: numberAt("wind_speed_10m"),
-        windGust: numberAt("wind_gusts_10m")
-      };
-    }
-
-    function weatherCacheKey(coordinates) {
-      return (
-        "match-weather:" +
-        coordinates.latitude.toFixed(4) +
-        "," +
-        coordinates.longitude.toFixed(4)
-      );
-    }
-
-    function cachedForecast(coordinates) {
-      try {
-        const raw = sessionStorage.getItem(
-          weatherCacheKey(coordinates)
-        );
-
-        if (!raw) {
-          return null;
-        }
-
-        const cached = JSON.parse(raw);
-        const age = Date.now() - cached.savedAt;
-
-        if (age > WEATHER_CACHE_MINUTES * 60 * 1000) {
-          sessionStorage.removeItem(
-            weatherCacheKey(coordinates)
-          );
-          return null;
-        }
-
-        return cached.payload;
-      } catch (error) {
-        return null;
-      }
-    }
-
-    function saveForecast(coordinates, payload) {
-      try {
-        sessionStorage.setItem(
-          weatherCacheKey(coordinates),
-          JSON.stringify({
-            savedAt: Date.now(),
-            payload
-          })
-        );
-      } catch (error) {
-        /*
-         * Forecasts still work when browser storage is unavailable.
-         */
-      }
-    }
-
-    async function fetchForecast(coordinates) {
-      const cached = cachedForecast(coordinates);
-
-      if (cached) {
-        return cached;
-      }
-
-      const parameters = new URLSearchParams({
-        latitude: String(coordinates.latitude),
-        longitude: String(coordinates.longitude),
-        hourly: [
-          "temperature_2m",
-          "apparent_temperature",
-          "precipitation_probability",
-          "weather_code",
-          "wind_speed_10m",
-          "wind_gusts_10m"
-        ].join(","),
-        timezone: TIME_ZONE,
-        forecast_days: "8",
-        temperature_unit: "celsius",
-        wind_speed_unit: "kmh"
-      });
-
-      const response = await fetch(
-        `https://api.open-meteo.com/v1/forecast?${parameters}`,
-        {
-          cache: "no-store"
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(
-          `Weather service returned ${response.status}`
-        );
-      }
-
-      const payload = await response.json();
-      saveForecast(coordinates, payload);
-      return payload;
-    }
-
-    function isWithinWeatherWindow(event) {
-      const now = new Date();
-      const limit = new Date(
-        now.getTime() +
-        WEATHER_FORECAST_DAYS * 24 * 60 * 60 * 1000
-      );
-
-      return event.start >= now && event.start <= limit;
-    }
-
-    async function loadMatchWeather(fixtures) {
-      const eligible = fixtures.filter(
-        event =>
-          isWithinWeatherWindow(event) &&
-          event.coordinates
-      );
-
-      eligible.forEach(event => {
-        event.weatherStatus = "loading";
-      });
-
-      renderFixtures();
-
-      const grouped = new Map();
-
-      for (const event of eligible) {
-        const key =
-          event.coordinates.latitude.toFixed(4) +
-          "," +
-          event.coordinates.longitude.toFixed(4);
-
-        if (!grouped.has(key)) {
-          grouped.set(key, {
-            coordinates: event.coordinates,
-            events: []
-          });
-        }
-
-        grouped.get(key).events.push(event);
-      }
-
-      await Promise.all(
-        [...grouped.values()].map(async group => {
-          try {
-            const forecast = await fetchForecast(
-              group.coordinates
-            );
-
-            for (const event of group.events) {
-              event.weather = weatherAtKickoff(
-                forecast,
-                event.start
-              );
-              event.weatherStatus = event.weather
-                ? "ready"
-                : "unavailable";
-            }
-          } catch (error) {
-            console.error("Weather forecast failed", error);
-
-            for (const event of group.events) {
-              event.weatherStatus = "unavailable";
-            }
-          }
-        })
-      );
-
-      renderFixtures();
-    }
-
-    function weatherMarkup(event) {
-      if (!isWithinWeatherWindow(event)) {
-        return "";
-      }
-
-      if (!event.coordinates) {
-        return "";
-      }
-
-      if (event.weatherStatus === "loading") {
-        return `
-          <span class="weather-pill weather-loading">
-            🌦️ Loading match forecast…
-          </span>`;
-      }
-
-      if (!event.weather) {
-        return `
-          <span class="weather-pill weather-unavailable">
-            🌦️ Match forecast unavailable
-          </span>`;
-      }
-
-      const details = weatherCodeDetails(
-        event.weather.weatherCode
-      );
-      const temperature = Math.round(
-        event.weather.temperature
-      );
-      const rainChance = Math.round(
-        event.weather.rainChance ?? 0
-      );
-      const windSpeed = Math.round(
-        event.weather.windSpeed ?? 0
-      );
-
-      return `
-        <span
-          class="weather-pill"
-          title="Forecast at the scheduled start time"
-        >
-          <span>${details.icon}</span>
-          <strong>${temperature}°C</strong>
-          <span>${escapeHtml(details.label)}</span>
-          <span>• ${rainChance}% rain</span>
-          <span>• wind ${windSpeed} km/h</span>
-          <span class="weather-note">
-            Forecast at start time
-          </span>
-        </span>`;
+      return match ? match[0] : "";
     }
 
     function parseCalendar(text) {
@@ -1720,69 +986,64 @@
           const block = section.split("END:VEVENT")[0];
           const summary = decodeIcs(property(block, "SUMMARY"));
           const description = decodeIcs(property(block, "DESCRIPTION"));
+          const location = decodeIcs(property(block, "LOCATION"));
+          const wazeUrl = property(block, "URL");
           const start = parseDate(block, "DTSTART");
           const end = parseDate(block, "DTEND");
           const lower = summary.toLowerCase();
-          const person = lower.includes("finn") ? "finn" : "tate";
+
+          const sportProperty = decodeIcs(property(block, "X-SPORT")).toLowerCase();
           const sport =
-            summary.includes("🥎") || lower.includes("softball")
+            sportProperty.includes("softball") ||
+            summary.includes("🥎") ||
+            lower.includes("softball")
               ? "softball"
               : "soccer";
 
-          const location = decodeIcs(
-            property(block, "LOCATION")
-          );
-          const wazeUrl = property(block, "URL");
+          const personProperty = decodeIcs(property(block, "X-PERSON")).toLowerCase();
+          const person =
+            personProperty.includes("finn") || lower.includes("finn")
+              ? "finn"
+              : "tate";
 
           return {
             summary,
             description,
             start,
             end,
-            person,
             sport,
+            person,
             location,
             wazeUrl,
-            coordinates: eventCoordinates(
-              block,
-              location,
-              wazeUrl
-            ),
+            coordinates:
+              parseGeo(block) ||
+              coordsFromWaze(wazeUrl) ||
+              knownCoords(location),
             squadiUrl: extractSquadiUrl(description),
             homeTeam: decodeIcs(property(block, "X-HOME-TEAM")),
             awayTeam: decodeIcs(property(block, "X-AWAY-TEAM")),
             homeScore: property(block, "X-HOME-SCORE"),
-            awayScore: property(block, "X-AWAY-SCORE")
+            awayScore: property(block, "X-AWAY-SCORE"),
+            weather: null,
+            weatherStatus: ""
           };
         })
-        .filter(item => item.start)
-        .sort((a, b) => a.start - b.start);
+        .filter(event => event.start)
+        .sort((a,b) => a.start - b.start);
     }
 
-    function dateParts(date) {
-      const options = { timeZone: TIME_ZONE };
-      return {
-        weekday: new Intl.DateTimeFormat("en-AU", {
-          ...options,
-          weekday: "short"
-        }).format(date),
-        day: new Intl.DateTimeFormat("en-AU", {
-          ...options,
-          day: "numeric"
-        }).format(date),
-        month: new Intl.DateTimeFormat("en-AU", {
-          ...options,
-          month: "short"
-        }).format(date)
-      };
+    function cleanSummary(summary) {
+      return String(summary || "")
+        .replace(/^⚽\s*/, "")
+        .replace(/^🥎\s*/, "")
+        .replace(/\s*\|\s*(?:KO|Start)\s+\d{1,2}:\d{2}(?:am|pm)$/i, "")
+        .trim();
     }
 
-    function monthKey(date) {
-      return new Intl.DateTimeFormat("en-AU", {
-        timeZone: TIME_ZONE,
-        month: "long",
-        year: "numeric"
-      }).format(date);
+    function withoutPerson(summary) {
+      return cleanSummary(summary)
+        .replace(/^(Finn|Tate)\s*\|\s*/i, "")
+        .trim();
     }
 
     function formatTime(date) {
@@ -1793,42 +1054,48 @@
         hour12: true
       })
         .format(date)
-        .replace(" am", "am")
-        .replace(" pm", "pm");
+        .replace(" am","am")
+        .replace(" pm","pm");
     }
 
-    function formatFullDate(date) {
+    function formatDate(date, long = false) {
       return new Intl.DateTimeFormat("en-AU", {
         timeZone: TIME_ZONE,
-        weekday: "long",
+        weekday: long ? "long" : "short",
         day: "numeric",
-        month: "long"
+        month: long ? "long" : "short"
       }).format(date);
     }
 
+    function dateParts(date) {
+      return {
+        weekday: new Intl.DateTimeFormat("en-AU", {
+          timeZone: TIME_ZONE,
+          weekday: "short"
+        }).format(date),
+        day: new Intl.DateTimeFormat("en-AU", {
+          timeZone: TIME_ZONE,
+          day: "numeric"
+        }).format(date),
+        month: new Intl.DateTimeFormat("en-AU", {
+          timeZone: TIME_ZONE,
+          month: "short"
+        }).format(date)
+      };
+    }
+
     function roundText(description) {
-      const line = description
+      const line = String(description || "")
         .split("\n")
-        .find(value => /^Round\b/i.test(value.trim()));
+        .find(item => /^Round\b/i.test(item.trim()));
       return line ? line.trim() : "";
     }
 
-    function cleanedTitle(summary) {
-      return summary
-        .replace(/^⚽\s*/, "")
-        .replace(/^🥎\s*/, "")
-        .replace(/\s*\|\s*(?:KO|Start)\s+\d{1,2}:\d{2}(?:am|pm)$/i, "");
-    }
-
     function locationMarkup(event) {
-      if (!event.location) {
-        return "";
-      }
-
-      const locationText = escapeHtml(event.location);
+      if (!event.location) return "";
 
       if (!event.wazeUrl) {
-        return `<span>📍 ${locationText}</span>`;
+        return `<span>📍 ${escapeHtml(event.location)}</span>`;
       }
 
       return `
@@ -1839,703 +1106,751 @@
             href="${escapeHtml(event.wazeUrl)}"
             target="_blank"
             rel="noopener"
-            aria-label="Open ${locationText} in Waze"
           >
-            ${locationText}
+            ${escapeHtml(event.location)}
           </a>
         </span>`;
     }
 
-    function actionLinks(event, compact = false) {
-      const links = [];
+    function weatherCode(code) {
+      code = Number(code);
 
-      if (event.squadiUrl) {
-        links.push(
-          `<a class="${compact ? "button button-secondary" : "squadi"}"
-              href="${escapeHtml(event.squadiUrl)}"
-              target="_blank"
-              rel="noopener">View match</a>`
-        );
-      }
+      if (code === 0) return ["☀️","Clear"];
+      if (code === 1) return ["🌤️","Mainly clear"];
+      if (code === 2) return ["⛅","Partly cloudy"];
+      if (code === 3) return ["☁️","Overcast"];
+      if ([45,48].includes(code)) return ["🌫️","Fog"];
+      if ([51,53,55,56,57].includes(code)) return ["🌦️","Drizzle"];
+      if ([61,63,65,66,67].includes(code)) return ["🌧️","Rain"];
+      if ([80,81,82].includes(code)) return ["🌦️","Showers"];
+      if ([95,96,99].includes(code)) return ["⛈️","Thunderstorm"];
 
-      return links.join("");
+      return ["🌡️","Forecast"];
     }
-    function renderNext(fixtures) {
-      const panel = document.getElementById("next-panel");
-      const event = fixtures[0];
 
-      if (!event) {
-        panel.innerHTML = `
-          <div>
-            <p class="next-label">Next match</p>
-            <h2 class="next-title">No upcoming matches listed</h2>
-          </div>
-          <div class="next-actions"></div>`;
-        return;
+    function weatherWindow(event) {
+      const now = new Date();
+      return (
+        event.start >= now &&
+        event.start <= new Date(
+          now.getTime() + WEATHER_DAYS * 86400000
+        )
+      );
+    }
+
+    function weatherMarkup(event) {
+      if (!weatherWindow(event) || !event.coordinates) return "";
+
+      if (event.weatherStatus === "loading") {
+        return `<span class="weather loading">🌦️ Loading forecast…</span>`;
       }
 
-      panel.innerHTML = `
-        <div>
-          <p class="next-label">Next match</p>
-          <h2 class="next-title">${escapeHtml(cleanedTitle(event.summary))}</h2>
-          <div class="next-meta">
-            <span>📅 ${escapeHtml(formatFullDate(event.start))}</span>
-            <span>🕒 ${escapeHtml(formatTime(event.start))}</span>
-            ${locationMarkup(event)}
-            ${weatherMarkup(event)}
-          </div>
-        </div>
-        ${
-          actionLinks(event, true)
-            ? `
-              <div class="next-actions">
-                ${actionLinks(event, true)}
-              </div>
-            `
-            : ""
-        }`;
+      if (!event.weather) {
+        return event.weatherStatus === "unavailable"
+          ? `<span class="weather unavailable">🌦️ Forecast unavailable</span>`
+          : "";
+      }
+
+      const [icon, label] = weatherCode(event.weather.weatherCode);
+
+      return `
+        <span class="weather">
+          ${icon}
+          <strong>${Math.round(event.weather.temperature)}°C</strong>
+          ${escapeHtml(label)}
+          • ${Math.round(event.weather.rainChance ?? 0)}% rain
+          • wind ${Math.round(event.weather.windSpeed ?? 0)} km/h
+        </span>`;
+    }
+
+    function localDateValue(date) {
+      const parts = new Intl.DateTimeFormat("en-AU", {
+        timeZone: TIME_ZONE,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        hourCycle: "h23"
+      }).formatToParts(date);
+
+      const value = Object.fromEntries(
+        parts
+          .filter(part => part.type !== "literal")
+          .map(part => [part.type, Number(part.value)])
+      );
+
+      return Date.UTC(
+        value.year,
+        value.month - 1,
+        value.day,
+        value.hour,
+        value.minute
+      );
+    }
+
+    function apiTimeValue(value) {
+      const match = String(value).match(
+        /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/
+      );
+
+      return match
+        ? Date.UTC(
+            Number(match[1]),
+            Number(match[2]) - 1,
+            Number(match[3]),
+            Number(match[4]),
+            Number(match[5])
+          )
+        : NaN;
+    }
+
+    function forecastAtKickoff(payload, kickoff) {
+      const hourly = payload?.hourly;
+      if (!hourly?.time) return null;
+
+      const target = localDateValue(kickoff);
+      let nearest = -1;
+      let difference = Infinity;
+
+      hourly.time.forEach((time,index) => {
+        const delta = Math.abs(apiTimeValue(time) - target);
+        if (delta < difference) {
+          nearest = index;
+          difference = delta;
+        }
+      });
+
+      if (nearest < 0 || difference > 90 * 60000) return null;
+
+      const numberAt = name => {
+        const value = Number(hourly[name]?.[nearest]);
+        return Number.isFinite(value) ? value : null;
+      };
+
+      return {
+        temperature: numberAt("temperature_2m"),
+        rainChance: numberAt("precipitation_probability"),
+        weatherCode: numberAt("weather_code"),
+        windSpeed: numberAt("wind_speed_10m")
+      };
+    }
+
+    async function fetchForecast(coords) {
+      const key =
+        `weather:${coords.latitude.toFixed(4)},${coords.longitude.toFixed(4)}`;
+
+      try {
+        const cached = JSON.parse(sessionStorage.getItem(key) || "null");
+        if (
+          cached &&
+          Date.now() - cached.savedAt <
+            WEATHER_CACHE_MINUTES * 60000
+        ) {
+          return cached.payload;
+        }
+      } catch (_) {}
+
+      const params = new URLSearchParams({
+        latitude: String(coords.latitude),
+        longitude: String(coords.longitude),
+        hourly: [
+          "temperature_2m",
+          "precipitation_probability",
+          "weather_code",
+          "wind_speed_10m"
+        ].join(","),
+        timezone: TIME_ZONE,
+        forecast_days: "8",
+        temperature_unit: "celsius",
+        wind_speed_unit: "kmh"
+      });
+
+      const response = await fetch(
+        `https://api.open-meteo.com/v1/forecast?${params}`,
+        { cache: "no-store" }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Weather ${response.status}`);
+      }
+
+      const payload = await response.json();
+
+      try {
+        sessionStorage.setItem(
+          key,
+          JSON.stringify({ savedAt: Date.now(), payload })
+        );
+      } catch (_) {}
+
+      return payload;
+    }
+
+    async function loadWeather() {
+      const eligible = state.fixtures.filter(
+        event => weatherWindow(event) && event.coordinates
+      );
+
+      eligible.forEach(event => {
+        event.weatherStatus = "loading";
+      });
+
+      render();
+
+      const groups = new Map();
+
+      eligible.forEach(event => {
+        const key =
+          `${event.coordinates.latitude.toFixed(4)},` +
+          `${event.coordinates.longitude.toFixed(4)}`;
+
+        if (!groups.has(key)) {
+          groups.set(key, {
+            coords: event.coordinates,
+            events: []
+          });
+        }
+
+        groups.get(key).events.push(event);
+      });
+
+      await Promise.all(
+        [...groups.values()].map(async group => {
+          try {
+            const payload = await fetchForecast(group.coords);
+
+            group.events.forEach(event => {
+              event.weather = forecastAtKickoff(payload,event.start);
+              event.weatherStatus =
+                event.weather ? "ready" : "unavailable";
+            });
+          } catch (_) {
+            group.events.forEach(event => {
+              event.weatherStatus = "unavailable";
+            });
+          }
+        })
+      );
+
+      render();
     }
 
     function fixtureCard(event) {
       const parts = dateParts(event.start);
       const round = roundText(event.description);
-      const sportName = event.sport === "softball" ? "Softball" : "Soccer";
-      const sportIcon = event.sport === "softball" ? "🥎" : "⚽";
-      const timeRange = event.end
-        ? `${formatTime(event.start)} – ${formatTime(event.end)}`
-        : formatTime(event.start);
+      const icon = event.sport === "softball" ? "🥎" : "⚽";
+      const sport = event.sport === "softball" ? "Softball" : "Soccer";
 
       return `
         <article class="fixture ${event.sport}">
-          <div class="date-card">
+          <div class="date-tile">
             <span class="weekday">${escapeHtml(parts.weekday)}</span>
             <span class="day">${escapeHtml(parts.day)}</span>
             <span class="month">${escapeHtml(parts.month)}</span>
           </div>
 
-          <div class="fixture-main">
-            <div class="sport-pill">${sportIcon} ${sportName}</div>
-            <h3 class="fixture-title">${escapeHtml(cleanedTitle(event.summary))}</h3>
-            <div class="fixture-details">
-              <span>🕒 ${escapeHtml(timeRange)}</span>
+          <div>
+            <div class="sport-pill">${icon} ${sport}</div>
+            <h3>${escapeHtml(cleanSummary(event.summary))}</h3>
+
+            <div class="meta">
+              <span>
+                🕒 ${escapeHtml(formatTime(event.start))}
+                ${event.end ? ` – ${escapeHtml(formatTime(event.end))}` : ""}
+              </span>
               ${locationMarkup(event)}
               ${round ? `<span>🏆 ${escapeHtml(round)}</span>` : ""}
               ${weatherMarkup(event)}
             </div>
-          </div>
 
-          ${
-            actionLinks(event)
-              ? `
-                <div class="fixture-actions">
-                  ${actionLinks(event)}
-                </div>
-              `
-              : ""
-          }
-        </article>`;
-    }
-
-    function resultCard(event) {
-      const parts = dateParts(event.start);
-      const round = roundText(event.description);
-      const cleaned = cleanedTitle(event.summary);
-      const titleWithoutName = cleaned.replace(/^(Finn|Tate)\s*\|\s*/i, "");
-      const titleParts = titleWithoutName.split(" vs ");
-      const homeTeam = event.homeTeam || titleParts[0] || "";
-      const awayTeam = event.awayTeam || titleParts[1] || "";
-      const hasScore = event.homeScore !== "" && event.awayScore !== "";
-
-      return `
-        <article class="fixture soccer">
-          <div class="date-card">
-            <span class="weekday">${escapeHtml(parts.weekday)}</span>
-            <span class="day">${escapeHtml(parts.day)}</span>
-            <span class="month">${escapeHtml(parts.month)}</span>
-          </div>
-
-          <div class="fixture-main">
-            <div class="sport-pill">
-              ⚽ ${escapeHtml(event.person === "finn" ? "Finn" : "Tate")}
-            </div>
-
-            <h3 class="fixture-title">
-              ${escapeHtml(homeTeam)} vs ${escapeHtml(awayTeam)}
-            </h3>
-
-            ${
-              hasScore
-                ? `
-                  <div class="result-score" aria-label="Final score">
-                    <span class="score-number">${escapeHtml(event.homeScore)}</span>
-                    <span>–</span>
-                    <span class="score-number">${escapeHtml(event.awayScore)}</span>
-                  </div>
-                `
-                : `
-                  <div class="result-score unavailable">
-                    Score not published
-                  </div>
-                `
-            }
-
-            <div class="fixture-details">
-              ${round ? `<span>🏆 ${escapeHtml(round)}</span>` : ""}
-              ${locationMarkup(event)}
-            </div>
-          </div>
-
-          <div class="fixture-actions">
             ${
               event.squadiUrl
                 ? `
-                  <a class="squadi"
-                     href="${escapeHtml(event.squadiUrl)}"
-                     target="_blank"
-                     rel="noopener">
-                    View result
-                  </a>
-                `
+                  <div class="fixture-actions">
+                    <a
+                      class="text-link"
+                      href="${escapeHtml(event.squadiUrl)}"
+                      target="_blank"
+                      rel="noopener"
+                    >
+                      View in Squadi
+                    </a>
+                  </div>`
                 : ""
             }
           </div>
         </article>`;
     }
 
-    function soccerValue(value) {
-      return (
-        value === null ||
-        value === undefined ||
-        value === ""
-      )
-        ? "—"
-        : escapeHtml(value);
+    function soccerResultCard(event) {
+      const title = withoutPerson(event.summary);
+      const hasScore =
+        event.homeScore !== "" &&
+        event.awayScore !== "";
+
+      return `
+        <article class="result-card">
+          <div>
+            <h3>${escapeHtml(title)}</h3>
+            <div class="sub">
+              ${escapeHtml(formatDate(event.start,true))}
+              ${roundText(event.description)
+                ? ` • ${escapeHtml(roundText(event.description))}`
+                : ""}
+              ${event.squadiUrl
+                ? ` • <a href="${escapeHtml(event.squadiUrl)}" target="_blank" rel="noopener">Squadi</a>`
+                : ""}
+            </div>
+          </div>
+
+          <div class="score ${hasScore ? "" : "pending"}">
+            ${
+              hasScore
+                ? `${escapeHtml(event.homeScore)} – ${escapeHtml(event.awayScore)}`
+                : "Score not published"
+            }
+          </div>
+        </article>`;
     }
 
-    function renderSoccerLaddersDashboard() {
-      const container = document.getElementById(
-        "soccer-ladders-dashboard"
-      );
+    function softballResultCard(result) {
+      const hasScore =
+        result.thornlie_score !== null &&
+        result.thornlie_score !== undefined &&
+        result.opponent_score !== null &&
+        result.opponent_score !== undefined;
 
-      const ladders = Array.isArray(
-        soccerLaddersData?.ladders
-      )
-        ? soccerLaddersData.ladders
+      const outcome = String(result.result || "").toUpperCase();
+      const badge =
+        outcome === "W"
+          ? `<span class="result-badge win">W</span>`
+          : outcome === "L"
+          ? `<span class="result-badge loss">L</span>`
+          : outcome === "D"
+          ? `<span class="result-badge draw">D</span>`
+          : "";
+
+      return `
+        <article class="result-card">
+          <div>
+            <h3>Thornlie Hawks (Blue) vs ${escapeHtml(result.opponent || "Opponent")}</h3>
+            <div class="sub">${escapeHtml(result.date || "")}</div>
+          </div>
+
+          <div class="score ${hasScore ? "" : "pending"}">
+            ${badge}
+            ${
+              hasScore
+                ? `${escapeHtml(result.thornlie_score)} – ${escapeHtml(result.opponent_score)}`
+                : "Score unavailable"
+            }
+          </div>
+        </article>`;
+    }
+
+    function soccerLadder(person) {
+      const ladders = Array.isArray(state.ladders?.ladders)
+        ? state.ladders.ladders
         : [];
 
-      if (!ladders.length) {
-        container.innerHTML = `
-          <div class="empty">
-            <span class="empty-icon">🏆</span>
-            Soccer ladders are not available yet.
-          </div>`;
-        return;
-      }
-
-      container.innerHTML = ladders
-        .map(ladder => {
-          const rows = Array.isArray(ladder.rows)
-            ? ladder.rows
-            : [];
-          const target = ladder.target_summary;
-          const position = target?.position;
-
-          const rowsHtml = rows.length
-            ? rows
-                .map(row => {
-                  const isArmadale =
-                    String(row.team || "")
-                      .toLowerCase()
-                      .includes("armadale");
-
-                  return `
-                    <tr class="${isArmadale ? "armadale-team" : ""}">
-                      <td>${soccerValue(row.position)}</td>
-                      <td>${escapeHtml(row.team || "")}</td>
-                      <td>${soccerValue(row.played)}</td>
-                      <td>${soccerValue(row.won)}</td>
-                      <td>${soccerValue(row.drawn)}</td>
-                      <td>${soccerValue(row.lost)}</td>
-                      <td>${soccerValue(row.for)}</td>
-                      <td>${soccerValue(row.against)}</td>
-                      <td>${soccerValue(row.difference)}</td>
-                      <td>${soccerValue(row.points)}</td>
-                    </tr>`;
-                })
-                .join("")
-            : `
-              <tr>
-                <td colspan="10">
-                  Squadi ladder data has not been detected yet.
-                </td>
-              </tr>`;
-
-          return `
-            <section class="soccer-ladder-card">
-              <div class="soccer-ladder-head">
-                <h3>
-                  ⚽ ${escapeHtml(ladder.player || "")}
-                  — ${escapeHtml(ladder.division || "")}
-                </h3>
-
-                ${
-                  position
-                    ? `
-                      <span class="soccer-position-pill">
-                        #${escapeHtml(position)} on ladder
-                      </span>
-                    `
-                    : ""
-                }
-              </div>
-
-              <div class="soccer-ladder-table-wrap">
-                <table class="soccer-ladder-table">
-                  <thead>
-                    <tr>
-                      <th>Pos</th>
-                      <th>Team</th>
-                      <th>P</th>
-                      <th>W</th>
-                      <th>D</th>
-                      <th>L</th>
-                      <th>For</th>
-                      <th>Ag</th>
-                      <th>Diff</th>
-                      <th>Pts</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    ${rowsHtml}
-                  </tbody>
-                </table>
-              </div>
-
-              <div class="soccer-ladder-source">
-                Source:
-                <a
-                  href="${escapeHtml(ladder.source_url || "#")}"
-                  target="_blank"
-                  rel="noopener"
-                >
-                  Squadi
-                </a>
-              </div>
-            </section>`;
-        })
-        .join("");
+      return ladders.find(
+        item => String(item.player || "").toLowerCase() === person
+      );
     }
 
-    function softballResultBadge(result) {
-      const value = String(result || "").toUpperCase();
+    function soccerLadderMarkup(person) {
+      const ladder = soccerLadder(person);
 
-      if (value === "W") {
-        return '<span class="softball-result-badge win">W</span>';
-      }
-
-      if (value === "L") {
-        return '<span class="softball-result-badge loss">L</span>';
-      }
-
-      if (value === "D") {
-        return '<span class="softball-result-badge draw">D</span>';
-      }
-
-      return "";
-    }
-
-    function renderSoftballDashboard() {
-      const container = document.getElementById("softball-dashboard");
-
-      if (!softballData || !Array.isArray(softballData.ladder)) {
-        container.innerHTML = `
+      if (!ladder || !Array.isArray(ladder.rows) || !ladder.rows.length) {
+        return `
           <div class="empty">
-            <span class="empty-icon">🥎</span>
-            Softball results and ladder are not available yet.
+            <span class="icon">🏆</span>
+            Soccer ladder data has not populated yet.
           </div>`;
-        return;
       }
 
-      const team = softballData.team_summary;
-      const ladder = softballData.ladder || [];
-      const results = softballData.results || [];
-      const updated = softballData.updated
-        ? `DDMSA data as of ${escapeHtml(softballData.updated)}`
-        : "Latest DDMSA data";
+      const rows = ladder.rows.map(row => {
+        const highlight =
+          String(row.team || "").toLowerCase().includes("armadale");
 
-      const summary = team
-        ? `
-          <div class="softball-summary">
-            <div class="softball-rank">
-              <strong>#${escapeHtml(team.position)}</strong>
-              <span>Position</span>
-            </div>
+        return `
+          <tr class="${highlight ? "highlight-soccer" : ""}">
+            <td>${escapeHtml(row.position ?? "—")}</td>
+            <td>${escapeHtml(row.team ?? "")}</td>
+            <td>${escapeHtml(row.played ?? "—")}</td>
+            <td>${escapeHtml(row.won ?? "—")}</td>
+            <td>${escapeHtml(row.drawn ?? "—")}</td>
+            <td>${escapeHtml(row.lost ?? "—")}</td>
+            <td>${escapeHtml(row.for ?? "—")}</td>
+            <td>${escapeHtml(row.against ?? "—")}</td>
+            <td>${escapeHtml(row.difference ?? "—")}</td>
+            <td>${escapeHtml(row.points ?? "—")}</td>
+          </tr>`;
+      }).join("");
 
-            <div>
-              <h3>🥎 Tate — Thornlie Hawks (Blue)</h3>
-              <div class="softball-record">
-                <span>${escapeHtml(team.played)} played</span>
-                <span>${escapeHtml(team.won)} wins</span>
-                <span>${escapeHtml(team.lost)} losses</span>
-                <span>${escapeHtml(team.drawn)} draws</span>
-                <span>${escapeHtml(team.points)} points</span>
-                <span>${escapeHtml(team.runs_for)} for / ${escapeHtml(team.runs_against)} against</span>
-              </div>
-            </div>
-          </div>`
-        : "";
+      const position = ladder.target_summary?.position;
 
-      const resultsHtml = results.length
-        ? results
-            .slice()
-            .reverse()
-            .map(result => {
-              const hasScore =
-                result.thornlie_score !== null &&
-                result.thornlie_score !== undefined &&
-                result.opponent_score !== null &&
-                result.opponent_score !== undefined;
-
-              return `
-                <div class="softball-result">
-                  <div>
-                    <div class="softball-result-opponent">
-                      vs ${escapeHtml(result.opponent || "Opponent")}
-                    </div>
-                    <div class="softball-result-date">
-                      ${escapeHtml(result.date || "")}
-                    </div>
-                  </div>
-
-                  <div class="softball-result-score">
-                    ${softballResultBadge(result.result)}
-                    ${
-                      hasScore
-                        ? `<span>${escapeHtml(result.thornlie_score)} – ${escapeHtml(result.opponent_score)}</span>`
-                        : `<span>Score unavailable</span>`
-                    }
-                  </div>
-                </div>`;
-            })
-            .join("")
-        : `
-          <div class="empty">
-            DDMSA's ladder is available, but historical Tate result rows
-            have not yet been detected from the DDMSA past-results pages.
-          </div>`;
-
-      const ladderHtml = ladder
-        .map(row => {
-          const isTate =
-            String(row.team || "")
-              .toLowerCase()
-              .includes("thornlie hawks") &&
-            String(row.team || "")
-              .toLowerCase()
-              .includes("blue");
-
-          return `
-            <tr class="${isTate ? "tate-team" : ""}">
-              <td>${escapeHtml(row.position)}</td>
-              <td>${escapeHtml(row.team)}</td>
-              <td>${escapeHtml(row.played)}</td>
-              <td>${escapeHtml(row.won)}</td>
-              <td>${escapeHtml(row.lost)}</td>
-              <td>${escapeHtml(row.drawn)}</td>
-              <td>${escapeHtml(row.runs_for)}</td>
-              <td>${escapeHtml(row.runs_against)}</td>
-              <td>${escapeHtml(row.points)}</td>
-            </tr>`;
-        })
-        .join("");
-
-      container.innerHTML = `
-        ${summary}
-
-        <section class="softball-block">
-          <div class="softball-block-head">
-            <h3>All Tate's past results</h3>
-            <span>${updated}</span>
+      return `
+        <div class="ladder-card">
+          <div class="ladder-head">
+            <h3>⚽ ${escapeHtml(ladder.division || "Soccer ladder")}</h3>
+            ${position ? `<span class="position-pill">#${escapeHtml(position)}</span>` : ""}
           </div>
 
-          <div class="softball-results">
-            ${resultsHtml}
-          </div>
-        </section>
-
-        <section class="softball-block">
-          <div class="softball-block-head">
-            <h3>Under 13's Mixed ladder</h3>
-            <span>${updated}</span>
-          </div>
-
-          <div class="ladder-wrap">
-            <table class="ladder">
+          <div class="table-wrap">
+            <table>
               <thead>
                 <tr>
-                  <th>Pos</th>
-                  <th>Team</th>
-                  <th>P</th>
-                  <th>W</th>
-                  <th>L</th>
-                  <th>D</th>
-                  <th>For</th>
-                  <th>Ag</th>
-                  <th>Pts</th>
+                  <th>Pos</th><th>Team</th><th>P</th><th>W</th><th>D</th>
+                  <th>L</th><th>For</th><th>Ag</th><th>Diff</th><th>Pts</th>
                 </tr>
               </thead>
-              <tbody>
-                ${ladderHtml}
-              </tbody>
+              <tbody>${rows}</tbody>
             </table>
           </div>
-        </section>
 
-        <div class="softball-source">
-          Source:
-          <a
-            href="${escapeHtml(softballData.source_url || "https://ddmsa.com/resframe.htm")}"
-            target="_blank"
-            rel="noopener"
-          >
-            Dale Districts Men's Softball Association
-          </a>.
-          Data updates when DDMSA publishes new results or ladder information.
+          <div class="source">
+            Source:
+            <a href="${escapeHtml(ladder.source_url || "#")}" target="_blank" rel="noopener">Squadi</a>
+          </div>
         </div>`;
     }
 
-    function updateFilterVisibility() {
-      const filterBar = document.querySelector(".filters");
+    function softballLadderMarkup() {
+      const data = state.softball;
 
-      if (filterBar) {
-        filterBar.hidden = activeView === "softball" || activeView === "ladders";
+      if (!data || !Array.isArray(data.ladder) || !data.ladder.length) {
+        return `
+          <div class="empty">
+            <span class="icon">🥎</span>
+            Softball ladder data is not available yet.
+          </div>`;
       }
 
-      document
-        .querySelectorAll('[data-filter="soccer"], [data-filter="softball"]')
-        .forEach(button => {
-          button.hidden = activeView === "results";
-        });
+      const rows = data.ladder.map(row => {
+        const highlight =
+          String(row.team || "").toLowerCase().includes("thornlie hawks") &&
+          String(row.team || "").toLowerCase().includes("blue");
+
+        return `
+          <tr class="${highlight ? "highlight-softball" : ""}">
+            <td>${escapeHtml(row.position ?? "—")}</td>
+            <td>${escapeHtml(row.team ?? "")}</td>
+            <td>${escapeHtml(row.played ?? "—")}</td>
+            <td>${escapeHtml(row.won ?? "—")}</td>
+            <td>${escapeHtml(row.lost ?? "—")}</td>
+            <td>${escapeHtml(row.drawn ?? "—")}</td>
+            <td>${escapeHtml(row.runs_for ?? "—")}</td>
+            <td>${escapeHtml(row.runs_against ?? "—")}</td>
+            <td>${escapeHtml(row.points ?? "—")}</td>
+          </tr>`;
+      }).join("");
+
+      return `
+        <div class="ladder-card softball-ladder">
+          <div class="ladder-head">
+            <h3>🥎 ${escapeHtml(data.division || "Softball ladder")}</h3>
+            ${
+              data.team_summary?.position
+                ? `<span class="position-pill">#${escapeHtml(data.team_summary.position)}</span>`
+                : ""
+            }
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Pos</th><th>Team</th><th>P</th><th>W</th><th>L</th>
+                  <th>D</th><th>For</th><th>Ag</th><th>Pts</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+
+          <div class="source">
+            Source:
+            <a href="${escapeHtml(data.source_url || "https://ddmsa.com/resframe.htm")}" target="_blank" rel="noopener">DDMSA</a>
+            ${data.updated ? ` • ${escapeHtml(data.updated)}` : ""}
+          </div>
+        </div>`;
     }
 
-    function renderFixtures() {
+    function pageHeading(title, subtitle) {
+      return `
+        <div class="page-head">
+          <div>
+            <h2>${escapeHtml(title)}</h2>
+            <p>${escapeHtml(subtitle)}</p>
+          </div>
+          <div class="viewed">
+            ${state.loadedAt ? `Updated view ${formatTime(state.loadedAt)}` : ""}
+          </div>
+        </div>`;
+    }
+
+    function renderUpcoming() {
       const now = new Date();
-      const upcoming = allFixtures.filter(
-        event => (event.end || event.start) >= now
-      );
 
-      renderNext(upcoming);
+      const upcoming = state.fixtures
+        .filter(event => (event.end || event.start) >= now)
+        .sort((a,b) => a.start - b.start);
 
-      const resultsView = activeView === "results";
-      const softballView = activeView === "softball";
-      const laddersView = activeView === "ladders";
-
-      const fixtureContainer =
-        document.getElementById("fixture-groups");
-      const softballContainer =
-        document.getElementById("softball-dashboard");
-      const soccerLaddersContainer =
-        document.getElementById(
-          "soccer-ladders-dashboard"
-        );
-
-      fixtureContainer.hidden =
-        softballView || laddersView;
-      softballContainer.hidden =
-        !softballView;
-      soccerLaddersContainer.hidden =
-        !laddersView;
-
-      if (softballView) {
-        document.getElementById("next-panel").hidden = true;
-        document.getElementById("section-title").textContent =
-          "Tate's softball";
-        document.getElementById("fixture-count").textContent =
-          "Results and Under 13's Mixed ladder";
-        updateFilterVisibility();
-        renderSoftballDashboard();
-        return;
-      }
-
-      if (laddersView) {
-        document.getElementById("next-panel").hidden = true;
-        document.getElementById("section-title").textContent =
-          "Soccer ladders";
-        document.getElementById("fixture-count").textContent =
-          "Finn and Tate's current divisions";
-        updateFilterVisibility();
-        renderSoccerLaddersDashboard();
-        return;
-      }
-
-      const source = resultsView
-        ? allFixtures
-            .filter(
-              event =>
-                event.sport === "soccer" &&
-                (event.end || event.start) < now
-            )
-            .sort((a, b) => b.start - a.start)
-        : upcoming;
-
-      const filtered = source.filter(event => {
-        if (activeFilter === "all") return true;
-        return event.person === activeFilter || event.sport === activeFilter;
-      });
-
-      document.getElementById("next-panel").hidden = resultsView;
-      document.getElementById("section-title").textContent =
-        resultsView ? "Past soccer results" : "Upcoming fixtures";
-
-      document.getElementById("fixture-count").textContent =
-        `${filtered.length} ${resultsView ? "past" : "upcoming"} ` +
-        `${filtered.length === 1 ? "match" : "matches"}`;
-
-      updateFilterVisibility();
-
-      const container = document.getElementById("fixture-groups");
-
-      if (!filtered.length) {
-        container.innerHTML = `
+      if (!upcoming.length) {
+        return `
+          ${pageHeading("Upcoming games","All Finn and Tate matches")}
           <div class="empty">
-            <span class="empty-icon">${resultsView ? "🏆" : "📅"}</span>
-            ${
-              resultsView
-                ? "No past soccer matches are currently available."
-                : "No upcoming matches in this category."
-            }
+            <span class="icon">📅</span>
+            No upcoming games are currently listed.
           </div>`;
-        return;
       }
 
-      const groups = new Map();
+      const next = upcoming[0];
 
-      for (const event of filtered) {
-        const key = monthKey(event.start);
+      return `
+        ${pageHeading("Upcoming games","All Finn and Tate matches")}
 
-        if (!groups.has(key)) {
-          groups.set(key, []);
+        <section class="next-card">
+          <div>
+            <div class="next-label">Next game</div>
+            <h3 class="next-title">${escapeHtml(cleanSummary(next.summary))}</h3>
+            <div class="meta">
+              <span>📅 ${escapeHtml(formatDate(next.start,true))}</span>
+              <span>🕒 ${escapeHtml(formatTime(next.start))}</span>
+              ${locationMarkup(next)}
+              ${weatherMarkup(next)}
+            </div>
+          </div>
+        </section>
+
+        <div class="section-title">All upcoming games</div>
+        <div class="fixtures">
+          ${upcoming.map(fixtureCard).join("")}
+        </div>`;
+    }
+
+    function personSportButtons(person) {
+      if (person === "finn") return "";
+
+      const current = state.personSport.tate;
+
+      return `
+        <div class="sport-switch">
+          <button
+            data-sport="soccer"
+            class="${current === "soccer" ? "active" : ""}"
+          >
+            ⚽ Soccer
+          </button>
+
+          <button
+            data-sport="softball"
+            class="softball ${current === "softball" ? "active" : ""}"
+          >
+            🥎 Softball
+          </button>
+        </div>`;
+    }
+
+    function contentButtons(person) {
+      const current = state.personView[person];
+
+      return `
+        <div class="content-switch">
+          <button data-content="fixtures" class="${current === "fixtures" ? "active" : ""}">
+            Fixtures
+          </button>
+          <button data-content="results" class="${current === "results" ? "active" : ""}">
+            Results
+          </button>
+          <button data-content="ladder" class="${current === "ladder" ? "active" : ""}">
+            Ladder
+          </button>
+        </div>`;
+    }
+
+    function personContent(person) {
+      const sport =
+        person === "finn"
+          ? "soccer"
+          : state.personSport.tate;
+
+      const view = state.personView[person];
+      const now = new Date();
+
+      if (view === "fixtures") {
+        const fixtures = state.fixtures
+          .filter(
+            event =>
+              event.person === person &&
+              event.sport === sport &&
+              (event.end || event.start) >= now
+          )
+          .sort((a,b) => a.start - b.start);
+
+        return fixtures.length
+          ? `<div class="fixtures">${fixtures.map(fixtureCard).join("")}</div>`
+          : `
+            <div class="empty">
+              <span class="icon">📅</span>
+              No future ${escapeHtml(sport)} fixtures are currently listed.
+            </div>`;
+      }
+
+      if (view === "results") {
+        if (sport === "softball") {
+          const results = Array.isArray(state.softball?.results)
+            ? state.softball.results.slice().reverse()
+            : [];
+
+          return results.length
+            ? `<div class="result-list">${results.map(softballResultCard).join("")}</div>`
+            : `
+              <div class="empty">
+                <span class="icon">🥎</span>
+                DDMSA has not supplied historical Tate results in a format we can display yet.
+              </div>`;
         }
 
-        groups.get(key).push(event);
+        const results = state.fixtures
+          .filter(
+            event =>
+              event.person === person &&
+              event.sport === "soccer" &&
+              (event.end || event.start) < now
+          )
+          .sort((a,b) => b.start - a.start);
+
+        return results.length
+          ? `<div class="result-list">${results.map(soccerResultCard).join("")}</div>`
+          : `
+            <div class="empty">
+              <span class="icon">⚽</span>
+              No past soccer games are currently available.
+            </div>`;
       }
 
-      container.innerHTML = [...groups.entries()]
-        .map(([month, fixtures]) => `
-          <section>
-            <h3 class="month-heading">${escapeHtml(month)}</h3>
-
-            <div class="fixture-list">
-              ${
-                fixtures
-                  .map(resultsView ? resultCard : fixtureCard)
-                  .join("")
-              }
-            </div>
-          </section>`)
-        .join("");
+      return sport === "softball"
+        ? softballLadderMarkup()
+        : soccerLadderMarkup(person);
     }
-    async function loadFixtures() {
-      const container = document.getElementById("fixture-groups");
+
+    function renderPerson(person) {
+      const name = person === "finn" ? "Finn" : "Tate";
+      const sport =
+        person === "finn"
+          ? "soccer"
+          : state.personSport.tate;
+
+      const subtitle =
+        person === "finn"
+          ? "Soccer — fixtures, results and ladder"
+          : sport === "soccer"
+          ? "Soccer — fixtures, results and ladder"
+          : "Softball — fixtures, results and ladder";
+
+      return `
+        <section class="person-summary">
+          <div class="person-avatar">${name[0]}</div>
+          <div>
+            <h2>${name}</h2>
+            <p>${escapeHtml(subtitle)}</p>
+          </div>
+        </section>
+
+        ${personSportButtons(person)}
+        ${contentButtons(person)}
+        ${personContent(person)}
+      `;
+    }
+
+    function render() {
+      document.querySelectorAll(".primary-nav button").forEach(button => {
+        button.classList.toggle(
+          "active",
+          button.dataset.page === state.page
+        );
+      });
+
+      const app = document.getElementById("app");
+
+      if (state.page === "upcoming") {
+        app.innerHTML = renderUpcoming();
+      } else {
+        app.innerHTML = renderPerson(state.page);
+      }
+
+      bindDynamicControls();
+    }
+
+    function bindDynamicControls() {
+      document.querySelectorAll("[data-sport]").forEach(button => {
+        button.addEventListener("click", () => {
+          state.personSport.tate = button.dataset.sport;
+          state.personView.tate = "fixtures";
+          render();
+        });
+      });
+
+      document.querySelectorAll("[data-content]").forEach(button => {
+        button.addEventListener("click", () => {
+          state.personView[state.page] = button.dataset.content;
+          render();
+        });
+      });
+    }
+
+    document.querySelectorAll(".primary-nav button").forEach(button => {
+      button.addEventListener("click", () => {
+        state.page = button.dataset.page;
+        render();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+    });
+
+    async function loadData() {
+      const cacheKey = Date.now();
 
       try {
-        const cacheKey = Date.now();
+        const [icsResponse, softballResponse, ladderResponse] =
+          await Promise.all([
+            fetch(`${ICS_URL}?v=${cacheKey}`, { cache: "no-store" }),
+            fetch(`${SOFTBALL_URL}?v=${cacheKey}`, { cache: "no-store" }),
+            fetch(`${SOCCER_LADDERS_URL}?v=${cacheKey}`, { cache: "no-store" })
+          ]);
 
-        const [
-          response,
-          softballResponse,
-          soccerLaddersResponse
-        ] = await Promise.all([
-          fetch(
-            `${ICS_URL}?v=${cacheKey}`,
-            { cache: "no-store" }
-          ),
-          fetch(
-            `${SOFTBALL_URL}?v=${cacheKey}`,
-            { cache: "no-store" }
-          ),
-          fetch(
-            `${SOCCER_LADDERS_URL}?v=${cacheKey}`,
-            { cache: "no-store" }
-          )
-        ]);
-
-        if (!response.ok) {
-          throw new Error(`Calendar feed returned ${response.status}`);
+        if (!icsResponse.ok) {
+          throw new Error(`Calendar returned ${icsResponse.status}`);
         }
 
-        allFixtures = parseCalendar(await response.text());
+        state.fixtures = parseCalendar(await icsResponse.text());
 
-        if (softballResponse.ok) {
-          softballData = await softballResponse.json();
-        } else {
-          softballData = null;
-        }
+        state.softball = softballResponse.ok
+          ? await softballResponse.json()
+          : null;
 
-        if (soccerLaddersResponse.ok) {
-          soccerLaddersData =
-            await soccerLaddersResponse.json();
-        } else {
-          soccerLaddersData = null;
-        }
-        document.getElementById("last-updated").textContent =
-          `Viewed ${new Intl.DateTimeFormat("en-AU", {
-            timeZone: TIME_ZONE,
-            hour: "numeric",
-            minute: "2-digit",
-            hour12: true
-          }).format(new Date())}`;
+        state.ladders = ladderResponse.ok
+          ? await ladderResponse.json()
+          : null;
 
-        renderFixtures();
+        state.loadedAt = new Date();
 
-        const now = new Date();
-        const upcomingForWeather = allFixtures.filter(
-          event => (event.end || event.start) >= now
-        );
-
-        await loadMatchWeather(upcomingForWeather);
+        render();
+        loadWeather();
       } catch (error) {
         console.error(error);
-        document.getElementById("fixture-count").textContent = "";
-        container.innerHTML = `
-          <div class="error">
-            The fixture list could not be loaded. Please refresh the page.
+
+        document.getElementById("app").innerHTML = `
+          <div class="empty error">
+            <span class="icon">⚠️</span>
+            The sports data could not be loaded. Please refresh the page.
           </div>`;
       }
     }
 
-    document.querySelectorAll(".view-tab").forEach(button => {
-      button.addEventListener("click", () => {
-        document.querySelectorAll(".view-tab").forEach(item => {
-          item.classList.remove("active");
-          item.setAttribute("aria-selected", "false");
-        });
-
-        button.classList.add("active");
-        button.setAttribute("aria-selected", "true");
-        activeView = button.dataset.view;
-        activeFilter = "all";
-
-        document.querySelectorAll(".filter").forEach(item =>
-          item.classList.toggle("active", item.dataset.filter === "all")
-        );
-
-        renderFixtures();
-      });
-    });
-
-    document.querySelectorAll(".filter").forEach(button => {
-      button.addEventListener("click", () => {
-        document.querySelectorAll(".filter").forEach(item =>
-          item.classList.remove("active")
-        );
-        button.classList.add("active");
-        activeFilter = button.dataset.filter;
-        renderFixtures();
-      });
-    });
-
-    loadFixtures();
+    loadData();
   </script>
 </body>
 </html>
