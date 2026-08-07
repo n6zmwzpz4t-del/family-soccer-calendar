@@ -9,6 +9,7 @@ on:
       - "docs/fixtures.ics"
       - "docs/debug.json"
       - "docs/softball.json"
+      - "docs/soccer_ladders.json"
 
 permissions:
   contents: write
@@ -66,6 +67,12 @@ jobs:
               printf '{}\n' > /tmp/softball-before.json
             fi
 
+            if [ -f docs/soccer_ladders.json ]; then
+              cp docs/soccer_ladders.json /tmp/soccer-ladders-before.json
+            else
+              printf '{}\n' > /tmp/soccer-ladders-before.json
+            fi
+
             # Check Squadi and DDMSA, then regenerate local published data.
             python generate_calendar.py
 
@@ -80,6 +87,7 @@ jobs:
 
             calendar_changed=0
             softball_changed=0
+            soccer_ladders_changed=0
 
             if ! cmp -s \
               /tmp/fixtures-before-compare.ics \
@@ -97,8 +105,18 @@ jobs:
               fi
             fi
 
+            if [ -f docs/soccer_ladders.json ]; then
+              if ! cmp -s \
+                /tmp/soccer-ladders-before.json \
+                docs/soccer_ladders.json
+              then
+                soccer_ladders_changed=1
+              fi
+            fi
+
             if [ "$calendar_changed" -eq 0 ] \
-              && [ "$softball_changed" -eq 0 ]
+              && [ "$softball_changed" -eq 0 ] \
+              && [ "$soccer_ladders_changed" -eq 0 ]
             then
               echo "No meaningful sports-data changes detected."
               echo "Nothing will be committed or deployed."
@@ -111,17 +129,28 @@ jobs:
                 rm -f docs/softball.json
               fi
 
+              if git ls-files --error-unmatch docs/soccer_ladders.json >/dev/null 2>&1; then
+                git restore docs/soccer_ladders.json
+              else
+                rm -f docs/soccer_ladders.json
+              fi
+
               exit 0
             fi
 
             echo "Sports-data changes detected."
             echo "Calendar changed: $calendar_changed"
             echo "DDMSA softball changed: $softball_changed"
+            echo "Squadi ladders changed: $soccer_ladders_changed"
 
             git add docs/fixtures.ics docs/debug.json
 
             if [ -f docs/softball.json ]; then
               git add docs/softball.json
+            fi
+
+            if [ -f docs/soccer_ladders.json ]; then
+              git add docs/soccer_ladders.json
             fi
 
             git commit -m "Refresh Finn and Tate sports data"
