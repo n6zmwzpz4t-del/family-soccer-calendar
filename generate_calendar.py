@@ -20,6 +20,36 @@ OUTPUT = ROOT / "docs" / "fixtures.ics"
 DEBUG = ROOT / "docs" / "debug.json"
 MANUAL_FIXTURES = ROOT / "manual_fixtures.json"
 SOFTBALL_DATA = ROOT / "docs" / "softball.json"
+SOCCER_LADDER_DATA = ROOT / "docs" / "soccer_ladders.json"
+
+SOCCER_LADDERS = [
+    {
+        "player": "Finn",
+        "division": "U14 JDL D2",
+        "target_team": "Armadale SC - U14 JDL D2",
+        "url": (
+            "https://registration.squadi.com/livescorePublicLadder"
+            "?organisationKey=f524913b-317c-4011-8f66-e4eb3f101ebe"
+            "&yearId=8"
+            "&competitionUniqueKey=2929eee2-4f37-46f3-a6d6-123acee5443f"
+            "&divisionId=10370"
+            "&teamId=-1"
+        ),
+    },
+    {
+        "player": "Tate",
+        "division": "U13 JCL SD1",
+        "target_team": "Armadale SC - U13 JCL SD1",
+        "url": (
+            "https://registration.squadi.com/livescorePublicLadder"
+            "?organisationKey=f524913b-317c-4011-8f66-e4eb3f101ebe"
+            "&yearId=8"
+            "&competitionUniqueKey=fafe940b-0a16-474a-9ac8-9dbf00035b0c"
+            "&divisionId=10761"
+            "&teamId=-1"
+        ),
+    },
+]
 
 DDMSA_RESULTS_URL = "https://ddmsa.com/resframe.htm"
 DDMSA_HOME_URL = "https://ddmsa.com/"
@@ -848,6 +878,643 @@ def extract_score_pair(obj: dict[str, Any]) -> tuple[str, str]:
 
 
 
+
+LADDER_TEAM_KEYS = (
+    "teamName",
+    "teamDisplayName",
+    "displayTeamName",
+    "clubTeamName",
+    "clubName",
+    "entityName",
+)
+
+LADDER_POSITION_KEYS = (
+    "position",
+    "rank",
+    "ladderPosition",
+    "standingPosition",
+    "place",
+)
+
+LADDER_PLAYED_KEYS = (
+    "played",
+    "gamesPlayed",
+    "matchesPlayed",
+    "playedCount",
+    "gameCount",
+)
+
+LADDER_WON_KEYS = (
+    "won",
+    "wins",
+    "gamesWon",
+    "matchesWon",
+    "winCount",
+)
+
+LADDER_DRAWN_KEYS = (
+    "drawn",
+    "draws",
+    "gamesDrawn",
+    "matchesDrawn",
+    "drawCount",
+)
+
+LADDER_LOST_KEYS = (
+    "lost",
+    "losses",
+    "gamesLost",
+    "matchesLost",
+    "lossCount",
+)
+
+LADDER_FOR_KEYS = (
+    "goalsFor",
+    "pointsFor",
+    "for",
+    "scoreFor",
+    "totalFor",
+)
+
+LADDER_AGAINST_KEYS = (
+    "goalsAgainst",
+    "pointsAgainst",
+    "against",
+    "scoreAgainst",
+    "totalAgainst",
+)
+
+LADDER_DIFFERENCE_KEYS = (
+    "goalDifference",
+    "pointsDifference",
+    "difference",
+    "diff",
+)
+
+LADDER_POINTS_KEYS = (
+    "points",
+    "totalPoints",
+    "ladderPoints",
+    "competitionPoints",
+    "premiershipPoints",
+)
+
+LADDER_PERCENTAGE_KEYS = (
+    "percentage",
+    "percent",
+    "ratio",
+    "forAgainstPercentage",
+)
+
+
+def ladder_int(value: Any) -> int | None:
+    if value is None or isinstance(value, bool):
+        return None
+
+    if isinstance(value, (int, float)):
+        return int(value)
+
+    text = clean(value)
+    match = re.fullmatch(r"-?\d+(?:\.0+)?", text)
+
+    if not match:
+        return None
+
+    return int(float(text))
+
+
+def nested_first(
+    obj: Any,
+    keys: tuple[str, ...],
+    max_depth: int = 4,
+) -> Any:
+    """Find one of the named keys inside a small nested Squadi object."""
+    wanted = {key.lower() for key in keys}
+    queue: list[tuple[Any, int]] = [(obj, 0)]
+
+    while queue:
+        value, depth = queue.pop(0)
+
+        if depth > max_depth:
+            continue
+
+        if isinstance(value, dict):
+            lower = {
+                str(key).lower(): item
+                for key, item in value.items()
+            }
+
+            for key in wanted:
+                if key in lower and lower[key] not in (None, ""):
+                    return lower[key]
+
+            for child in value.values():
+                if isinstance(child, (dict, list)):
+                    queue.append((child, depth + 1))
+
+        elif isinstance(value, list):
+            for child in value:
+                if isinstance(child, (dict, list)):
+                    queue.append((child, depth + 1))
+
+    return None
+
+
+def ladder_team_name(obj: dict[str, Any]) -> str:
+    direct = clean(first(obj, LADDER_TEAM_KEYS))
+    if direct:
+        return direct
+
+    for container_key in (
+        "team",
+        "teamDetail",
+        "teamDetails",
+        "participant",
+        "club",
+    ):
+        container = obj.get(container_key)
+
+        if isinstance(container, dict):
+            name = clean(
+                first(
+                    container,
+                    (
+                        "teamName",
+                        "displayName",
+                        "name",
+                        "clubName",
+                    ),
+                )
+            )
+
+            if name:
+                return name
+
+    return ""
+
+
+def ladder_stat(
+    obj: dict[str, Any],
+    keys: tuple[str, ...],
+) -> int | None:
+    value = first(obj, keys)
+
+    if value in (None, ""):
+        value = nested_first(obj, keys, max_depth=3)
+
+    return ladder_int(value)
+
+
+def ladder_percentage(
+    obj: dict[str, Any],
+) -> str:
+    value = first(obj, LADDER_PERCENTAGE_KEYS)
+
+    if value in (None, ""):
+        value = nested_first(
+            obj,
+            LADDER_PERCENTAGE_KEYS,
+            max_depth=3,
+        )
+
+    return clean(value)
+
+
+def parse_squadi_ladder_payloads(
+    payloads: list[Any],
+) -> list[dict[str, Any]]:
+    """Extract ladder rows from any JSON payload returned by Squadi."""
+    candidates: dict[str, dict[str, Any]] = {}
+
+    for payload in payloads:
+        for obj in walk(payload):
+            if not isinstance(obj, dict):
+                continue
+
+            team = ladder_team_name(obj)
+
+            if not team or len(team) > 120:
+                continue
+
+            played = ladder_stat(obj, LADDER_PLAYED_KEYS)
+            won = ladder_stat(obj, LADDER_WON_KEYS)
+            drawn = ladder_stat(obj, LADDER_DRAWN_KEYS)
+            lost = ladder_stat(obj, LADDER_LOST_KEYS)
+            goals_for = ladder_stat(obj, LADDER_FOR_KEYS)
+            goals_against = ladder_stat(obj, LADDER_AGAINST_KEYS)
+            difference = ladder_stat(obj, LADDER_DIFFERENCE_KEYS)
+            points = ladder_stat(obj, LADDER_POINTS_KEYS)
+            position = ladder_stat(obj, LADDER_POSITION_KEYS)
+
+            values = (
+                played,
+                won,
+                drawn,
+                lost,
+                goals_for,
+                goals_against,
+                difference,
+                points,
+                position,
+            )
+
+            # Fixture objects also contain team names. Require enough
+            # ladder-style statistics to prevent false positives.
+            completeness = sum(
+                value is not None
+                for value in values
+            )
+
+            if played is None or completeness < 4:
+                continue
+
+            if difference is None and (
+                goals_for is not None
+                and goals_against is not None
+            ):
+                difference = goals_for - goals_against
+
+            row = {
+                "position": position,
+                "team": team,
+                "played": played,
+                "won": won,
+                "drawn": drawn,
+                "lost": lost,
+                "for": goals_for,
+                "against": goals_against,
+                "difference": difference,
+                "points": points,
+                "percentage": ladder_percentage(obj),
+            }
+
+            key = re.sub(
+                r"[^a-z0-9]+",
+                "",
+                team.lower(),
+            )
+
+            current = candidates.get(key)
+
+            if (
+                current is None
+                or sum(
+                    value not in (None, "")
+                    for value in row.values()
+                )
+                > sum(
+                    value not in (None, "")
+                    for value in current.values()
+                )
+            ):
+                candidates[key] = row
+
+    rows = list(candidates.values())
+
+    if any(row.get("position") is not None for row in rows):
+        rows.sort(
+            key=lambda row: (
+                row.get("position")
+                if row.get("position") is not None
+                else 999
+            )
+        )
+    else:
+        rows.sort(
+            key=lambda row: (
+                -(row.get("points") or 0),
+                -(row.get("difference") or 0),
+                -(row.get("for") or 0),
+                row.get("team", ""),
+            )
+        )
+
+        for index, row in enumerate(rows, start=1):
+            row["position"] = index
+
+    return rows
+
+
+def parse_squadi_ladder_tables(
+    raw_tables: list[list[list[str]]],
+) -> list[dict[str, Any]]:
+    """Fallback for Squadi versions that render an actual HTML table."""
+    aliases = {
+        "position": {"pos", "position", "rank", "#"},
+        "team": {"team", "club"},
+        "played": {"p", "pl", "played", "gp"},
+        "won": {"w", "won", "wins"},
+        "drawn": {"d", "draw", "drawn"},
+        "lost": {"l", "lost", "loss"},
+        "for": {"gf", "for", "f", "pf"},
+        "against": {"ga", "against", "a", "pa"},
+        "difference": {"gd", "diff", "difference"},
+        "points": {"pts", "points", "pnts"},
+    }
+
+    best: list[dict[str, Any]] = []
+
+    for table in raw_tables:
+        if len(table) < 2:
+            continue
+
+        header_index = None
+        mapping: dict[str, int] = {}
+
+        for index, row in enumerate(table[:5]):
+            cleaned = [
+                re.sub(
+                    r"[^a-z0-9#]+",
+                    "",
+                    clean(cell).lower(),
+                )
+                for cell in row
+            ]
+
+            candidate: dict[str, int] = {}
+
+            for field, names in aliases.items():
+                for cell_index, cell in enumerate(cleaned):
+                    if cell in names:
+                        candidate[field] = cell_index
+                        break
+
+            if (
+                "team" in candidate
+                and "played" in candidate
+                and len(candidate) >= 4
+            ):
+                header_index = index
+                mapping = candidate
+                break
+
+        if header_index is None:
+            continue
+
+        rows: list[dict[str, Any]] = []
+
+        for raw_row in table[header_index + 1 :]:
+            cells = [clean(cell) for cell in raw_row]
+
+            if not cells:
+                continue
+
+            def cell(field: str) -> str:
+                index = mapping.get(field)
+                return (
+                    cells[index]
+                    if index is not None
+                    and index < len(cells)
+                    else ""
+                )
+
+            team = cell("team")
+
+            if not team:
+                continue
+
+            row = {
+                "position": ladder_int(cell("position")),
+                "team": team,
+                "played": ladder_int(cell("played")),
+                "won": ladder_int(cell("won")),
+                "drawn": ladder_int(cell("drawn")),
+                "lost": ladder_int(cell("lost")),
+                "for": ladder_int(cell("for")),
+                "against": ladder_int(cell("against")),
+                "difference": ladder_int(cell("difference")),
+                "points": ladder_int(cell("points")),
+                "percentage": "",
+            }
+
+            if row["played"] is not None:
+                rows.append(row)
+
+        if len(rows) > len(best):
+            best = rows
+
+    for index, row in enumerate(best, start=1):
+        if row.get("position") is None:
+            row["position"] = index
+
+    return best
+
+
+async def scrape_squadi_ladder(
+    browser,
+    ladder_config: dict[str, str],
+) -> dict[str, Any]:
+    page = await browser.new_page(
+        viewport={
+            "width": 1440,
+            "height": 1200,
+        }
+    )
+
+    payloads: list[Any] = []
+    responses: list[dict[str, Any]] = []
+
+    async def capture(response) -> None:
+        content_type = (
+            response.headers.get("content-type")
+            or ""
+        ).lower()
+
+        if "json" not in content_type:
+            return
+
+        try:
+            payloads.append(
+                await response.json()
+            )
+            responses.append(
+                {
+                    "url": response.url,
+                    "status": response.status,
+                }
+            )
+        except Exception:
+            pass
+
+    page.on("response", capture)
+
+    try:
+        await page.goto(
+            ladder_config["url"],
+            wait_until="domcontentloaded",
+            timeout=120_000,
+        )
+        await page.wait_for_timeout(10_000)
+
+        await page.evaluate(
+            "window.scrollTo(0, document.body.scrollHeight)"
+        )
+        await page.wait_for_timeout(2_000)
+
+        body_text = await page.locator(
+            "body"
+        ).inner_text()
+
+        try:
+            raw_tables = await page.locator(
+                "table"
+            ).evaluate_all(
+                """
+                tables => tables.map(table =>
+                  Array.from(table.rows).map(row =>
+                    Array.from(row.cells).map(cell =>
+                      (cell.innerText || cell.textContent || '')
+                        .replace(/\\s+/g, ' ')
+                        .trim()
+                    )
+                  )
+                )
+                """
+            )
+        except Exception:
+            raw_tables = []
+
+        rows = parse_squadi_ladder_payloads(
+            payloads
+        )
+
+        source = "json"
+
+        if not rows:
+            rows = parse_squadi_ladder_tables(
+                raw_tables
+            )
+            source = "html_table"
+
+        target_key = re.sub(
+            r"[^a-z0-9]+",
+            "",
+            ladder_config[
+                "target_team"
+            ].lower(),
+        )
+
+        target_summary = next(
+            (
+                row
+                for row in rows
+                if re.sub(
+                    r"[^a-z0-9]+",
+                    "",
+                    row.get(
+                        "team",
+                        "",
+                    ).lower(),
+                )
+                == target_key
+            ),
+            None,
+        )
+
+        return {
+            "player": ladder_config["player"],
+            "division": ladder_config["division"],
+            "target_team": ladder_config[
+                "target_team"
+            ],
+            "source_url": ladder_config["url"],
+            "rows": rows,
+            "target_summary": target_summary,
+            "status": "ok" if rows else "not_found",
+            "diagnostics": {
+                "source": source,
+                "json_payload_count": len(payloads),
+                "response_urls": responses[:30],
+                "body_text_preview": body_text[:4_000],
+            },
+        }
+
+    finally:
+        await page.close()
+
+
+def write_soccer_ladders_data(
+    ladders: list[dict[str, Any]],
+) -> None:
+    """
+    Merge successfully scraped ladders with the last published copy.
+
+    A temporary Squadi ladder-page failure should not remove a ladder
+    that was working on the previous refresh.
+    """
+    existing_by_player: dict[str, dict[str, Any]] = {}
+
+    if SOCCER_LADDER_DATA.exists():
+        try:
+            existing = json.loads(
+                SOCCER_LADDER_DATA.read_text(
+                    encoding="utf-8"
+                )
+            )
+
+            for item in existing.get(
+                "ladders",
+                [],
+            ):
+                player = clean(
+                    item.get("player")
+                )
+
+                if player:
+                    existing_by_player[
+                        player
+                    ] = item
+
+        except Exception:
+            pass
+
+    merged: list[dict[str, Any]] = []
+
+    for item in ladders:
+        player = clean(item.get("player"))
+
+        if item.get("rows"):
+            merged.append(item)
+        elif player in existing_by_player:
+            previous = existing_by_player[player].copy()
+            previous["last_attempt_status"] = (
+                item.get("status")
+                or "not_found"
+            )
+            previous["last_attempt_diagnostics"] = (
+                item.get("diagnostics")
+            )
+            merged.append(previous)
+        else:
+            merged.append(item)
+
+    payload = {
+        "source": "Squadi",
+        "ladders": merged,
+    }
+
+    SOCCER_LADDER_DATA.write_text(
+        json.dumps(
+            payload,
+            indent=2,
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+
+    successful = sum(
+        bool(item.get("rows"))
+        for item in merged
+    )
+
+    print(
+        "Squadi ladders: wrote "
+        f"{successful}/{len(merged)} "
+        "available ladders to "
+        f"{SOCCER_LADDER_DATA}."
+    )
+
+
 def ddmsa_clean(value: Any) -> str:
     """Normalise old DDMSA HTML text without changing team names."""
     return re.sub(
@@ -1344,19 +2011,36 @@ async def scrape_ddmsa_softball(browser) -> dict[str, Any]:
         finally:
             await home.close()
 
-        # Follow the most promising dated result/ladder links. Old DDMSA
-        # menus can contain historical links, so cap the number inspected.
-        unique_candidates: list[str] = []
+        # Follow current and historical result pages. DDMSA's "Past
+        # Results" page is itself framed, so every child frame must be
+        # extracted rather than only the outer HTML document.
+        candidate_links.append(
+            (150, "https://ddmsa.com/pastres.htm")
+        )
 
-        for _, href in sorted(
+        queue: list[tuple[int, str, int]] = []
+
+        for score, href in sorted(
             candidate_links,
             key=lambda item: item[0],
             reverse=True,
         ):
-            if href not in visited and href not in unique_candidates:
-                unique_candidates.append(href)
+            if href not in visited:
+                queue.append((score, href, 0))
 
-        for href in unique_candidates[:24]:
+        queued = {
+            href
+            for _, href, _ in queue
+        }
+
+        processed_pages = 0
+
+        while queue and processed_pages < 60:
+            _, href, depth = queue.pop(0)
+
+            if href in visited:
+                continue
+
             candidate_page = await browser.new_page()
 
             try:
@@ -1365,10 +2049,106 @@ async def scrape_ddmsa_softball(browser) -> dict[str, Any]:
                     wait_until="domcontentloaded",
                     timeout=30_000,
                 )
-                await candidate_page.wait_for_timeout(600)
-                document = await ddmsa_extract_document(candidate_page)
-                visited.add(href)
-                documents.append(document)
+                await candidate_page.wait_for_timeout(800)
+                processed_pages += 1
+
+                page_documents: list[
+                    dict[str, Any]
+                ] = []
+
+                for frame in candidate_page.frames:
+                    document = (
+                        await ddmsa_extract_document(
+                            frame
+                        )
+                    )
+
+                    document_url = ddmsa_clean(
+                        document.get("url")
+                    )
+
+                    if (
+                        document_url
+                        and document_url
+                        not in visited
+                    ):
+                        visited.add(
+                            document_url
+                        )
+                        documents.append(
+                            document
+                        )
+                        page_documents.append(
+                            document
+                        )
+
+                # Historical menus commonly contain one link per week.
+                # Follow result/past/week/2026 links one additional level.
+                if depth < 2:
+                    for document in page_documents:
+                        for link in document.get(
+                            "links",
+                            [],
+                        ):
+                            linked_href = (
+                                ddmsa_clean(
+                                    link.get("href")
+                                )
+                            )
+                            text = ddmsa_clean(
+                                link.get("text")
+                            )
+                            combined = (
+                                f"{text} {linked_href}"
+                                .lower()
+                            )
+
+                            if (
+                                not linked_href
+                                or "ddmsa.com"
+                                not in linked_href.lower()
+                                or not re.search(
+                                    r"\.html?"
+                                    r"(?:$|[?#])",
+                                    linked_href,
+                                    re.IGNORECASE,
+                                )
+                            ):
+                                continue
+
+                            historical_hint = any(
+                                token in combined
+                                for token in (
+                                    "result",
+                                    "past",
+                                    "week",
+                                    "2026",
+                                    "junior",
+                                    "u13",
+                                    "ladder",
+                                )
+                            )
+
+                            if not historical_hint:
+                                continue
+
+                            if (
+                                linked_href
+                                not in visited
+                                and linked_href
+                                not in queued
+                            ):
+                                queued.add(
+                                    linked_href
+                                )
+                                queue.append(
+                                    (
+                                        50,
+                                        linked_href,
+                                        depth + 1,
+                                    )
+                                )
+
             except Exception:
                 pass
             finally:
@@ -1408,44 +2188,113 @@ async def scrape_ddmsa_softball(browser) -> dict[str, Any]:
                 key=lambda item: item[0],
             )
 
-        result_candidates: list[
-            tuple[int, dict[str, Any], list[dict[str, Any]]]
-        ] = []
+        results: list[dict[str, Any]] = []
+        result_sources: list[str] = []
+        result_seen: set[
+            tuple[str, str, int | None, int | None]
+        ] = set()
 
         for document in documents:
-            results = ddmsa_parse_results(
+            document_results = ddmsa_parse_results(
                 document.get("tables", []),
                 ladder,
             )
 
-            if not results:
+            if not document_results:
                 continue
 
-            score = len(results)
-
-            if "result" in document.get("url", "").lower():
-                score += 100
-
-            if "2026" in document.get("url", "").lower():
-                score += 20
-
-            if re.search(
-                r"\bRESULT",
-                document.get("body_text", ""),
-                flags=re.IGNORECASE,
-            ):
-                score += 50
-
-            result_candidates.append((score, document, results))
-
-        results: list[dict[str, Any]] = []
-        results_document: dict[str, Any] | None = None
-
-        if result_candidates:
-            _, results_document, results = max(
-                result_candidates,
-                key=lambda item: item[0],
+            document_url = ddmsa_clean(
+                document.get("url")
             )
+
+            if (
+                document_url
+                and document_url
+                not in result_sources
+            ):
+                result_sources.append(
+                    document_url
+                )
+
+            for result in document_results:
+                signature = (
+                    ddmsa_clean(
+                        result.get("date")
+                    ),
+                    ddmsa_key(
+                        result.get("opponent", "")
+                    ),
+                    result.get(
+                        "thornlie_score"
+                    ),
+                    result.get(
+                        "opponent_score"
+                    ),
+                )
+
+                if signature in result_seen:
+                    continue
+
+                result_seen.add(signature)
+                results.append(result)
+
+        def result_sort_key(
+            result: dict[str, Any],
+        ) -> datetime:
+            raw_date = ddmsa_clean(
+                result.get("date")
+            )
+
+            if not raw_date:
+                return datetime(
+                    1900,
+                    1,
+                    1,
+                )
+
+            text = raw_date
+
+            if not re.search(
+                r"\b20\d{2}\b",
+                text,
+            ):
+                text = f"{text} 2026"
+
+            try:
+                parsed = dateparser.parse(
+                    text,
+                    dayfirst=True,
+                )
+
+                return parsed or datetime(
+                    1900,
+                    1,
+                    1,
+                )
+            except Exception:
+                return datetime(
+                    1900,
+                    1,
+                    1,
+                )
+
+        results.sort(
+            key=result_sort_key
+        )
+
+        results_document: dict[str, Any] | None = (
+            next(
+                (
+                    document
+                    for document in documents
+                    if ddmsa_clean(
+                        document.get("url")
+                    )
+                    in result_sources
+                ),
+                None,
+            )
+        )
 
         team_row = next(
             (
@@ -1493,6 +2342,7 @@ async def scrape_ddmsa_softball(browser) -> dict[str, Any]:
                 if results_document
                 else ""
             ),
+            "results_source_urls": result_sources,
             "status": (
                 "ok"
                 if ladder
@@ -1501,6 +2351,8 @@ async def scrape_ddmsa_softball(browser) -> dict[str, Any]:
             # Keep small diagnostics useful if DDMSA changes its old site.
             "diagnostics": {
                 "documents_checked": len(documents),
+                "past_results_found": len(results),
+                "result_source_count": len(result_sources),
                 "candidate_urls": [
                     document.get("url", "")
                     for document in documents
@@ -1926,6 +2778,38 @@ async def main() -> None:
             fixtures, debug = await scrape_team(browser, team, timezone)
             all_fixtures.extend(fixtures)
             debug_teams.append(debug)
+
+        soccer_ladders: list[dict[str, Any]] = []
+
+        for ladder_config in SOCCER_LADDERS:
+            try:
+                soccer_ladders.append(
+                    await scrape_squadi_ladder(
+                        browser,
+                        ladder_config,
+                    )
+                )
+            except Exception as exc:
+                soccer_ladders.append(
+                    {
+                        "player": ladder_config["player"],
+                        "division": ladder_config["division"],
+                        "target_team": ladder_config[
+                            "target_team"
+                        ],
+                        "source_url": ladder_config["url"],
+                        "rows": [],
+                        "target_summary": None,
+                        "status": "error",
+                        "diagnostics": {
+                            "error": str(exc),
+                        },
+                    }
+                )
+
+        write_soccer_ladders_data(
+            soccer_ladders
+        )
 
         try:
             ddmsa_softball = await scrape_ddmsa_softball(browser)
