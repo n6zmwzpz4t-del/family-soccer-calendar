@@ -316,8 +316,10 @@
 
 
     .view-tabs {
-      display: inline-grid;
-      grid-template-columns: repeat(3, 1fr);
+      display: flex;
+      max-width: 100%;
+      overflow-x: auto;
+      scrollbar-width: none;
       gap: 5px;
       margin: 34px 0 18px;
       padding: 5px;
@@ -327,7 +329,12 @@
       box-shadow: 0 6px 18px rgba(15, 23, 42, 0.055);
     }
 
+    .view-tabs::-webkit-scrollbar {
+      display: none;
+    }
+
     .view-tab {
+      flex: 0 0 auto;
       min-height: 44px;
       padding: 9px 18px;
       border: 0;
@@ -370,6 +377,97 @@
       font-weight: 750;
     }
 
+
+
+    .soccer-ladders-dashboard {
+      display: grid;
+      gap: 20px;
+    }
+
+    .soccer-ladder-card {
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: var(--surface);
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.055);
+    }
+
+    .soccer-ladder-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .soccer-ladder-head h3 {
+      margin: 0;
+      font-size: 1.13rem;
+      letter-spacing: -0.025em;
+    }
+
+    .soccer-position-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      color: #2751b3;
+      background: var(--sky);
+      font-size: 0.8rem;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .soccer-ladder-table-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .soccer-ladder-table {
+      width: 100%;
+      min-width: 720px;
+      border-collapse: collapse;
+      font-size: 0.86rem;
+    }
+
+    .soccer-ladder-table th,
+    .soccer-ladder-table td {
+      padding: 10px 8px;
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .soccer-ladder-table th:nth-child(2),
+    .soccer-ladder-table td:nth-child(2) {
+      text-align: left;
+    }
+
+    .soccer-ladder-table th {
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 850;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .soccer-ladder-table tr.armadale-team {
+      color: #234da8;
+      background: var(--sky);
+      font-weight: 850;
+    }
+
+    .soccer-ladder-source {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    .soccer-ladder-source a {
+      color: var(--blue);
+      font-weight: 750;
+    }
 
     .softball-dashboard {
       display: grid;
@@ -1046,6 +1144,15 @@
 
         <button
           class="view-tab"
+          data-view="ladders"
+          role="tab"
+          aria-selected="false"
+        >
+          Ladders
+        </button>
+
+        <button
+          class="view-tab"
           data-view="softball"
           role="tab"
           aria-selected="false"
@@ -1071,6 +1178,11 @@
       </div>
 
       <div id="fixture-groups" class="fixture-groups"></div>
+      <div
+        id="soccer-ladders-dashboard"
+        class="soccer-ladders-dashboard"
+        hidden
+      ></div>
       <div id="softball-dashboard" class="softball-dashboard" hidden></div>
     </section>
   </main>
@@ -1089,6 +1201,7 @@
     const TIME_ZONE = "Australia/Perth";
     const ICS_URL = "fixtures.ics";
     const SOFTBALL_URL = "softball.json";
+    const SOCCER_LADDERS_URL = "soccer_ladders.json";
     const WEATHER_FORECAST_DAYS = 7;
     const WEATHER_CACHE_MINUTES = 30;
 
@@ -1107,6 +1220,7 @@
 
     let allFixtures = [];
     let softballData = null;
+    let soccerLaddersData = null;
     let activeFilter = "all";
     let activeView = "upcoming";
 
@@ -1888,6 +2002,130 @@
         </article>`;
     }
 
+    function soccerValue(value) {
+      return (
+        value === null ||
+        value === undefined ||
+        value === ""
+      )
+        ? "—"
+        : escapeHtml(value);
+    }
+
+    function renderSoccerLaddersDashboard() {
+      const container = document.getElementById(
+        "soccer-ladders-dashboard"
+      );
+
+      const ladders = Array.isArray(
+        soccerLaddersData?.ladders
+      )
+        ? soccerLaddersData.ladders
+        : [];
+
+      if (!ladders.length) {
+        container.innerHTML = `
+          <div class="empty">
+            <span class="empty-icon">🏆</span>
+            Soccer ladders are not available yet.
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = ladders
+        .map(ladder => {
+          const rows = Array.isArray(ladder.rows)
+            ? ladder.rows
+            : [];
+          const target = ladder.target_summary;
+          const position = target?.position;
+
+          const rowsHtml = rows.length
+            ? rows
+                .map(row => {
+                  const isArmadale =
+                    String(row.team || "")
+                      .toLowerCase()
+                      .includes("armadale");
+
+                  return `
+                    <tr class="${isArmadale ? "armadale-team" : ""}">
+                      <td>${soccerValue(row.position)}</td>
+                      <td>${escapeHtml(row.team || "")}</td>
+                      <td>${soccerValue(row.played)}</td>
+                      <td>${soccerValue(row.won)}</td>
+                      <td>${soccerValue(row.drawn)}</td>
+                      <td>${soccerValue(row.lost)}</td>
+                      <td>${soccerValue(row.for)}</td>
+                      <td>${soccerValue(row.against)}</td>
+                      <td>${soccerValue(row.difference)}</td>
+                      <td>${soccerValue(row.points)}</td>
+                    </tr>`;
+                })
+                .join("")
+            : `
+              <tr>
+                <td colspan="10">
+                  Squadi ladder data has not been detected yet.
+                </td>
+              </tr>`;
+
+          return `
+            <section class="soccer-ladder-card">
+              <div class="soccer-ladder-head">
+                <h3>
+                  ⚽ ${escapeHtml(ladder.player || "")}
+                  — ${escapeHtml(ladder.division || "")}
+                </h3>
+
+                ${
+                  position
+                    ? `
+                      <span class="soccer-position-pill">
+                        #${escapeHtml(position)} on ladder
+                      </span>
+                    `
+                    : ""
+                }
+              </div>
+
+              <div class="soccer-ladder-table-wrap">
+                <table class="soccer-ladder-table">
+                  <thead>
+                    <tr>
+                      <th>Pos</th>
+                      <th>Team</th>
+                      <th>P</th>
+                      <th>W</th>
+                      <th>D</th>
+                      <th>L</th>
+                      <th>For</th>
+                      <th>Ag</th>
+                      <th>Diff</th>
+                      <th>Pts</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${rowsHtml}
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="soccer-ladder-source">
+                Source:
+                <a
+                  href="${escapeHtml(ladder.source_url || "#")}"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  Squadi
+                </a>
+              </div>
+            </section>`;
+        })
+        .join("");
+    }
+
     function softballResultBadge(result) {
       const value = String(result || "").toUpperCase();
 
@@ -1982,8 +2220,8 @@
             .join("")
         : `
           <div class="empty">
-            DDMSA's ladder is available, but individual Tate result rows
-            have not been detected from the current results page.
+            DDMSA's ladder is available, but historical Tate result rows
+            have not yet been detected from the DDMSA past-results pages.
           </div>`;
 
       const ladderHtml = ladder
@@ -2016,7 +2254,7 @@
 
         <section class="softball-block">
           <div class="softball-block-head">
-            <h3>Tate's results</h3>
+            <h3>All Tate's past results</h3>
             <span>${updated}</span>
           </div>
 
@@ -2070,7 +2308,7 @@
       const filterBar = document.querySelector(".filters");
 
       if (filterBar) {
-        filterBar.hidden = activeView === "softball";
+        filterBar.hidden = activeView === "softball" || activeView === "ladders";
       }
 
       document
@@ -2090,14 +2328,23 @@
 
       const resultsView = activeView === "results";
       const softballView = activeView === "softball";
+      const laddersView = activeView === "ladders";
 
       const fixtureContainer =
         document.getElementById("fixture-groups");
       const softballContainer =
         document.getElementById("softball-dashboard");
+      const soccerLaddersContainer =
+        document.getElementById(
+          "soccer-ladders-dashboard"
+        );
 
-      fixtureContainer.hidden = softballView;
-      softballContainer.hidden = !softballView;
+      fixtureContainer.hidden =
+        softballView || laddersView;
+      softballContainer.hidden =
+        !softballView;
+      soccerLaddersContainer.hidden =
+        !laddersView;
 
       if (softballView) {
         document.getElementById("next-panel").hidden = true;
@@ -2107,6 +2354,17 @@
           "Results and Under 13's Mixed ladder";
         updateFilterVisibility();
         renderSoftballDashboard();
+        return;
+      }
+
+      if (laddersView) {
+        document.getElementById("next-panel").hidden = true;
+        document.getElementById("section-title").textContent =
+          "Soccer ladders";
+        document.getElementById("fixture-count").textContent =
+          "Finn and Tate's current divisions";
+        updateFilterVisibility();
+        renderSoccerLaddersDashboard();
         return;
       }
 
@@ -2183,13 +2441,21 @@
       try {
         const cacheKey = Date.now();
 
-        const [response, softballResponse] = await Promise.all([
+        const [
+          response,
+          softballResponse,
+          soccerLaddersResponse
+        ] = await Promise.all([
           fetch(
             `${ICS_URL}?v=${cacheKey}`,
             { cache: "no-store" }
           ),
           fetch(
             `${SOFTBALL_URL}?v=${cacheKey}`,
+            { cache: "no-store" }
+          ),
+          fetch(
+            `${SOCCER_LADDERS_URL}?v=${cacheKey}`,
             { cache: "no-store" }
           )
         ]);
@@ -2204,6 +2470,13 @@
           softballData = await softballResponse.json();
         } else {
           softballData = null;
+        }
+
+        if (soccerLaddersResponse.ok) {
+          soccerLaddersData =
+            await soccerLaddersResponse.json();
+        } else {
+          soccerLaddersData = null;
         }
         document.getElementById("last-updated").textContent =
           `Viewed ${new Intl.DateTimeFormat("en-AU", {
