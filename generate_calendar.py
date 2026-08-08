@@ -1199,21 +1199,29 @@ def parse_squadi_ladder_body_text(
     body_text: str,
 ) -> list[dict[str, Any]]:
     """
-    Parse the ladder exactly as Squadi renders it on screen.
+    Parse Squadi's rendered ladder.
 
-    Squadi's ladder is built with divs rather than a real HTML table, so
-    Playwright's body.inner_text() is the most reliable fallback. The
-    rendered order is:
+    Squadi renders the public ladder with divs rather than a normal HTML
+    table.  In the rendered text each ladder row is:
 
-      Rank, Team, MP, W, D, L, GF, GA, PTS, GD, form...
+      rank, team, MP, W, D, L, GF, GA, PTS, GD
 
-    The form values (W/D/L) are ignored.
+    followed by up to five W/D/L form markers.
+
+    This parser deliberately ignores the form markers and finds the next
+    numeric rank, making it tolerant of tabs, blank lines and layout changes.
     """
     lines = [
         clean(line)
-        for line in body_text.splitlines()
+        for line in body_text.replace("\r", "\n").splitlines()
         if clean(line)
     ]
+
+    if not lines:
+        return []
+
+    # Start after Squadi's column headings if they are present.
+    start_index = 0
 
     try:
         rank_index = next(
@@ -1221,19 +1229,27 @@ def parse_squadi_ladder_body_text(
             for index, line in enumerate(lines)
             if line.lower() == "rank"
         )
-    except StopIteration:
-        return []
 
-    start = rank_index + 1
-    for index in range(rank_index, min(len(lines), rank_index + 20)):
-        if lines[index].lower() == "next":
-            start = index + 1
-            break
+        for index in range(
+            rank_index,
+            min(len(lines), rank_index + 30),
+        ):
+            if lines[index].lower() == "next":
+                start_index = index + 1
+                break
+        else:
+            start_index = rank_index + 1
+
+    except StopIteration:
+        # The diagnostic preview can occasionally start partway through
+        # the page.  In that case simply search from the beginning.
+        start_index = 0
 
     rows: list[dict[str, Any]] = []
-    index = start
+    index = start_index
 
     while index < len(lines):
+        # Squadi's legend begins with "MP = Matches Played".
         if (
             lines[index].upper() == "MP"
             and index + 1 < len(lines)
@@ -1241,16 +1257,27 @@ def parse_squadi_ladder_body_text(
         ):
             break
 
-        if not re.fullmatch(r"\d+", lines[index]):
+        if not re.fullmatch(r"\d{1,2}", lines[index]):
             index += 1
             continue
 
         position = int(lines[index])
 
-        if index + 1 >= len(lines):
+        # A ladder rank is followed by a team name and eight numeric stats.
+        if index + 9 >= len(lines):
             break
 
         team = lines[index + 1]
+
+        # Do not mistake form/history numbers for ladder positions.
+        if not re.search(
+            r"(?:FC|SC|U\d+|Academy|SPFC|LUFC|MUMFC)",
+            team,
+            flags=re.IGNORECASE,
+        ):
+            index += 1
+            continue
+
         values: list[int] = []
         cursor = index + 2
 
@@ -1294,9 +1321,94 @@ def parse_squadi_ladder_body_text(
             }
         )
 
+        # Skip the W/D/L form markers.  The next iteration will find the
+        # next numeric rank, regardless of how many form markers Squadi shows.
         index = cursor
 
-    return rows
+    # Reject obvious false positives and keep only one row per rank.
+    unique: dict[int, dict[str, Any]] = {}
+
+    for row in rows:
+        position = row["position"]
+
+        if 1 <= position <= 50:
+            unique[position] = row
+
+    return [
+        unique[position]
+        for position in sorted(unique)
+    ]
+
+
+def repair_squadi_ladder_from_diagnostics(
+    item: dict[str, Any],
+) -> dict[str, Any]:
+    """
+    If a live ladder parse fails, try the rendered text saved in diagnostics.
+
+    This is particularly useful after upgrading the parser: the repository
+    already contains the complete Squadi ladder text from the previous run.
+    """
+    if item.get("rows"):
+        return item
+
+    diagnostic_sources = [
+        item.get("diagnostics"),
+        item.get("last_attempt_diagnostics"),
+    ]
+
+    for diagnostics in diagnostic_sources:
+        if not isinstance(diagnostics, dict):
+            continue
+
+        preview = clean(
+            diagnostics.get("body_text_preview")
+        )
+
+        if not preview:
+            continue
+
+        rows = parse_squadi_ladder_body_text(
+            preview
+        )
+
+        if not rows:
+            continue
+
+        target_key = re.sub(
+            r"[^a-z0-9]+",
+            "",
+            clean(item.get("target_team")).lower(),
+        )
+
+        target_summary = next(
+            (
+                row
+                for row in rows
+                if re.sub(
+                    r"[^a-z0-9]+",
+                    "",
+                    clean(row.get("team")).lower(),
+                )
+                == target_key
+            ),
+            None,
+        )
+
+        repaired = item.copy()
+        repaired["rows"] = rows
+        repaired["target_summary"] = target_summary
+        repaired["status"] = "ok"
+        repaired["diagnostics"] = {
+            **diagnostics,
+            "source": "rendered_text_repair",
+        }
+        repaired.pop("last_attempt_status", None)
+        repaired.pop("last_attempt_diagnostics", None)
+
+        return repaired
+
+    return item
 
 
 def parse_squadi_ladder_tables(
@@ -1583,10 +1695,25 @@ def write_soccer_ladders_data(
     for item in ladders:
         player = clean(item.get("player"))
 
+        # First repair the fresh scrape from its rendered-text diagnostics.
+        item = repair_squadi_ladder_from_diagnostics(item)
+
         if item.get("rows"):
             merged.append(item)
-        elif player in existing_by_player:
+            continue
+
+        if player in existing_by_player:
             previous = existing_by_player[player].copy()
+
+            # The previous JSON may already contain the complete Squadi
+            # rendered ladder text in last_attempt_diagnostics. Repair it
+            # immediately rather than waiting for another successful scrape.
+            previous = repair_squadi_ladder_from_diagnostics(previous)
+
+            if previous.get("rows"):
+                merged.append(previous)
+                continue
+
             previous["last_attempt_status"] = (
                 item.get("status")
                 or "not_found"
@@ -1833,10 +1960,12 @@ def ddmsa_parse_results(
     ladder: list[dict[str, Any]],
 ) -> list[dict[str, Any]]:
     """
-    Extract Tate's Thornlie Hawks (Blue) result rows.
+    Extract all Thornlie Hawks (Blue) U13 results from DDMSA result tables.
 
-    DDMSA uses legacy spreadsheets converted to HTML, so this parser is
-    intentionally tolerant of slightly different column layouts.
+    DDMSA's historical pages are old spreadsheet-to-HTML exports.  Some
+    tables contain the "Under 13" heading and some don't, so this parser
+    identifies the U13 section by the team names from the current ladder
+    instead of requiring a heading in every table.
     """
     team_names = [
         ddmsa_clean(item.get("team"))
@@ -1848,145 +1977,243 @@ def ddmsa_parse_results(
         team_names.append(DDMSA_TEAM)
 
     results: list[dict[str, Any]] = []
-    seen: set[tuple[str, str, int | None, int | None]] = set()
+    seen: set[
+        tuple[str, str, int | None, int | None]
+    ] = set()
+
+    def add_result(
+        date: str,
+        opponent: str,
+        thornlie_score: int | None,
+        opponent_score: int | None,
+        raw: list[str],
+    ) -> None:
+        if not opponent:
+            return
+
+        outcome = ""
+
+        if (
+            thornlie_score is not None
+            and opponent_score is not None
+        ):
+            if thornlie_score > opponent_score:
+                outcome = "W"
+            elif thornlie_score < opponent_score:
+                outcome = "L"
+            else:
+                outcome = "D"
+
+        signature = (
+            ddmsa_clean(date),
+            ddmsa_key(opponent),
+            thornlie_score,
+            opponent_score,
+        )
+
+        if signature in seen:
+            return
+
+        seen.add(signature)
+        results.append(
+            {
+                "date": ddmsa_clean(date),
+                "opponent": opponent,
+                "thornlie_score": thornlie_score,
+                "opponent_score": opponent_score,
+                "result": outcome,
+                "raw": raw,
+            }
+        )
 
     for table in tables:
-        heading_index = None
-
-        for index, row in enumerate(table):
-            if ddmsa_is_u13_heading(" ".join(row)):
-                heading_index = index
-                break
-
-        if heading_index is None:
-            continue
-
         current_date = ""
 
-        for row in table[heading_index + 1 :]:
-            cells = [ddmsa_clean(cell) for cell in row]
-            cells = [cell for cell in cells if cell]
+        # Entries where DDMSA puts one team + score on each row are paired
+        # after the direct two-team row pass.
+        single_entries: list[
+            tuple[str, str, int | None, list[str]]
+        ] = []
+
+        for raw_row in table:
+            cells = [
+                ddmsa_clean(cell)
+                for cell in raw_row
+                if ddmsa_clean(cell)
+            ]
 
             if not cells:
                 continue
 
-            joined = " ".join(cells)
-            key = ddmsa_key(joined)
-
-            if (
-                ("under" in key and not ddmsa_is_u13_heading(joined))
-                or key.startswith("division")
-            ):
-                break
-
-            current_date = ddmsa_date_from_cells(cells, current_date)
+            current_date = ddmsa_date_from_cells(
+                cells,
+                current_date,
+            )
 
             team_hits: list[tuple[int, str]] = []
 
-            for index, cell in enumerate(cells):
-                team = ddmsa_matching_team(cell, team_names)
-                if team and all(ddmsa_key(existing[1]) != ddmsa_key(team) for existing in team_hits):
-                    team_hits.append((index, team))
+            for cell_index, cell in enumerate(cells):
+                team = ddmsa_matching_team(
+                    cell,
+                    team_names,
+                )
 
-            if len(team_hits) < 2:
+                if (
+                    team
+                    and all(
+                        ddmsa_key(existing[1])
+                        != ddmsa_key(team)
+                        for existing in team_hits
+                    )
+                ):
+                    team_hits.append(
+                        (cell_index, team)
+                    )
+
+            # Most result exports have both teams on the same row.
+            if len(team_hits) >= 2:
+                target_hit = next(
+                    (
+                        hit
+                        for hit in team_hits
+                        if ddmsa_key(hit[1])
+                        == ddmsa_key(DDMSA_TEAM)
+                    ),
+                    None,
+                )
+
+                opponent_hit = next(
+                    (
+                        hit
+                        for hit in team_hits
+                        if ddmsa_key(hit[1])
+                        != ddmsa_key(DDMSA_TEAM)
+                    ),
+                    None,
+                )
+
+                if target_hit and opponent_hit:
+                    target_index, _ = target_hit
+                    opponent_index, opponent = opponent_hit
+
+                    target_score = ddmsa_score_near_team(
+                        cells,
+                        target_index,
+                        opponent_index,
+                    )
+                    opponent_score = ddmsa_score_near_team(
+                        cells,
+                        opponent_index,
+                        target_index,
+                    )
+
+                    # A compact spreadsheet row may contain the two scores
+                    # between the team cells. Prefer the two numeric cells
+                    # nearest the two team names if the first pass duplicated.
+                    if (
+                        target_score is not None
+                        and opponent_score is not None
+                        and target_score == opponent_score
+                    ):
+                        numeric = [
+                            (index, ddmsa_int(cell))
+                            for index, cell in enumerate(cells)
+                            if ddmsa_int(cell) is not None
+                            and 0 <= int(ddmsa_int(cell)) <= 99
+                        ]
+
+                        relevant = [
+                            item
+                            for item in numeric
+                            if min(
+                                abs(item[0] - target_index),
+                                abs(item[0] - opponent_index),
+                            )
+                            <= 3
+                        ]
+
+                        if len(relevant) >= 2:
+                            target_score = relevant[0][1]
+                            opponent_score = relevant[1][1]
+
+                    add_result(
+                        current_date,
+                        opponent,
+                        target_score,
+                        opponent_score,
+                        cells,
+                    )
+
                 continue
 
-            target_hit = next(
-                (
-                    hit
-                    for hit in team_hits
-                    if ddmsa_key(hit[1]) == ddmsa_key(DDMSA_TEAM)
-                ),
-                None,
-            )
+            # Some DDMSA exports use:
+            #   Team A | score
+            #   Team B | score
+            # rather than both teams in one row.
+            if len(team_hits) == 1:
+                team_index, team = team_hits[0]
 
-            if target_hit is None:
-                continue
-
-            opponent_hit = next(
-                (
-                    hit
-                    for hit in team_hits
-                    if ddmsa_key(hit[1]) != ddmsa_key(DDMSA_TEAM)
-                ),
-                None,
-            )
-
-            if opponent_hit is None:
-                continue
-
-            target_index, _ = target_hit
-            opponent_index, opponent = opponent_hit
-
-            target_score = ddmsa_score_near_team(
-                cells,
-                target_index,
-                opponent_index,
-            )
-            opponent_score = ddmsa_score_near_team(
-                cells,
-                opponent_index,
-                target_index,
-            )
-
-            # If both score lookups picked the same integer in a compact
-            # layout, fall back to the two small integers nearest the teams.
-            if (
-                target_score is not None
-                and opponent_score is not None
-                and target_score == opponent_score
-            ):
-                numeric_cells = [
-                    (index, ddmsa_int(cell))
+                numeric = [
+                    (abs(index - team_index), ddmsa_int(cell))
                     for index, cell in enumerate(cells)
                     if ddmsa_int(cell) is not None
                     and 0 <= int(ddmsa_int(cell)) <= 99
+                    and abs(index - team_index) <= 3
                 ]
 
-                near = [
-                    item
-                    for item in numeric_cells
-                    if min(abs(item[0] - target_index), abs(item[0] - opponent_index)) <= 2
-                ]
+                numeric.sort(
+                    key=lambda item: item[0]
+                )
 
-                distinct = []
-                for item in near:
-                    if item[1] not in [value for _, value in distinct]:
-                        distinct.append(item)
+                score = (
+                    numeric[0][1]
+                    if numeric
+                    else None
+                )
 
-                if len(distinct) >= 2:
-                    target_score = distinct[0][1]
-                    opponent_score = distinct[1][1]
+                single_entries.append(
+                    (
+                        current_date,
+                        team,
+                        score,
+                        cells,
+                    )
+                )
 
-            outcome = ""
+        # Pair adjacent one-team rows belonging to U13 teams.
+        for index in range(len(single_entries) - 1):
+            first_entry = single_entries[index]
+            second_entry = single_entries[index + 1]
 
-            if target_score is not None and opponent_score is not None:
-                if target_score > opponent_score:
-                    outcome = "W"
-                elif target_score < opponent_score:
-                    outcome = "L"
-                else:
-                    outcome = "D"
+            first_date, first_team, first_score, first_raw = first_entry
+            second_date, second_team, second_score, second_raw = second_entry
 
-            record = {
-                "date": current_date,
-                "opponent": opponent,
-                "thornlie_score": target_score,
-                "opponent_score": opponent_score,
-                "result": outcome,
-                "raw": cells,
-            }
+            if ddmsa_key(first_team) == ddmsa_key(second_team):
+                continue
 
-            signature = (
-                current_date,
-                ddmsa_key(opponent),
-                target_score,
-                opponent_score,
-            )
+            if (
+                ddmsa_key(first_team) == ddmsa_key(DDMSA_TEAM)
+                and ddmsa_key(second_team) != ddmsa_key(DDMSA_TEAM)
+            ):
+                add_result(
+                    first_date or second_date,
+                    second_team,
+                    first_score,
+                    second_score,
+                    first_raw + second_raw,
+                )
 
-            if signature not in seen:
-                seen.add(signature)
-                results.append(record)
+            elif (
+                ddmsa_key(second_team) == ddmsa_key(DDMSA_TEAM)
+                and ddmsa_key(first_team) != ddmsa_key(DDMSA_TEAM)
+            ):
+                add_result(
+                    second_date or first_date,
+                    first_team,
+                    second_score,
+                    first_score,
+                    first_raw + second_raw,
+                )
 
     return results
 
@@ -2463,6 +2690,20 @@ async def scrape_ddmsa_softball(browser) -> dict[str, Any]:
                 "documents_checked": len(documents),
                 "past_results_found": len(results),
                 "result_source_count": len(result_sources),
+                "result_document_previews": [
+                    {
+                        "url": document.get("url", ""),
+                        "text": document.get("body_text", "")[:3_000],
+                        "tables": document.get("tables", [])[:4],
+                    }
+                    for document in documents
+                    if (
+                        "result" in document.get("url", "").lower()
+                        or "pastres" in document.get("url", "").lower()
+                        or DDMSA_TEAM.lower()
+                        in document.get("body_text", "").lower()
+                    )
+                ][:8],
                 "candidate_urls": [
                     document.get("url", "")
                     for document in documents
