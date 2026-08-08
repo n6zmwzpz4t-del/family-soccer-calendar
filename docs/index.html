@@ -1169,19 +1169,71 @@
         .trim();
     }
 
-    function clubDisplayName(team) {
-      let name = String(team || "")
-        .replace(/\s*-\s*U\d+.*$/i, "")
+    function stripSoccerDivision(team) {
+      return String(team || "")
+        .replace(/\s*-\s*U\d+\s+.*$/i, "")
         .trim();
+    }
 
-      const clubNames = {
-        "Armadale": "Armadale SC",
-        "Mindarie": "Mindarie FC",
+    function soccerNameKey(team) {
+      return stripSoccerDivision(team)
+        .replace(/\s+(?:FC|SC)$/i, "")
+        .replace(/[^a-z0-9]+/gi, "")
+        .toLowerCase();
+    }
+
+    function canonicalSoccerTeamName(team) {
+      const raw = stripSoccerDivision(team);
+
+      if (!raw) {
+        return "";
+      }
+
+      // Explicit aliases where Squadi commonly uses abbreviations.
+      const aliases = {
         "LUFC": "Lynwood United FC"
       };
 
-      return clubNames[name] || name;
+      if (aliases[raw]) {
+        return aliases[raw];
+      }
+
+      // Prefer the full club naming used in Squadi's ladder data.
+      // This preserves suffixes such as FC and SC consistently.
+      const ladders = Array.isArray(state.ladders?.ladders)
+        ? state.ladders.ladders
+        : [];
+
+      const targetKey = soccerNameKey(raw);
+
+      for (const ladder of ladders) {
+        const rows = Array.isArray(ladder?.rows)
+          ? ladder.rows
+          : [];
+
+        for (const row of rows) {
+          const candidate = stripSoccerDivision(row?.team);
+
+          if (
+            candidate &&
+            soccerNameKey(candidate) === targetKey
+          ) {
+            return candidate;
+          }
+        }
+      }
+
+      // Known fixture-name fallbacks for cases where Squadi's fixture feed
+      // omits FC/SC but the club's published ladder name includes it.
+      const known = {
+        "Armadale": "Armadale SC",
+        "Mindarie": "Mindarie FC",
+        "Murdoch University Melville": "Murdoch University Melville FC"
+      };
+
+      return known[raw] || raw;
     }
+
 
     function matchDisplayTitle(event) {
       if (
@@ -1190,8 +1242,8 @@
         event.awayTeam
       ) {
         return (
-          `${clubDisplayName(event.homeTeam)} vs ` +
-          `${clubDisplayName(event.awayTeam)}`
+          `${canonicalSoccerTeamName(event.homeTeam)} vs ` +
+          `${canonicalSoccerTeamName(event.awayTeam)}`
         );
       }
 
@@ -1515,9 +1567,14 @@
       const icon = event.sport === "softball" ? "🥎" : "⚽";
       const sport = event.sport === "softball" ? "Softball" : "Soccer";
       const usePersonTile = Boolean(options.personTile);
-      const title = usePersonTile
-        ? matchDisplayTitle(event)
-        : cleanSummary(event.summary);
+      const title =
+        event.sport === "soccer"
+          ? matchDisplayTitle(event)
+          : (
+              usePersonTile
+                ? matchDisplayTitle(event)
+                : cleanSummary(event.summary)
+            );
 
       return `
         <article class="fixture ${event.sport}">
@@ -1573,7 +1630,7 @@
     }
 
     function soccerResultCard(event) {
-      const title = withoutPerson(event.summary);
+      const title = matchDisplayTitle(event);
       const hasScore =
         event.homeScore !== "" &&
         event.awayScore !== "";
@@ -1650,15 +1707,18 @@
         );
       }
 
-      // Fallback: strip any trailing age/division suffix if Squadi
-      // formats it slightly differently from the ladder heading.
       name = name.replace(
         /\s*-\s*U\d+\s+.*$/i,
         ""
-      );
+      ).trim();
 
-      return name.trim();
+      if (name === "LUFC") {
+        return "Lynwood United FC";
+      }
+
+      return name;
     }
+
 
     function soccerLadder(person) {
       const ladders = Array.isArray(state.ladders?.ladders)
