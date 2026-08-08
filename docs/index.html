@@ -1638,6 +1638,28 @@
         </article>`;
     }
 
+    function ladderTeamDisplayName(team, division) {
+      let name = String(team || "").trim();
+      const div = String(division || "").trim();
+
+      if (div) {
+        const escaped = div.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        name = name.replace(
+          new RegExp("\\s*-\\s*" + escaped + "\\s*$", "i"),
+          ""
+        );
+      }
+
+      // Fallback: strip any trailing age/division suffix if Squadi
+      // formats it slightly differently from the ladder heading.
+      name = name.replace(
+        /\s*-\s*U\d+\s+.*$/i,
+        ""
+      );
+
+      return name.trim();
+    }
+
     function soccerLadder(person) {
       const ladders = Array.isArray(state.ladders?.ladders)
         ? state.ladders.ladders
@@ -1666,7 +1688,7 @@
         return `
           <tr class="${highlight ? "highlight-soccer" : ""}">
             <td>${escapeHtml(row.position ?? "—")}</td>
-            <td>${escapeHtml(row.team ?? "")}</td>
+            <td>${escapeHtml(ladderTeamDisplayName(row.team, ladder.division))}</td>
             <td>${escapeHtml(row.played ?? "—")}</td>
             <td>${escapeHtml(row.won ?? "—")}</td>
             <td>${escapeHtml(row.drawn ?? "—")}</td>
