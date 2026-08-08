@@ -1955,6 +1955,278 @@ def ddmsa_score_near_team(
     return ddmsa_int(cells[candidates[0][1]]) if candidates else None
 
 
+
+def ddmsa_weekly_u13_results(
+    tables: list[list[list[str]]],
+    source_url: str = "",
+) -> list[dict[str, Any]]:
+    """
+    Parse one DDMSA weekly-results page.
+
+    The historical results pages are spreadsheet-style HTML.  Each page
+    contains several divisions and one section headed something like:
+
+        Division U13s MIXED Saturday 1 AUG
+
+    Rows beneath that heading are normally:
+
+        TEAM A | SCORE | : | SCORE | TEAM B
+
+    We only need the row containing Thornlie Hawks (Blue).
+    """
+    target_key = ddmsa_key(DDMSA_TEAM)
+    results: list[dict[str, Any]] = []
+
+    for table in tables:
+        active_u13 = False
+        current_date = ""
+
+        for raw_row in table:
+            cells = [
+                ddmsa_clean(cell)
+                for cell in raw_row
+                if ddmsa_clean(cell)
+            ]
+
+            if not cells:
+                continue
+
+            joined = " ".join(cells)
+            joined_key = ddmsa_key(joined)
+
+            # Start of the U13 Mixed section.
+            if (
+                "division" in joined_key
+                and "u13" in joined_key
+                and "mixed" in joined_key
+            ):
+                active_u13 = True
+
+                date_match = re.search(
+                    r"Saturday\s+(\d{1,2}\s+[A-Za-z]{3,9})",
+                    joined,
+                    flags=re.IGNORECASE,
+                )
+
+                if date_match:
+                    current_date = ddmsa_clean(
+                        date_match.group(1)
+                    )
+
+                continue
+
+            # Stop when the next division begins.
+            if (
+                active_u13
+                and "division" in joined_key
+                and not (
+                    "u13" in joined_key
+                    and "mixed" in joined_key
+                )
+            ):
+                active_u13 = False
+
+            if not active_u13:
+                continue
+
+            # Ignore bye rows.
+            if "bye" in joined.lower():
+                continue
+
+            target_indices = [
+                index
+                for index, cell in enumerate(cells)
+                if target_key in ddmsa_key(cell)
+            ]
+
+            if not target_indices:
+                continue
+
+            target_index = target_indices[0]
+
+            # Locate likely U13 team-name cells in this row.  Old DDMSA
+            # exports vary slightly, so identify text cells rather than
+            # relying on fixed column positions.
+            team_cells: list[tuple[int, str]] = []
+
+            for index, cell in enumerate(cells):
+                key = ddmsa_key(cell)
+
+                if not key:
+                    continue
+
+                if key == target_key:
+                    team_cells.append(
+                        (index, DDMSA_TEAM)
+                    )
+                    continue
+
+                # Skip punctuation, scores, headings and generic labels.
+                if (
+                    ddmsa_int(cell) is not None
+                    or cell == ":"
+                    or "division" in key
+                    or key.startswith("team")
+                    or key.startswith("score")
+                    or key == "bye"
+                ):
+                    continue
+
+                # Team names in this competition are alphabetic club names,
+                # often with a colour in brackets.
+                if re.search(
+                    r"[A-Za-z]{3}",
+                    cell,
+                ):
+                    team_cells.append(
+                        (index, cell)
+                    )
+
+            opponent_hit = next(
+                (
+                    item
+                    for item in team_cells
+                    if item[0] != target_index
+                    and ddmsa_key(item[1])
+                    != target_key
+                ),
+                None,
+            )
+
+            if opponent_hit is None:
+                continue
+
+            opponent_index, opponent = opponent_hit
+
+            # Weekly result rows are visually:
+            #
+            #   left team | left score | : | right score | right team
+            #
+            # Find the closest score to each team, moving inward.
+            numeric_cells = [
+                (index, ddmsa_int(cell))
+                for index, cell in enumerate(cells)
+                if (
+                    ddmsa_int(cell) is not None
+                    and 0 <= int(ddmsa_int(cell)) <= 99
+                )
+            ]
+
+            def inward_score(
+                team_index: int,
+                other_index: int,
+            ) -> int | None:
+                if team_index < other_index:
+                    candidates = [
+                        (index, value)
+                        for index, value in numeric_cells
+                        if team_index < index < other_index
+                    ]
+
+                    if candidates:
+                        candidates.sort(
+                            key=lambda item: item[0]
+                        )
+                        return candidates[0][1]
+
+                else:
+                    candidates = [
+                        (index, value)
+                        for index, value in numeric_cells
+                        if other_index < index < team_index
+                    ]
+
+                    if candidates:
+                        candidates.sort(
+                            key=lambda item: item[0],
+                            reverse=True,
+                        )
+                        return candidates[0][1]
+
+                # Fallback: nearest numeric cell to this team.
+                nearest = sorted(
+                    numeric_cells,
+                    key=lambda item: abs(
+                        item[0] - team_index
+                    ),
+                )
+
+                return (
+                    nearest[0][1]
+                    if nearest
+                    else None
+                )
+
+            thornlie_score = inward_score(
+                target_index,
+                opponent_index,
+            )
+            opponent_score = inward_score(
+                opponent_index,
+                target_index,
+            )
+
+            # If both lookups returned the same score, use the two scores
+            # between the two teams explicitly.
+            if (
+                thornlie_score is not None
+                and opponent_score is not None
+                and thornlie_score == opponent_score
+            ):
+                between = [
+                    (index, value)
+                    for index, value in numeric_cells
+                    if min(
+                        target_index,
+                        opponent_index,
+                    )
+                    < index
+                    < max(
+                        target_index,
+                        opponent_index,
+                    )
+                ]
+
+                between.sort(
+                    key=lambda item: item[0]
+                )
+
+                if len(between) >= 2:
+                    if target_index < opponent_index:
+                        thornlie_score = between[0][1]
+                        opponent_score = between[-1][1]
+                    else:
+                        opponent_score = between[0][1]
+                        thornlie_score = between[-1][1]
+
+            outcome = ""
+
+            if (
+                thornlie_score is not None
+                and opponent_score is not None
+            ):
+                if thornlie_score > opponent_score:
+                    outcome = "W"
+                elif thornlie_score < opponent_score:
+                    outcome = "L"
+                else:
+                    outcome = "D"
+
+            results.append(
+                {
+                    "date": current_date,
+                    "opponent": opponent,
+                    "thornlie_score": thornlie_score,
+                    "opponent_score": opponent_score,
+                    "result": outcome,
+                    "source_url": source_url,
+                    "raw": cells,
+                }
+            )
+
+    return results
+
+
 def ddmsa_parse_results(
     tables: list[list[list[str]]],
     ladder: list[dict[str, Any]],
@@ -2453,16 +2725,24 @@ async def scrape_ddmsa_softball(browser) -> dict[str, Any]:
                             ):
                                 continue
 
-                            historical_hint = any(
-                                token in combined
-                                for token in (
-                                    "result",
-                                    "past",
-                                    "week",
-                                    "2026",
-                                    "junior",
-                                    "u13",
-                                    "ladder",
+                            historical_hint = (
+                                bool(
+                                    re.search(
+                                        r"week\s*0?\d+",
+                                        combined,
+                                        flags=re.IGNORECASE,
+                                    )
+                                )
+                                or any(
+                                    token in combined
+                                    for token in (
+                                        "result",
+                                        "past",
+                                        "2026",
+                                        "junior",
+                                        "u13",
+                                        "ladder",
+                                    )
                                 )
                             )
 
@@ -2532,10 +2812,20 @@ async def scrape_ddmsa_softball(browser) -> dict[str, Any]:
         ] = set()
 
         for document in documents:
-            document_results = ddmsa_parse_results(
-                document.get("tables", []),
-                ladder,
+            document_results = (
+                ddmsa_weekly_u13_results(
+                    document.get("tables", []),
+                    document.get("url", ""),
+                )
             )
+
+            # Keep the broad parser as a fallback for any DDMSA page that
+            # does not use the standard weekly U13 Mixed layout.
+            if not document_results:
+                document_results = ddmsa_parse_results(
+                    document.get("tables", []),
+                    ladder,
+                )
 
             if not document_results:
                 continue
@@ -2689,6 +2979,7 @@ async def scrape_ddmsa_softball(browser) -> dict[str, Any]:
             "diagnostics": {
                 "documents_checked": len(documents),
                 "past_results_found": len(results),
+                "weekly_u13_results_found": len(results),
                 "result_source_count": len(result_sources),
                 "result_document_previews": [
                     {
