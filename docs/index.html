@@ -700,6 +700,28 @@
       color: var(--red);
     }
 
+    .bottom-subscribe {
+      display: grid;
+      gap: 10px;
+      margin-top: 8px;
+      margin-bottom: 24px;
+      padding: 18px;
+      border-radius: 22px;
+      background: linear-gradient(135deg, var(--navy), var(--navy-2));
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+
+    .bottom-subscribe .subscribe {
+      width: 100%;
+    }
+
+    .bottom-subscribe .subscribe-note {
+      max-width: none;
+      color: rgba(255,255,255,.72);
+      text-align: center;
+    }
+
     footer {
       padding: 0 0 38px;
       color: var(--muted);
@@ -781,17 +803,6 @@
           for Finn and Tate in one place.
         </p>
 
-        <div class="hero-actions">
-          <a
-            class="subscribe"
-            href="webcal://n6zmwzpz4t-del.github.io/family-soccer-calendar/fixtures.ics"
-          >
-            📅 Subscribe to the full calendar
-          </a>
-          <span class="subscribe-note">
-            Adds every Finn and Tate match and keeps the calendar updated.
-          </span>
-        </div>
       </div>
     </div>
   </header>
@@ -812,6 +823,19 @@
       </div>
     </div>
   </main>
+
+
+  <section class="shell bottom-subscribe">
+    <a
+      class="subscribe"
+      href="webcal://n6zmwzpz4t-del.github.io/family-soccer-calendar/fixtures.ics"
+    >
+      📅 Subscribe to the full calendar
+    </a>
+    <span class="subscribe-note">
+      Adds every Finn and Tate match and keeps the calendar updated.
+    </span>
+  </section>
 
   <footer class="shell">
     Fixtures and ladders update automatically. Please confirm late changes
