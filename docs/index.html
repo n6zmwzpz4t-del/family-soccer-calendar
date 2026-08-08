@@ -1170,9 +1170,17 @@
     }
 
     function clubDisplayName(team) {
-      return String(team || "")
+      let name = String(team || "")
         .replace(/\s*-\s*U\d+.*$/i, "")
         .trim();
+
+      const clubNames = {
+        "Armadale": "Armadale SC",
+        "Mindarie": "Mindarie FC",
+        "LUFC": "Leeming United FC"
+      };
+
+      return clubNames[name] || name;
     }
 
     function matchDisplayTitle(event) {
