@@ -277,6 +277,95 @@
       background: #f7f8fb;
     }
 
+
+    .match-preview {
+      margin: -8px 0 26px;
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: linear-gradient(135deg, rgba(47,103,232,.06), rgba(255,255,255,.98));
+      box-shadow: 0 6px 18px rgba(15,23,42,.05);
+    }
+
+    .match-preview-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .match-preview-head h3 { margin: 0; font-size: 1rem; letter-spacing: -.02em; }
+
+    .match-preview-tag {
+      padding: 5px 8px;
+      border-radius: 999px;
+      color: #2751b3;
+      background: var(--blue-soft);
+      font-size: .68rem;
+      font-weight: 900;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+
+    .match-preview p { margin: 0; color: #344054; font-size: .91rem; line-height: 1.58; }
+
+    .preview-stats {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 9px;
+      margin-top: 14px;
+    }
+
+    .preview-stat {
+      padding: 10px 11px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: rgba(255,255,255,.86);
+    }
+
+    .preview-stat-label {
+      display: block;
+      color: var(--muted);
+      font-size: .68rem;
+      font-weight: 850;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+
+    .preview-stat strong { display: block; margin-top: 3px; color: var(--navy); font-size: .92rem; }
+
+    .form-row { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 13px; }
+
+    .form-chip {
+      display: inline-grid;
+      place-items: center;
+      min-width: 27px;
+      height: 27px;
+      padding: 0 7px;
+      border-radius: 9px;
+      color: white;
+      font-size: .7rem;
+      font-weight: 950;
+    }
+
+    .form-chip.w { background: var(--green); }
+    .form-chip.d { background: #747d8f; }
+    .form-chip.l { background: var(--red); }
+
+    .form-caption {
+      display: inline-flex;
+      align-items: center;
+      margin-right: 4px;
+      color: var(--muted);
+      font-size: .76rem;
+      font-weight: 800;
+    }
+
+    @media (max-width: 480px) {
+      .preview-stats { grid-template-columns: 1fr; }
+    }
+
     .section-title {
       display: flex;
       align-items: center;
@@ -889,7 +978,7 @@
     <div class="shell hero-inner">
       <div class="hero-copy">
         <div class="hero-eyebrow">⚽ Soccer &nbsp; • &nbsp; 🥎 Softball</div>
-        <h1>Come and watch us play</h1>
+        <h1>Come and watch us play.</h1>
         <p>
           Fixtures, results, ladders, match-day weather and directions
           for Finn and Tate in one place.
@@ -1724,6 +1813,182 @@
     }
 
 
+
+    function ladderRowForTeam(ladder, teamName) {
+      if (!ladder || !Array.isArray(ladder.rows)) return null;
+      const targetKey = soccerNameKey(teamName);
+      return ladder.rows.find(row => soccerNameKey(row.team) === targetKey) || null;
+    }
+
+    function ordinal(value) {
+      const number = Number(value);
+      if (!Number.isFinite(number)) return "—";
+      const mod100 = number % 100;
+      if (mod100 >= 11 && mod100 <= 13) return `${number}th`;
+      switch (number % 10) {
+        case 1: return `${number}st`;
+        case 2: return `${number}nd`;
+        case 3: return `${number}rd`;
+        default: return `${number}th`;
+      }
+    }
+
+    function pointsPerGame(row) {
+      const played = Number(row?.played);
+      const points = Number(row?.points);
+      if (!Number.isFinite(played) || !Number.isFinite(points) || played <= 0) return null;
+      return points / played;
+    }
+
+    function recentTeamForm(event, teamName, limit = 5) {
+      const targetKey = soccerNameKey(teamName);
+      return state.fixtures
+        .filter(item =>
+          item.sport === "soccer" &&
+          item.start < event.start &&
+          item.homeScore !== "" && item.awayScore !== "" &&
+          (soccerNameKey(item.homeTeam) === targetKey || soccerNameKey(item.awayTeam) === targetKey)
+        )
+        .sort((a,b) => b.start - a.start)
+        .slice(0, limit)
+        .map(item => {
+          const isHome = soccerNameKey(item.homeTeam) === targetKey;
+          const scored = Number(isHome ? item.homeScore : item.awayScore);
+          const conceded = Number(isHome ? item.awayScore : item.homeScore);
+          if (scored > conceded) return "W";
+          if (scored < conceded) return "L";
+          return "D";
+        });
+    }
+
+    function formSummary(form) {
+      const wins = form.filter(value => value === "W").length;
+      const draws = form.filter(value => value === "D").length;
+      const losses = form.filter(value => value === "L").length;
+      const parts = [];
+      if (wins) parts.push(`${wins} ${wins === 1 ? "win" : "wins"}`);
+      if (draws) parts.push(`${draws} ${draws === 1 ? "draw" : "draws"}`);
+      if (losses) parts.push(`${losses} ${losses === 1 ? "loss" : "losses"}`);
+      return parts.join(", ");
+    }
+
+    function formMarkup(label, form) {
+      if (!form.length) return "";
+      return `
+        <div class="form-row">
+          <span class="form-caption">${escapeHtml(label)} form</span>
+          ${form.map(value => `<span class="form-chip ${value.toLowerCase()}">${value}</span>`).join("")}
+        </div>`;
+    }
+
+    function soccerMatchPreview(event) {
+      const ladder = soccerLadder(event.person);
+      if (!ladder) return "";
+
+      const homeName = canonicalSoccerTeamName(event.homeTeam);
+      const awayName = canonicalSoccerTeamName(event.awayTeam);
+      const homeRow = ladderRowForTeam(ladder, homeName);
+      const awayRow = ladderRowForTeam(ladder, awayName);
+      if (!homeRow || !awayRow) return "";
+
+      const homePpg = pointsPerGame(homeRow);
+      const awayPpg = pointsPerGame(awayRow);
+      const homeForm = recentTeamForm(event, homeName);
+      const awayForm = recentTeamForm(event, awayName);
+      const homeRecent = formSummary(homeForm);
+      const awayRecent = formSummary(awayForm);
+      const homePosition = ordinal(homeRow.position);
+      const awayPosition = ordinal(awayRow.position);
+      const homeDiff = Number(homeRow.difference ?? 0);
+      const awayDiff = Number(awayRow.difference ?? 0);
+
+      let seasonText = "";
+      if (homePpg !== null && awayPpg !== null) {
+        if (Math.abs(homePpg - awayPpg) < 0.12) {
+          seasonText = "The teams have been producing very similar results across the season.";
+        } else if (homePpg > awayPpg) {
+          seasonText = `${homeName} have the stronger season record so far, averaging ${homePpg.toFixed(2)} points per game compared with ${awayPpg.toFixed(2)} for ${awayName}.`;
+        } else {
+          seasonText = `${awayName} have the stronger season record so far, averaging ${awayPpg.toFixed(2)} points per game compared with ${homePpg.toFixed(2)} for ${homeName}.`;
+        }
+      }
+
+      let recentText = "";
+      if (homeRecent && awayRecent) {
+        recentText = ` Recent results show ${homeName} with ${homeRecent} from their last ${homeForm.length}, while ${awayName} have ${awayRecent} from their last ${awayForm.length}.`;
+      } else if (homeRecent) {
+        recentText = ` ${homeName} come into the game with ${homeRecent} from their last ${homeForm.length} recorded matches.`;
+      } else if (awayRecent) {
+        recentText = ` ${awayName} come into the game with ${awayRecent} from their last ${awayForm.length} recorded matches.`;
+      }
+
+      let goalText = "";
+      if (homeDiff !== awayDiff) {
+        const better = homeDiff > awayDiff ? homeName : awayName;
+        const betterDiff = homeDiff > awayDiff ? homeDiff : awayDiff;
+        goalText = ` ${better} also have the better goal difference (${betterDiff > 0 ? "+" : ""}${betterDiff}).`;
+      }
+
+      const commentary = `${homeName} are ${homePosition} on the ladder and ${awayName} are ${awayPosition}. ${seasonText}${recentText}${goalText}`;
+
+      return `
+        <section class="match-preview">
+          <div class="match-preview-head">
+            <h3>⚽ Match Preview</h3>
+            <span class="match-preview-tag">Form guide</span>
+          </div>
+          <p>${escapeHtml(commentary)}</p>
+          <div class="preview-stats">
+            <div class="preview-stat">
+              <span class="preview-stat-label">${escapeHtml(homeName)}</span>
+              <strong>${homePosition} • ${escapeHtml(homeRow.points ?? "—")} pts${homePpg !== null ? ` • ${homePpg.toFixed(2)} PPG` : ""}</strong>
+            </div>
+            <div class="preview-stat">
+              <span class="preview-stat-label">${escapeHtml(awayName)}</span>
+              <strong>${awayPosition} • ${escapeHtml(awayRow.points ?? "—")} pts${awayPpg !== null ? ` • ${awayPpg.toFixed(2)} PPG` : ""}</strong>
+            </div>
+          </div>
+          ${formMarkup(homeName, homeForm)}
+          ${formMarkup(awayName, awayForm)}
+        </section>`;
+    }
+
+    function softballMatchPreview(event) {
+      const data = state.softball;
+      if (!data?.team_summary) return "";
+
+      const team = data.team_summary;
+      const position = ordinal(team.position);
+      const results = Array.isArray(data.results) ? data.results : [];
+      const recent = results.slice().reverse().slice(0,5)
+        .map(result => String(result.result || "").toUpperCase())
+        .filter(value => ["W","D","L"].includes(value));
+      const recentText = recent.length
+        ? ` Recent recorded form is ${formSummary(recent)} from the last ${recent.length}.`
+        : "";
+      const commentary = `Thornlie Hawks (Blue) are currently ${position} in the ${data.division || "competition"} with ${team.points ?? "—"} points from ${team.played ?? "—"} games.${recentText}`;
+
+      return `
+        <section class="match-preview">
+          <div class="match-preview-head">
+            <h3>🥎 Match Preview</h3>
+            <span class="match-preview-tag">Form guide</span>
+          </div>
+          <p>${escapeHtml(commentary)}</p>
+          <div class="preview-stats">
+            <div class="preview-stat">
+              <span class="preview-stat-label">Thornlie Hawks (Blue)</span>
+              <strong>${position} • ${escapeHtml(team.points ?? "—")} pts • ${escapeHtml(team.won ?? "—")}W ${escapeHtml(team.drawn ?? "—")}D ${escapeHtml(team.lost ?? "—")}L</strong>
+            </div>
+          </div>
+          ${formMarkup("Thornlie Hawks (Blue)", recent)}
+        </section>`;
+    }
+
+    function matchPreview(event) {
+      return event.sport === "softball" ? softballMatchPreview(event) : soccerMatchPreview(event);
+    }
+
     function soccerLadder(person) {
       const ladders = Array.isArray(state.ladders?.ladders)
         ? state.ladders.ladders
@@ -1946,6 +2211,8 @@
             </div>
           </div>
         </section>
+
+        ${matchPreview(next)}
 
         <div class="section-title">All upcoming games</div>
 
