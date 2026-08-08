@@ -781,12 +781,60 @@
         font-size: .84rem;
       }
     }
+
+    /* Finn & Tate photo integration */
+    .hero-inner { position: relative; z-index: 1; }
+    .hero-copy { max-width: 600px; }
+    .hero-gallery {
+      position: absolute; right: 0; top: 8px; width: 360px; height: 250px;
+      pointer-events: none;
+    }
+    .hero-photo {
+      position: absolute; overflow: hidden; border: 3px solid rgba(255,255,255,.9);
+      border-radius: 22px; background: #dbe3f3;
+      box-shadow: 0 18px 40px rgba(0,0,0,.25);
+    }
+    .hero-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .hero-photo.tate-softball { width: 145px; height: 190px; right: 205px; top: 32px; transform: rotate(-5deg); }
+    .hero-photo.tate-softball img { object-position: 50% 35%; }
+    .hero-photo.tate-soccer { width: 118px; height: 160px; right: 112px; top: 0; transform: rotate(4deg); }
+    .hero-photo.tate-soccer img { object-position: 50% 35%; }
+    .hero-photo.finn-action { width: 128px; height: 175px; right: 8px; top: 18px; transform: rotate(5deg); }
+    .hero-photo.finn-action img { object-position: 50% 38%; }
+    .hero-photo.finn-ball { width: 138px; height: 110px; right: 72px; bottom: 0; transform: rotate(-3deg); }
+    .hero-photo.finn-ball img { object-position: 50% 57%; }
+
+    .person-avatar.photo-avatar { overflow: hidden; padding: 0; background: #dbe3f3; }
+    .person-avatar.photo-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .person-avatar.photo-avatar.finn img { object-position: 50% 42%; }
+    .person-avatar.photo-avatar.tate-soccer img { object-position: 50% 32%; }
+    .person-avatar.photo-avatar.tate-softball img { object-position: 50% 34%; }
+
+    @media (max-width: 900px) {
+      .hero-copy { max-width: 52%; }
+      .hero-gallery { transform: scale(.86); transform-origin: right top; }
+    }
+    @media (max-width: 700px) {
+      .hero { padding-bottom: 24px; }
+      .hero-copy { max-width: none; margin-top: 26px; }
+      .hero h1 { max-width: 520px; }
+      .hero-gallery {
+        position: relative; right: auto; top: auto; width: 100%; height: 155px;
+        margin: 22px auto 0; transform: none;
+      }
+      .hero-photo { border-width: 2px; border-radius: 16px; }
+      .hero-photo.tate-softball { width: 27%; height: 138px; left: 1%; right: auto; top: 8px; transform: rotate(-3deg); }
+      .hero-photo.tate-soccer { width: 24%; height: 128px; left: 25%; right: auto; top: 0; transform: rotate(2deg); }
+      .hero-photo.finn-action { width: 25%; height: 135px; right: 24%; top: 6px; transform: rotate(-2deg); }
+      .hero-photo.finn-ball { width: 27%; height: 128px; right: 1%; bottom: 3px; transform: rotate(3deg); }
+    }
+
   </style>
 </head>
 
 <body>
   <header class="hero">
-    <div class="shell">
+    <div class="shell hero-inner">
       <div class="brand">
         <div class="brand-icon">🏟️</div>
         <div>
@@ -803,6 +851,13 @@
           for Finn and Tate in one place.
         </p>
 
+      </div>
+
+      <div class="hero-gallery" aria-label="Finn and Tate playing sport">
+        <div class="hero-photo tate-softball"><img src="images/tate-softball.jpg" alt="Tate playing softball"></div>
+        <div class="hero-photo tate-soccer"><img src="images/tate-soccer.jpg" alt="Tate playing soccer"></div>
+        <div class="hero-photo finn-action"><img src="images/finn-soccer-action.jpg" alt="Finn playing soccer"></div>
+        <div class="hero-photo finn-ball"><img src="images/finn-soccer-ball.jpg" alt="Finn playing soccer"></div>
       </div>
     </div>
   </header>
@@ -1777,7 +1832,9 @@
 
       return `
         <section class="person-summary">
-          <div class="person-avatar">${name[0]}</div>
+          <div class="person-avatar photo-avatar ${person === "finn" ? "finn" : sport === "softball" ? "tate-softball" : "tate-soccer"}">
+            <img src="${person === "finn" ? "images/finn-soccer-ball.jpg" : sport === "softball" ? "images/tate-softball.jpg" : "images/tate-soccer.jpg"}" alt="${name} playing ${sport}">
+          </div>
           <div>
             <h2>${name}</h2>
             <p>${escapeHtml(subtitle)}</p>
