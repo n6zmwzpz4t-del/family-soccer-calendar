@@ -328,6 +328,89 @@
       background: var(--border);
     }
 
+
+    .day-group {
+      display: grid;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .day-heading {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0 0 2px;
+      color: var(--navy);
+      font-size: 1rem;
+      font-weight: 950;
+      letter-spacing: .025em;
+    }
+
+    .day-heading::after {
+      flex: 1;
+      height: 1px;
+      content: "";
+      background: var(--border);
+    }
+
+    .person-tile {
+      display: grid;
+      place-items: center;
+      align-content: center;
+      min-height: 76px;
+      padding: 8px;
+      border-radius: 15px;
+      color: white;
+      background: linear-gradient(145deg,var(--navy),var(--navy-2));
+      text-align: center;
+    }
+
+    .person-tile.tate {
+      background: linear-gradient(145deg,#263d83,#4169d8);
+    }
+
+    .fixture.softball .person-tile {
+      background: linear-gradient(145deg,var(--orange-dark),var(--orange));
+    }
+
+    .person-tile strong {
+      font-size: 1rem;
+      font-weight: 950;
+      letter-spacing: .02em;
+    }
+
+    .person-tile span {
+      margin-top: 4px;
+      font-size: .66rem;
+      font-weight: 800;
+      letter-spacing: .08em;
+      opacity: .78;
+      text-transform: uppercase;
+    }
+
+    .next-person {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      margin: 0 0 8px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      color: #2751b3;
+      background: var(--blue-soft);
+      font-size: .76rem;
+      font-weight: 900;
+    }
+
+    .next-person.tate {
+      color: #334d9b;
+      background: #eef1ff;
+    }
+
+    .next-person.softball {
+      color: #913c14;
+      background: var(--orange-soft);
+    }
+
     .fixtures {
       display: grid;
       gap: 12px;
@@ -743,7 +826,8 @@
         padding: 16px;
       }
 
-      .date-tile { min-height: 84px; }
+      .date-tile,
+      .person-tile { min-height: 84px; }
 
       .fixture .meta {
         display: flex;
@@ -1125,6 +1209,49 @@
         .trim();
     }
 
+    function clubDisplayName(team) {
+      return String(team || "")
+        .replace(/\s*-\s*U\d+.*$/i, "")
+        .trim();
+    }
+
+    function matchDisplayTitle(event) {
+      if (
+        event.sport === "soccer" &&
+        event.homeTeam &&
+        event.awayTeam
+      ) {
+        return (
+          `${clubDisplayName(event.homeTeam)} vs ` +
+          `${clubDisplayName(event.awayTeam)}`
+        );
+      }
+
+      return withoutPerson(event.summary);
+    }
+
+    function personName(event) {
+      return event.person === "finn" ? "Finn" : "Tate";
+    }
+
+    function groupDateLabel(date) {
+      return new Intl.DateTimeFormat("en-AU", {
+        timeZone: TIME_ZONE,
+        weekday: "long",
+        day: "numeric",
+        month: "long"
+      }).format(date);
+    }
+
+    function dateGroupKey(date) {
+      return new Intl.DateTimeFormat("en-CA", {
+        timeZone: TIME_ZONE,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+      }).format(date);
+    }
+
     function formatTime(date) {
       return new Intl.DateTimeFormat("en-AU", {
         timeZone: TIME_ZONE,
@@ -1415,23 +1542,38 @@
       render();
     }
 
-    function fixtureCard(event) {
-      const parts = dateParts(event.start);
+    function fixtureCard(event, options = {}) {
       const round = roundText(event.description);
       const icon = event.sport === "softball" ? "🥎" : "⚽";
       const sport = event.sport === "softball" ? "Softball" : "Soccer";
+      const usePersonTile = Boolean(options.personTile);
+      const title = usePersonTile
+        ? matchDisplayTitle(event)
+        : cleanSummary(event.summary);
 
       return `
         <article class="fixture ${event.sport}">
-          <div class="date-tile">
-            <span class="weekday">${escapeHtml(parts.weekday)}</span>
-            <span class="day">${escapeHtml(parts.day)}</span>
-            <span class="month">${escapeHtml(parts.month)}</span>
-          </div>
+          ${
+            usePersonTile
+              ? `
+                <div class="person-tile ${event.person}">
+                  <strong>${escapeHtml(personName(event))}</strong>
+                  <span>${escapeHtml(sport)}</span>
+                </div>`
+              : (() => {
+                  const parts = dateParts(event.start);
+                  return `
+                    <div class="date-tile">
+                      <span class="weekday">${escapeHtml(parts.weekday)}</span>
+                      <span class="day">${escapeHtml(parts.day)}</span>
+                      <span class="month">${escapeHtml(parts.month)}</span>
+                    </div>`;
+                })()
+          }
 
           <div>
             <div class="sport-pill">${icon} ${sport}</div>
-            <h3>${escapeHtml(cleanSummary(event.summary))}</h3>
+            <h3>${escapeHtml(title)}</h3>
 
             <div class="meta">
               <span>
@@ -1687,6 +1829,41 @@
       }
 
       const next = upcoming[0];
+      const nextSport =
+        next.sport === "softball" ? "Softball" : "Soccer";
+
+      const grouped = new Map();
+
+      upcoming.forEach(event => {
+        const key = dateGroupKey(event.start);
+
+        if (!grouped.has(key)) {
+          grouped.set(key, {
+            date: event.start,
+            fixtures: []
+          });
+        }
+
+        grouped.get(key).fixtures.push(event);
+      });
+
+      const groupedHtml = [...grouped.values()]
+        .map(group => `
+          <section class="day-group">
+            <h3 class="day-heading">
+              ${escapeHtml(groupDateLabel(group.date))}
+            </h3>
+
+            <div class="fixtures">
+              ${group.fixtures
+                .map(event =>
+                  fixtureCard(event, { personTile: true })
+                )
+                .join("")}
+            </div>
+          </section>
+        `)
+        .join("");
 
       return `
         ${pageHeading("Upcoming games","All Finn and Tate matches")}
@@ -1694,7 +1871,19 @@
         <section class="next-card">
           <div>
             <div class="next-label">Next game</div>
-            <h3 class="next-title">${escapeHtml(cleanSummary(next.summary))}</h3>
+
+            <div
+              class="next-person ${next.person} ${next.sport}"
+            >
+              ${next.sport === "softball" ? "🥎" : "⚽"}
+              ${escapeHtml(personName(next))} •
+              ${escapeHtml(nextSport)}
+            </div>
+
+            <h3 class="next-title">
+              ${escapeHtml(matchDisplayTitle(next))}
+            </h3>
+
             <div class="meta">
               <span>📅 ${escapeHtml(formatDate(next.start,true))}</span>
               <span>🕒 ${escapeHtml(formatTime(next.start))}</span>
@@ -1705,9 +1894,9 @@
         </section>
 
         <div class="section-title">All upcoming games</div>
-        <div class="fixtures">
-          ${upcoming.map(fixtureCard).join("")}
-        </div>`;
+
+        ${groupedHtml}
+      `;
     }
 
     function personSportButtons(person) {
