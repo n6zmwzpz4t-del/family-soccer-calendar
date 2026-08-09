@@ -1306,10 +1306,18 @@ def parse_squadi_ladder_body_text(
     This parser deliberately ignores the form markers and finds the next
     numeric rank, making it tolerant of tabs, blank lines and layout changes.
     """
+    # Squadi renders each ladder row with a mixture of newlines and tabs.
+    # The statistics can arrive as one tab-delimited line, so split on both
+    # line breaks and tab characters before normalising each cell.
+    raw_tokens = re.split(
+        r"[\r\n\t]+",
+        body_text,
+    )
+
     lines = [
-        clean(line)
-        for line in body_text.replace("\r", "\n").splitlines()
-        if clean(line)
+        clean(token)
+        for token in raw_tokens
+        if clean(token)
     ]
 
     if not lines:
@@ -1456,11 +1464,16 @@ def repair_squadi_ladder_from_diagnostics(
         if not isinstance(diagnostics, dict):
             continue
 
-        preview = clean(
-            diagnostics.get("body_text_preview")
+        # Preserve tabs/newlines in the saved page text. Flattening this
+        # whitespace would merge the ladder statistics back together.
+        preview = str(
+            diagnostics.get(
+                "body_text_preview"
+            )
+            or ""
         )
 
-        if not preview:
+        if not preview.strip():
             continue
 
         rows = parse_squadi_ladder_body_text(
