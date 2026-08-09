@@ -21,7 +21,7 @@ DEBUG = ROOT / "docs" / "debug.json"
 MANUAL_FIXTURES = ROOT / "manual_fixtures.json"
 SOFTBALL_DATA = ROOT / "docs" / "softball.json"
 SOCCER_LADDER_DATA = ROOT / "docs" / "soccer_ladders.json"
-LADDER_PARSER_VERSION = "2026-08-09-v4-numeric-cell-tokenizer"
+LADDER_PARSER_VERSION = "2026-08-09-v5-flat-row-regex"
 
 SOCCER_LADDERS = [
     {
@@ -1646,6 +1646,239 @@ def parse_squadi_ladder_tables(
     return best
 
 
+
+def parse_squadi_ladder_flat_text(
+    body_text: str,
+) -> list[dict[str, Any]]:
+    """
+    Parse a Squadi ladder even when the browser exposes an entire ladder row
+    as one flattened text string rather than individual DOM/text cells.
+
+    Expected logical row:
+        rank team MP W D L GF GA PTS GD
+
+    Example after whitespace normalisation:
+        2 Armadale SC - U14 JDL D2 3 3 0 0 6 1 9 5 W W W
+    """
+    text = re.sub(
+        r"\s+",
+        " ",
+        str(body_text or ""),
+    ).strip()
+
+    if not text:
+        return []
+
+    # Narrow to the actual standings portion where possible.
+    rank_match = re.search(
+        r"\bRank\b.*?\bNext\b",
+        text,
+        flags=re.IGNORECASE,
+    )
+
+    if rank_match:
+        text = text[
+            rank_match.end():
+        ]
+
+    # Stop before Squadi's abbreviation legend.
+    legend_match = re.search(
+        r"\bMP\s*=\s*Matches\s+Played\b",
+        text,
+        flags=re.IGNORECASE,
+    )
+
+    if legend_match:
+        text = text[
+            :legend_match.start()
+        ]
+
+    # The team text ends immediately before eight standalone integer stats.
+    # Club/team names may contain digits inside tokens such as U14 or D2;
+    # those do not match the standalone-number statistic pattern.
+    row_pattern = re.compile(
+        r"""
+        (?:^|\s)
+        (?P<position>\d{1,2})
+        \s+
+        (?P<team>
+            .*?
+            (?:-\s*U\d+\s+[^0-9]*?[A-Za-z]\d*|Academy(?:\s*-\s*U\d+.*?)?)
+        )
+        \s+
+        (?P<played>-?\d+)
+        \s+
+        (?P<won>-?\d+)
+        \s+
+        (?P<drawn>-?\d+)
+        \s+
+        (?P<lost>-?\d+)
+        \s+
+        (?P<gf>-?\d+)
+        \s+
+        (?P<ga>-?\d+)
+        \s+
+        (?P<points>-?\d+)
+        \s+
+        (?P<difference>-?\d+)
+        (?=
+            \s+(?:W|D|L)\b
+            |
+            \s+\d{1,2}\s+
+            |
+            \s*$
+        )
+        """,
+        flags=re.IGNORECASE | re.VERBOSE,
+    )
+
+    rows: list[dict[str, Any]] = []
+
+    for match in row_pattern.finditer(
+        text
+    ):
+        team = clean(
+            match.group("team")
+        )
+
+        # Reject anything that clearly isn't a football team row.
+        if not re.search(
+            r"(?:FC|SC|U\d+|Academy|SPFC|LUFC|MUMFC)",
+            team,
+            flags=re.IGNORECASE,
+        ):
+            continue
+
+        rows.append(
+            {
+                "position": int(
+                    match.group(
+                        "position"
+                    )
+                ),
+                "team": team,
+                "played": int(
+                    match.group(
+                        "played"
+                    )
+                ),
+                "won": int(
+                    match.group(
+                        "won"
+                    )
+                ),
+                "drawn": int(
+                    match.group(
+                        "drawn"
+                    )
+                ),
+                "lost": int(
+                    match.group(
+                        "lost"
+                    )
+                ),
+                "for": int(
+                    match.group(
+                        "gf"
+                    )
+                ),
+                "against": int(
+                    match.group(
+                        "ga"
+                    )
+                ),
+                "points": int(
+                    match.group(
+                        "points"
+                    )
+                ),
+                "difference": int(
+                    match.group(
+                        "difference"
+                    )
+                ),
+                "percentage": "",
+            }
+        )
+
+    # If the primary regex is too strict for a future Squadi team-label
+    # variation, use the known division suffix as a much simpler row boundary.
+    if not rows:
+        simple_pattern = re.compile(
+            r"""
+            (?:^|\s)
+            (?P<position>\d{1,2})
+            \s+
+            (?P<team>
+                [A-Za-z][A-Za-z0-9&().'/ -]+?
+                \s*-\s*U\d+\s+[A-Za-z0-9 ]+?
+            )
+            \s+
+            (?P<played>-?\d+)
+            \s+
+            (?P<won>-?\d+)
+            \s+
+            (?P<drawn>-?\d+)
+            \s+
+            (?P<lost>-?\d+)
+            \s+
+            (?P<gf>-?\d+)
+            \s+
+            (?P<ga>-?\d+)
+            \s+
+            (?P<points>-?\d+)
+            \s+
+            (?P<difference>-?\d+)
+            """,
+            flags=re.IGNORECASE | re.VERBOSE,
+        )
+
+        for match in simple_pattern.finditer(
+            text
+        ):
+            rows.append(
+                {
+                    "position": int(match.group("position")),
+                    "team": clean(match.group("team")),
+                    "played": int(match.group("played")),
+                    "won": int(match.group("won")),
+                    "drawn": int(match.group("drawn")),
+                    "lost": int(match.group("lost")),
+                    "for": int(match.group("gf")),
+                    "against": int(match.group("ga")),
+                    "points": int(match.group("points")),
+                    "difference": int(match.group("difference")),
+                    "percentage": "",
+                }
+            )
+
+    # Keep one row per ladder position and return in rank order.
+    unique: dict[
+        int,
+        dict[str, Any],
+    ] = {}
+
+    for row in rows:
+        position = row.get(
+            "position"
+        )
+
+        if (
+            isinstance(position, int)
+            and 1 <= position <= 50
+        ):
+            unique[
+                position
+            ] = row
+
+    return [
+        unique[position]
+        for position in sorted(
+            unique
+        )
+    ]
+
+
 async def scrape_squadi_ladder(
     browser,
     ladder_config: dict[str, str],
@@ -1800,6 +2033,12 @@ async def scrape_squadi_ladder(
             )
             source = "rendered_text"
 
+        if not rows:
+            rows = parse_squadi_ladder_flat_text(
+                body_text
+            )
+            source = "flat_rendered_text"
+
         target_summary = ladder_target_summary(
             rows,
             ladder_config[
@@ -1825,6 +2064,19 @@ async def scrape_squadi_ladder(
                 f"{ladder_config['player']} ladder: "
                 f"FAILED TO PARSE current standings "
                 f"(rows={len(rows)}, source={source})."
+            )
+
+            # A compact, escaped preview makes the GitHub Action log useful
+            # without dumping the whole page.
+            preview = re.sub(
+                r"\s+",
+                " ",
+                body_text,
+            ).strip()[:2_500]
+
+            print(
+                f"{ladder_config['player']} ladder text preview: "
+                f"{preview}"
             )
 
         return {
