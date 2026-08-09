@@ -40,6 +40,17 @@ SOCCER_LADDERS = [
         "player": "Tate",
         "division": "U13 JCL SD1",
         "target_team": "Armadale SC - U13 JCL SD1",
+        # The supplied Squadi URL was the Draws/Fixtures view.  The ladder
+        # uses the same competition/division identifiers with the public
+        # ladder route.
+        "fixture_reference_url": (
+            "https://registration.squadi.com/livescoreSeasonFixture"
+            "?organisationKey=f524913b-317c-4011-8f66-e4eb3f101ebe"
+            "&yearId=8"
+            "&competitionUniqueKey=fafe940b-0a16-474a-9ac8-9dbf00035b0c"
+            "&divisionId=10761"
+            "&teamId=-1"
+        ),
         "url": (
             "https://registration.squadi.com/livescorePublicLadder"
             "?organisationKey=f524913b-317c-4011-8f66-e4eb3f101ebe"
@@ -1195,6 +1206,90 @@ def parse_squadi_ladder_payloads(
     return rows
 
 
+
+def ladder_team_key(value: Any) -> str:
+    """
+    Compare Squadi team names while ignoring the repeated age/division
+    suffix and punctuation.
+    """
+    name = clean(value)
+
+    name = re.sub(
+        r"\s*-\s*U\d+\s+.*$",
+        "",
+        name,
+        flags=re.IGNORECASE,
+    )
+
+    aliases = {
+        "MUMFC": "Murdoch University Melville FC",
+        "SPFC": "Sutherland Park FC",
+        "LUFC": "Lynwood United FC",
+    }
+
+    name = aliases.get(name, name)
+
+    return re.sub(
+        r"[^a-z0-9]+",
+        "",
+        name.lower(),
+    )
+
+
+def ladder_rows_signature(
+    rows: list[dict[str, Any]],
+) -> str:
+    """
+    Produce a stable comparison value containing only real ladder data.
+
+    Diagnostics and timestamps are deliberately excluded so a successful
+    refresh does not cause a GitHub Pages deployment when the standings
+    have not actually changed.
+    """
+    normalised = [
+        {
+            "position": row.get("position"),
+            "team": clean(row.get("team")),
+            "played": row.get("played"),
+            "won": row.get("won"),
+            "drawn": row.get("drawn"),
+            "lost": row.get("lost"),
+            "for": row.get("for"),
+            "against": row.get("against"),
+            "difference": row.get("difference"),
+            "points": row.get("points"),
+            "percentage": clean(row.get("percentage")),
+        }
+        for row in rows
+    ]
+
+    return json.dumps(
+        normalised,
+        sort_keys=True,
+        ensure_ascii=False,
+        separators=(",", ":"),
+    )
+
+
+def ladder_target_summary(
+    rows: list[dict[str, Any]],
+    target_team: str,
+) -> dict[str, Any] | None:
+    target_key = ladder_team_key(target_team)
+
+    return next(
+        (
+            row
+            for row in rows
+            if ladder_team_key(
+                row.get("team")
+            )
+            == target_key
+        ),
+        None,
+    )
+
+
 def parse_squadi_ladder_body_text(
     body_text: str,
 ) -> list[dict[str, Any]]:
@@ -1520,10 +1615,18 @@ async def scrape_squadi_ladder(
     browser,
     ladder_config: dict[str, str],
 ) -> dict[str, Any]:
+    """
+    Load one Squadi public ladder and wait for the dynamically rendered
+    ladder rows before parsing.
+
+    Squadi sometimes returns the shell page quickly and populates the ladder
+    several seconds later.  A fixed sleep can therefore save yesterday's
+    ladder even though the page itself loaded successfully.
+    """
     page = await browser.new_page(
         viewport={
             "width": 1440,
-            "height": 1200,
+            "height": 1400,
         }
     )
 
@@ -1532,7 +1635,9 @@ async def scrape_squadi_ladder(
 
     async def capture(response) -> None:
         content_type = (
-            response.headers.get("content-type")
+            response.headers.get(
+                "content-type"
+            )
             or ""
         ).lower()
 
@@ -1540,32 +1645,82 @@ async def scrape_squadi_ladder(
             return
 
         try:
-            payloads.append(
-                await response.json()
-            )
+            payload = await response.json()
+            payloads.append(payload)
+
             responses.append(
                 {
                     "url": response.url,
                     "status": response.status,
                 }
             )
+
         except Exception:
             pass
 
-    page.on("response", capture)
+    page.on(
+        "response",
+        capture,
+    )
 
     try:
+        print(
+            f"{ladder_config['player']} ladder: opening "
+            f"{ladder_config['url']}"
+        )
+
         await page.goto(
             ladder_config["url"],
             wait_until="domcontentloaded",
             timeout=120_000,
         )
-        await page.wait_for_timeout(10_000)
+
+        # Wait until Squadi has rendered a real ladder rather than relying
+        # on a fixed delay.  We look for the column headings plus the target
+        # club name because those are present in both Finn and Tate's tables.
+        try:
+            await page.wait_for_function(
+                """
+                targetName => {
+                  const text = (document.body?.innerText || "")
+                    .replace(/\\s+/g, " ")
+                    .toLowerCase();
+
+                  const simplifiedTarget = targetName
+                    .replace(/\\s*-\\s*u\\d+.*$/i, "")
+                    .toLowerCase();
+
+                  return (
+                    text.includes("rank") &&
+                    text.includes("mp") &&
+                    text.includes("pts") &&
+                    text.includes(simplifiedTarget)
+                  );
+                }
+                """,
+                ladder_config[
+                    "target_team"
+                ],
+                timeout=35_000,
+            )
+
+        except Exception:
+            # Do not fail immediately.  JSON may still contain the ladder,
+            # and diagnostics below are useful if Squadi changed the UI.
+            print(
+                f"{ladder_config['player']} ladder: "
+                "render wait timed out; trying captured data anyway."
+            )
 
         await page.evaluate(
-            "window.scrollTo(0, document.body.scrollHeight)"
+            "window.scrollTo("
+            "0, document.body.scrollHeight"
+            ")"
         )
-        await page.wait_for_timeout(2_000)
+
+        await page.wait_for_timeout(
+            1_500
+        )
 
         body_text = await page.locator(
             "body"
@@ -1587,13 +1742,14 @@ async def scrape_squadi_ladder(
                 )
                 """
             )
+
         except Exception:
             raw_tables = []
 
+        # Try every known Squadi representation, in order.
         rows = parse_squadi_ladder_payloads(
             payloads
         )
-
         source = "json"
 
         if not rows:
@@ -1608,46 +1764,70 @@ async def scrape_squadi_ladder(
             )
             source = "rendered_text"
 
-        target_key = re.sub(
-            r"[^a-z0-9]+",
-            "",
+        target_summary = ladder_target_summary(
+            rows,
             ladder_config[
                 "target_team"
-            ].lower(),
+            ],
         )
 
-        target_summary = next(
-            (
-                row
-                for row in rows
-                if re.sub(
-                    r"[^a-z0-9]+",
-                    "",
-                    row.get(
-                        "team",
-                        "",
-                    ).lower(),
-                )
-                == target_key
-            ),
-            None,
+        status = (
+            "ok"
+            if rows
+            and target_summary
+            else "not_found"
         )
+
+        if status == "ok":
+            print(
+                f"{ladder_config['player']} ladder: "
+                f"SCRAPED {len(rows)} teams via {source}; "
+                f"Armadale is #{target_summary.get('position')}."
+            )
+        else:
+            print(
+                f"{ladder_config['player']} ladder: "
+                f"FAILED TO PARSE current standings "
+                f"(rows={len(rows)}, source={source})."
+            )
 
         return {
-            "player": ladder_config["player"],
-            "division": ladder_config["division"],
+            "player": ladder_config[
+                "player"
+            ],
+            "division": ladder_config[
+                "division"
+            ],
             "target_team": ladder_config[
                 "target_team"
             ],
-            "source_url": ladder_config["url"],
+            "source_url": ladder_config[
+                "url"
+            ],
+            "fixture_reference_url": (
+                ladder_config.get(
+                    "fixture_reference_url",
+                    "",
+                )
+            ),
             "rows": rows,
-            "target_summary": target_summary,
-            "status": "ok" if rows else "not_found",
+            "target_summary": (
+                target_summary
+            ),
+            "status": status,
             "diagnostics": {
                 "source": source,
-                "json_payload_count": len(payloads),
-                "response_urls": responses[:30],
-                "body_text_preview": body_text[:4_000],
+                "json_payload_count": len(
+                    payloads
+                ),
+                "response_urls": (
+                    responses[:40]
+                ),
+                # Keep enough rendered text to diagnose a changed Squadi
+                # layout.  This is not used to decide whether Pages deploys.
+                "body_text_preview": (
+                    body_text[:20_000]
+                ),
             },
         }
 
@@ -1655,16 +1835,24 @@ async def scrape_squadi_ladder(
         await page.close()
 
 
+
 def write_soccer_ladders_data(
     ladders: list[dict[str, Any]],
 ) -> None:
     """
-    Merge successfully scraped ladders with the last published copy.
+    Publish fresh Squadi ladders while protecting the website from a
+    temporary Squadi failure.
 
-    A temporary Squadi ladder-page failure should not remove a ladder
-    that was working on the previous refresh.
+    Important behaviour:
+      * Successful standings replace the old data.
+      * last_updated only changes when the ladder itself changes.
+      * Failed refreshes retain the previous standings but mark them stale.
+      * Repeated failures do not create a new timestamp every 10 minutes.
     """
-    existing_by_player: dict[str, dict[str, Any]] = {}
+    existing_by_player: dict[
+        str,
+        dict[str, Any],
+    ] = {}
 
     if SOCCER_LADDER_DATA.exists():
         try:
@@ -1679,7 +1867,9 @@ def write_soccer_ladders_data(
                 [],
             ):
                 player = clean(
-                    item.get("player")
+                    item.get(
+                        "player"
+                    )
                 )
 
                 if player:
@@ -1687,55 +1877,261 @@ def write_soccer_ladders_data(
                         player
                     ] = item
 
-        except Exception:
-            pass
+        except Exception as exc:
+            print(
+                "Squadi ladders: could not read "
+                f"existing data: {exc}"
+            )
 
-    merged: list[dict[str, Any]] = []
+    merged: list[
+        dict[str, Any]
+    ] = []
 
-    for item in ladders:
-        player = clean(item.get("player"))
+    now = datetime.now(
+        ZoneInfo(
+            CONFIG["timezone"]
+        )
+    ).isoformat(
+        timespec="seconds"
+    )
 
-        # First repair the fresh scrape from its rendered-text diagnostics.
-        item = repair_squadi_ladder_from_diagnostics(item)
+    for fresh in ladders:
+        player = clean(
+            fresh.get(
+                "player"
+            )
+        )
 
-        if item.get("rows"):
-            merged.append(item)
+        fresh = (
+            repair_squadi_ladder_from_diagnostics(
+                fresh
+            )
+        )
+
+        previous = (
+            existing_by_player.get(
+                player
+            )
+        )
+
+        fresh_rows = (
+            fresh.get("rows")
+            or []
+        )
+
+        fresh_target = (
+            ladder_target_summary(
+                fresh_rows,
+                clean(
+                    fresh.get(
+                        "target_team"
+                    )
+                ),
+            )
+            if fresh_rows
+            else None
+        )
+
+        fresh_success = bool(
+            fresh_rows
+            and fresh_target
+        )
+
+        if fresh_success:
+            fresh[
+                "target_summary"
+            ] = fresh_target
+
+            previous_rows = (
+                previous.get("rows")
+                if previous
+                else []
+            ) or []
+
+            changed = (
+                ladder_rows_signature(
+                    fresh_rows
+                )
+                != ladder_rows_signature(
+                    previous_rows
+                )
+            )
+
+            if (
+                changed
+                or not previous
+                or not previous.get(
+                    "last_updated"
+                )
+            ):
+                fresh[
+                    "last_updated"
+                ] = now
+            else:
+                # Preserve the last real standings-change timestamp so a
+                # routine successful poll does not modify soccer_ladders.json.
+                fresh[
+                    "last_updated"
+                ] = previous.get(
+                    "last_updated"
+                )
+
+            fresh["status"] = "ok"
+            fresh["stale"] = False
+            fresh.pop(
+                "last_attempt_status",
+                None,
+            )
+
+            # Diagnostics are helpful while developing, but they can contain
+            # volatile network details. Keep the current parser source only.
+            fresh["diagnostics"] = {
+                "source": (
+                    fresh.get(
+                        "diagnostics",
+                        {},
+                    ).get(
+                        "source",
+                        "unknown",
+                    )
+                ),
+                "team_count": len(
+                    fresh_rows
+                ),
+            }
+
+            merged.append(
+                fresh
+            )
+
+            print(
+                f"{player} ladder: UPDATED "
+                f"({len(fresh_rows)} teams, "
+                f"Armadale #{fresh_target.get('position')}, "
+                f"changed={'yes' if changed else 'no'})."
+            )
+
             continue
 
-        if player in existing_by_player:
-            previous = existing_by_player[player].copy()
+        # Fresh scrape failed.  Keep the last successful rows if available,
+        # but make the stale state visible instead of silently presenting them
+        # as newly refreshed.
+        if previous and previous.get(
+            "rows"
+        ):
+            kept = previous.copy()
 
-            # The previous JSON may already contain the complete Squadi
-            # rendered ladder text in last_attempt_diagnostics. Repair it
-            # immediately rather than waiting for another successful scrape.
-            previous = repair_squadi_ladder_from_diagnostics(previous)
-
-            if previous.get("rows"):
-                merged.append(previous)
-                continue
-
-            previous["last_attempt_status"] = (
-                item.get("status")
+            kept["status"] = "stale"
+            kept["stale"] = True
+            kept[
+                "last_attempt_status"
+            ] = (
+                fresh.get("status")
                 or "not_found"
             )
-            previous["last_attempt_diagnostics"] = (
-                item.get("diagnostics")
+
+            kept["diagnostics"] = {
+                "source": "cached_previous",
+                "fresh_parse_source": (
+                    fresh.get(
+                        "diagnostics",
+                        {},
+                    ).get(
+                        "source",
+                        "unknown",
+                    )
+                ),
+            }
+
+            merged.append(
+                kept
             )
-            merged.append(previous)
+
+            print(
+                f"{player} ladder: STALE - "
+                "fresh Squadi parse failed; "
+                "retaining last successful standings."
+            )
+
         else:
-            merged.append(item)
+            failed = {
+                "player": player,
+                "division": fresh.get(
+                    "division"
+                ),
+                "target_team": fresh.get(
+                    "target_team"
+                ),
+                "source_url": fresh.get(
+                    "source_url"
+                ),
+                "fixture_reference_url": (
+                    fresh.get(
+                        "fixture_reference_url",
+                        "",
+                    )
+                ),
+                "rows": [],
+                "target_summary": None,
+                "status": "not_found",
+                "stale": True,
+                "last_attempt_status": (
+                    fresh.get(
+                        "status"
+                    )
+                    or "not_found"
+                ),
+                "diagnostics": {
+                    "source": (
+                        fresh.get(
+                            "diagnostics",
+                            {},
+                        ).get(
+                            "source",
+                            "unknown",
+                        )
+                    ),
+                },
+            }
+
+            merged.append(
+                failed
+            )
+
+            print(
+                f"{player} ladder: NO DATA - "
+                "no current or cached standings available."
+            )
 
     payload = {
         "source": "Squadi",
         "ladders": merged,
     }
 
+    new_text = json.dumps(
+        payload,
+        indent=2,
+        ensure_ascii=False,
+    )
+
+    old_text = ""
+
+    if SOCCER_LADDER_DATA.exists():
+        old_text = (
+            SOCCER_LADDER_DATA.read_text(
+                encoding="utf-8"
+            )
+        )
+
+    if new_text == old_text:
+        print(
+            "Squadi ladders: no published "
+            "standings change."
+        )
+        return
+
     SOCCER_LADDER_DATA.write_text(
-        json.dumps(
-            payload,
-            indent=2,
-            ensure_ascii=False,
-        ),
+        new_text,
         encoding="utf-8",
     )
 
@@ -1744,12 +2140,18 @@ def write_soccer_ladders_data(
         for item in merged
     )
 
+    stale = sum(
+        bool(item.get("stale"))
+        for item in merged
+    )
+
     print(
         "Squadi ladders: wrote "
         f"{successful}/{len(merged)} "
-        "available ladders to "
-        f"{SOCCER_LADDER_DATA}."
+        "available ladders; "
+        f"{stale} marked stale."
     )
+
 
 
 def ddmsa_clean(value: Any) -> str:
@@ -3440,6 +3842,10 @@ async def main() -> None:
                             "target_team"
                         ],
                         "source_url": ladder_config["url"],
+                        "fixture_reference_url": ladder_config.get(
+                            "fixture_reference_url",
+                            "",
+                        ),
                         "rows": [],
                         "target_summary": None,
                         "status": "error",
