@@ -21,6 +21,7 @@ DEBUG = ROOT / "docs" / "debug.json"
 MANUAL_FIXTURES = ROOT / "manual_fixtures.json"
 SOFTBALL_DATA = ROOT / "docs" / "softball.json"
 SOCCER_LADDER_DATA = ROOT / "docs" / "soccer_ladders.json"
+LADDER_PARSER_VERSION = "2026-08-09-v4-numeric-cell-tokenizer"
 
 SOCCER_LADDERS = [
     {
@@ -1314,11 +1315,32 @@ def parse_squadi_ladder_body_text(
         body_text,
     )
 
-    lines = [
-        clean(token)
-        for token in raw_tokens
-        if clean(token)
-    ]
+    lines: list[str] = []
+
+    for raw_token in raw_tokens:
+        token = clean(raw_token)
+
+        if not token:
+            continue
+
+        # Depending on browser/rendering behaviour, Squadi may expose the
+        # eight numerical ladder cells as either tab-delimited values or one
+        # space-delimited string such as:
+        #
+        #   "3 3 0 0 6 1 9 5"
+        #
+        # Split only all-numeric runs; never split a team name on spaces.
+        if re.fullmatch(
+            r"-?\d+(?:\s+-?\d+)+",
+            token,
+        ):
+            lines.extend(
+                token.split()
+            )
+        else:
+            lines.append(
+                token
+            )
 
     if not lines:
         return []
@@ -1679,7 +1701,8 @@ async def scrape_squadi_ladder(
     try:
         print(
             f"{ladder_config['player']} ladder: opening "
-            f"{ladder_config['url']}"
+            f"{ladder_config['url']} "
+            f"[parser {LADDER_PARSER_VERSION}]"
         )
 
         await page.goto(
@@ -2010,6 +2033,9 @@ def write_soccer_ladders_data(
                 ),
                 "team_count": len(
                     fresh_rows
+                ),
+                "parser_version": (
+                    LADDER_PARSER_VERSION
                 ),
             }
 
