@@ -71,11 +71,43 @@
       background: rgba(239,125,50,.22);
     }
 
+    .brand {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      display: grid;
+      place-items: center;
+      width: 48px;
+      height: 48px;
+      border: 1px solid rgba(255,255,255,.22);
+      border-radius: 16px;
+      background: rgba(255,255,255,.10);
+      font-size: 1.35rem;
+    }
+
+    .brand strong {
+      display: block;
+      font-size: 1rem;
+    }
+
+    .brand span {
+      display: block;
+      margin-top: 2px;
+      color: rgba(255,255,255,.67);
+      font-size: .78rem;
+      font-weight: 650;
+    }
+
     .hero-copy {
       position: relative;
       z-index: 1;
       max-width: 720px;
-      margin-top: 8px;
+      margin-top: 34px;
     }
 
     .hero-eyebrow {
@@ -277,95 +309,6 @@
       background: #f7f8fb;
     }
 
-
-    .match-preview {
-      margin: -8px 0 26px;
-      padding: 18px;
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      background: linear-gradient(135deg, rgba(47,103,232,.06), rgba(255,255,255,.98));
-      box-shadow: 0 6px 18px rgba(15,23,42,.05);
-    }
-
-    .match-preview-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-
-    .match-preview-head h3 { margin: 0; font-size: 1rem; letter-spacing: -.02em; }
-
-    .match-preview-tag {
-      padding: 5px 8px;
-      border-radius: 999px;
-      color: #2751b3;
-      background: var(--blue-soft);
-      font-size: .68rem;
-      font-weight: 900;
-      letter-spacing: .05em;
-      text-transform: uppercase;
-    }
-
-    .match-preview p { margin: 0; color: #344054; font-size: .91rem; line-height: 1.58; }
-
-    .preview-stats {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0,1fr));
-      gap: 9px;
-      margin-top: 14px;
-    }
-
-    .preview-stat {
-      padding: 10px 11px;
-      border: 1px solid var(--border);
-      border-radius: 13px;
-      background: rgba(255,255,255,.86);
-    }
-
-    .preview-stat-label {
-      display: block;
-      color: var(--muted);
-      font-size: .68rem;
-      font-weight: 850;
-      letter-spacing: .05em;
-      text-transform: uppercase;
-    }
-
-    .preview-stat strong { display: block; margin-top: 3px; color: var(--navy); font-size: .92rem; }
-
-    .form-row { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 13px; }
-
-    .form-chip {
-      display: inline-grid;
-      place-items: center;
-      min-width: 27px;
-      height: 27px;
-      padding: 0 7px;
-      border-radius: 9px;
-      color: white;
-      font-size: .7rem;
-      font-weight: 950;
-    }
-
-    .form-chip.w { background: var(--green); }
-    .form-chip.d { background: #747d8f; }
-    .form-chip.l { background: var(--red); }
-
-    .form-caption {
-      display: inline-flex;
-      align-items: center;
-      margin-right: 4px;
-      color: var(--muted);
-      font-size: .76rem;
-      font-weight: 800;
-    }
-
-    @media (max-width: 480px) {
-      .preview-stats { grid-template-columns: 1fr; }
-    }
-
     .section-title {
       display: flex;
       align-items: center;
@@ -383,89 +326,6 @@
       height: 1px;
       content: "";
       background: var(--border);
-    }
-
-
-    .day-group {
-      display: grid;
-      gap: 12px;
-      margin-top: 24px;
-    }
-
-    .day-heading {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin: 0 0 2px;
-      color: var(--navy);
-      font-size: 1rem;
-      font-weight: 950;
-      letter-spacing: .025em;
-    }
-
-    .day-heading::after {
-      flex: 1;
-      height: 1px;
-      content: "";
-      background: var(--border);
-    }
-
-    .person-tile {
-      display: grid;
-      place-items: center;
-      align-content: center;
-      min-height: 76px;
-      padding: 8px;
-      border-radius: 15px;
-      color: white;
-      background: linear-gradient(145deg,var(--navy),var(--navy-2));
-      text-align: center;
-    }
-
-    .person-tile.tate {
-      background: linear-gradient(145deg,#263d83,#4169d8);
-    }
-
-    .fixture.softball .person-tile {
-      background: linear-gradient(145deg,var(--orange-dark),var(--orange));
-    }
-
-    .person-tile strong {
-      font-size: 1rem;
-      font-weight: 950;
-      letter-spacing: .02em;
-    }
-
-    .person-tile span {
-      margin-top: 4px;
-      font-size: .66rem;
-      font-weight: 800;
-      letter-spacing: .08em;
-      opacity: .78;
-      text-transform: uppercase;
-    }
-
-    .next-person {
-      display: inline-flex;
-      align-items: center;
-      width: fit-content;
-      margin: 0 0 8px;
-      padding: 5px 9px;
-      border-radius: 999px;
-      color: #2751b3;
-      background: var(--blue-soft);
-      font-size: .76rem;
-      font-weight: 900;
-    }
-
-    .next-person.tate {
-      color: #334d9b;
-      background: #eef1ff;
-    }
-
-    .next-person.softball {
-      color: #913c14;
-      background: var(--orange-soft);
     }
 
     .fixtures {
@@ -493,6 +353,15 @@
       color: white;
       background: linear-gradient(145deg,var(--navy),var(--navy-2));
       text-align: center;
+    }
+
+    .fixture.school_soccer .person-tile {
+      background: linear-gradient(145deg,#176b5b,#2b9a79);
+    }
+
+    .fixture.school_soccer .sport-pill {
+      color: #176b5b;
+      background: #e9f8f2;
     }
 
     .fixture.softball .date-tile {
@@ -883,8 +752,7 @@
         padding: 16px;
       }
 
-      .date-tile,
-      .person-tile { min-height: 84px; }
+      .date-tile { min-height: 84px; }
 
       .fixture .meta {
         display: flex;
@@ -976,6 +844,14 @@
 <body>
   <header class="hero">
     <div class="shell hero-inner">
+      <div class="brand">
+        <div class="brand-icon">🏟️</div>
+        <div>
+          <strong>Finn &amp; Tate</strong>
+          <span>Family sports hub</span>
+        </div>
+      </div>
+
       <div class="hero-copy">
         <div class="hero-eyebrow">⚽ Soccer &nbsp; • &nbsp; 🥎 Softball</div>
         <h1>Come and watch us play.</h1>
@@ -1205,10 +1081,15 @@
           const lower = summary.toLowerCase();
 
           const sportProperty = decodeIcs(property(block, "X-SPORT")).toLowerCase();
+          const sourceType = decodeIcs(property(block, "X-SOURCE-TYPE")).toLowerCase();
           const sport =
-            sportProperty.includes("softball") ||
-            summary.includes("🥎") ||
-            lower.includes("softball")
+            sportProperty.includes("school soccer") ||
+            sourceType.includes("school_calendar") ||
+            summary.includes("🏫")
+              ? "school_soccer"
+              : sportProperty.includes("softball") ||
+                summary.includes("🥎") ||
+                lower.includes("softball")
               ? "softball"
               : "soccer";
 
@@ -1225,6 +1106,7 @@
             end,
             sport,
             person,
+            sourceType,
             location,
             wazeUrl,
             coordinates:
@@ -1248,6 +1130,7 @@
       return String(summary || "")
         .replace(/^⚽\s*/, "")
         .replace(/^🥎\s*/, "")
+        .replace(/^🏫\s*/, "")
         .replace(/\s*\|\s*(?:KO|Start)\s+\d{1,2}:\d{2}(?:am|pm)$/i, "")
         .trim();
     }
@@ -1256,111 +1139,6 @@
       return cleanSummary(summary)
         .replace(/^(Finn|Tate)\s*\|\s*/i, "")
         .trim();
-    }
-
-    function stripSoccerDivision(team) {
-      return String(team || "")
-        .replace(/\s*-\s*U\d+\s+.*$/i, "")
-        .trim();
-    }
-
-    function soccerNameKey(team) {
-      return stripSoccerDivision(team)
-        .replace(/\s+(?:FC|SC)$/i, "")
-        .replace(/[^a-z0-9]+/gi, "")
-        .toLowerCase();
-    }
-
-    function canonicalSoccerTeamName(team) {
-      const raw = stripSoccerDivision(team);
-
-      if (!raw) {
-        return "";
-      }
-
-      // Explicit aliases where Squadi commonly uses abbreviations.
-      const aliases = {
-        "LUFC": "Lynwood United FC",
-        "MUMFC": "Murdoch University Melville FC",
-        "SPFC": "Sutherland Park FC"
-      };
-
-      if (aliases[raw]) {
-        return aliases[raw];
-      }
-
-      // Prefer the full club naming used in Squadi's ladder data.
-      // This preserves suffixes such as FC and SC consistently.
-      const ladders = Array.isArray(state.ladders?.ladders)
-        ? state.ladders.ladders
-        : [];
-
-      const targetKey = soccerNameKey(raw);
-
-      for (const ladder of ladders) {
-        const rows = Array.isArray(ladder?.rows)
-          ? ladder.rows
-          : [];
-
-        for (const row of rows) {
-          const candidate = stripSoccerDivision(row?.team);
-
-          if (
-            candidate &&
-            soccerNameKey(candidate) === targetKey
-          ) {
-            return candidate;
-          }
-        }
-      }
-
-      // Known fixture-name fallbacks for cases where Squadi's fixture feed
-      // omits FC/SC but the club's published ladder name includes it.
-      const known = {
-        "Armadale": "Armadale SC",
-        "Mindarie": "Mindarie FC",
-        "Murdoch University Melville": "Murdoch University Melville FC"
-      };
-
-      return known[raw] || raw;
-    }
-
-
-    function matchDisplayTitle(event) {
-      if (
-        event.sport === "soccer" &&
-        event.homeTeam &&
-        event.awayTeam
-      ) {
-        return (
-          `${canonicalSoccerTeamName(event.homeTeam)} vs ` +
-          `${canonicalSoccerTeamName(event.awayTeam)}`
-        );
-      }
-
-      return withoutPerson(event.summary);
-    }
-
-    function personName(event) {
-      return event.person === "finn" ? "Finn" : "Tate";
-    }
-
-    function groupDateLabel(date) {
-      return new Intl.DateTimeFormat("en-AU", {
-        timeZone: TIME_ZONE,
-        weekday: "long",
-        day: "numeric",
-        month: "long"
-      }).format(date);
-    }
-
-    function dateGroupKey(date) {
-      return new Intl.DateTimeFormat("en-CA", {
-        timeZone: TIME_ZONE,
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit"
-      }).format(date);
     }
 
     function formatTime(date) {
@@ -1653,43 +1431,27 @@
       render();
     }
 
-    function fixtureCard(event, options = {}) {
+    function fixtureCard(event) {
+      const parts = dateParts(event.start);
       const round = roundText(event.description);
-      const icon = event.sport === "softball" ? "🥎" : "⚽";
-      const sport = event.sport === "softball" ? "Softball" : "Soccer";
-      const usePersonTile = Boolean(options.personTile);
-      const title =
-        event.sport === "soccer"
-          ? matchDisplayTitle(event)
-          : (
-              usePersonTile
-                ? matchDisplayTitle(event)
-                : cleanSummary(event.summary)
-            );
+      const icon =
+        event.sport === "softball" ? "🥎" :
+        event.sport === "school_soccer" ? "🏫" : "⚽";
+      const sport =
+        event.sport === "softball" ? "Softball" :
+        event.sport === "school_soccer" ? "School Soccer" : "Club Soccer";
 
       return `
         <article class="fixture ${event.sport}">
-          ${
-            usePersonTile
-              ? `
-                <div class="person-tile ${event.person}">
-                  <strong>${escapeHtml(personName(event))}</strong>
-                  <span>${escapeHtml(sport)}</span>
-                </div>`
-              : (() => {
-                  const parts = dateParts(event.start);
-                  return `
-                    <div class="date-tile">
-                      <span class="weekday">${escapeHtml(parts.weekday)}</span>
-                      <span class="day">${escapeHtml(parts.day)}</span>
-                      <span class="month">${escapeHtml(parts.month)}</span>
-                    </div>`;
-                })()
-          }
+          <div class="date-tile">
+            <span class="weekday">${escapeHtml(parts.weekday)}</span>
+            <span class="day">${escapeHtml(parts.day)}</span>
+            <span class="month">${escapeHtml(parts.month)}</span>
+          </div>
 
           <div>
             <div class="sport-pill">${icon} ${sport}</div>
-            <h3>${escapeHtml(title)}</h3>
+            <h3>${escapeHtml(cleanSummary(event.summary))}</h3>
 
             <div class="meta">
               <span>
@@ -1721,7 +1483,7 @@
     }
 
     function soccerResultCard(event) {
-      const title = matchDisplayTitle(event);
+      const title = withoutPerson(event.summary);
       const hasScore =
         event.homeScore !== "" &&
         event.awayScore !== "";
@@ -1786,209 +1548,6 @@
         </article>`;
     }
 
-    function ladderTeamDisplayName(team, division) {
-      let name = String(team || "").trim();
-      const div = String(division || "").trim();
-
-      if (div) {
-        const escaped = div.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-        name = name.replace(
-          new RegExp("\\s*-\\s*" + escaped + "\\s*$", "i"),
-          ""
-        );
-      }
-
-      name = name.replace(
-        /\s*-\s*U\d+\s+.*$/i,
-        ""
-      ).trim();
-
-      const aliases = {
-        "LUFC": "Lynwood United FC",
-        "MUMFC": "Murdoch University Melville FC",
-        "SPFC": "Sutherland Park FC"
-      };
-
-      return aliases[name] || name;
-    }
-
-
-
-    function ladderRowForTeam(ladder, teamName) {
-      if (!ladder || !Array.isArray(ladder.rows)) return null;
-      const targetKey = soccerNameKey(teamName);
-      return ladder.rows.find(row => soccerNameKey(row.team) === targetKey) || null;
-    }
-
-    function ordinal(value) {
-      const number = Number(value);
-      if (!Number.isFinite(number)) return "—";
-      const mod100 = number % 100;
-      if (mod100 >= 11 && mod100 <= 13) return `${number}th`;
-      switch (number % 10) {
-        case 1: return `${number}st`;
-        case 2: return `${number}nd`;
-        case 3: return `${number}rd`;
-        default: return `${number}th`;
-      }
-    }
-
-    function pointsPerGame(row) {
-      const played = Number(row?.played);
-      const points = Number(row?.points);
-      if (!Number.isFinite(played) || !Number.isFinite(points) || played <= 0) return null;
-      return points / played;
-    }
-
-    function recentTeamForm(event, teamName, limit = 5) {
-      const targetKey = soccerNameKey(teamName);
-      return state.fixtures
-        .filter(item =>
-          item.sport === "soccer" &&
-          item.start < event.start &&
-          item.homeScore !== "" && item.awayScore !== "" &&
-          (soccerNameKey(item.homeTeam) === targetKey || soccerNameKey(item.awayTeam) === targetKey)
-        )
-        .sort((a,b) => b.start - a.start)
-        .slice(0, limit)
-        .map(item => {
-          const isHome = soccerNameKey(item.homeTeam) === targetKey;
-          const scored = Number(isHome ? item.homeScore : item.awayScore);
-          const conceded = Number(isHome ? item.awayScore : item.homeScore);
-          if (scored > conceded) return "W";
-          if (scored < conceded) return "L";
-          return "D";
-        });
-    }
-
-    function formSummary(form) {
-      const wins = form.filter(value => value === "W").length;
-      const draws = form.filter(value => value === "D").length;
-      const losses = form.filter(value => value === "L").length;
-      const parts = [];
-      if (wins) parts.push(`${wins} ${wins === 1 ? "win" : "wins"}`);
-      if (draws) parts.push(`${draws} ${draws === 1 ? "draw" : "draws"}`);
-      if (losses) parts.push(`${losses} ${losses === 1 ? "loss" : "losses"}`);
-      return parts.join(", ");
-    }
-
-    function formMarkup(label, form) {
-      if (!form.length) return "";
-      return `
-        <div class="form-row">
-          <span class="form-caption">${escapeHtml(label)} form</span>
-          ${form.map(value => `<span class="form-chip ${value.toLowerCase()}">${value}</span>`).join("")}
-        </div>`;
-    }
-
-    function soccerMatchPreview(event) {
-      const ladder = soccerLadder(event.person);
-      if (!ladder) return "";
-
-      const homeName = canonicalSoccerTeamName(event.homeTeam);
-      const awayName = canonicalSoccerTeamName(event.awayTeam);
-      const homeRow = ladderRowForTeam(ladder, homeName);
-      const awayRow = ladderRowForTeam(ladder, awayName);
-      if (!homeRow || !awayRow) return "";
-
-      const homePpg = pointsPerGame(homeRow);
-      const awayPpg = pointsPerGame(awayRow);
-      const homeForm = recentTeamForm(event, homeName);
-      const awayForm = recentTeamForm(event, awayName);
-      const homeRecent = formSummary(homeForm);
-      const awayRecent = formSummary(awayForm);
-      const homePosition = ordinal(homeRow.position);
-      const awayPosition = ordinal(awayRow.position);
-      const homeDiff = Number(homeRow.difference ?? 0);
-      const awayDiff = Number(awayRow.difference ?? 0);
-
-      let seasonText = "";
-      if (homePpg !== null && awayPpg !== null) {
-        if (Math.abs(homePpg - awayPpg) < 0.12) {
-          seasonText = "The teams have been producing very similar results across the season.";
-        } else if (homePpg > awayPpg) {
-          seasonText = `${homeName} have the stronger season record so far, averaging ${homePpg.toFixed(2)} points per game compared with ${awayPpg.toFixed(2)} for ${awayName}.`;
-        } else {
-          seasonText = `${awayName} have the stronger season record so far, averaging ${awayPpg.toFixed(2)} points per game compared with ${homePpg.toFixed(2)} for ${homeName}.`;
-        }
-      }
-
-      let recentText = "";
-      if (homeRecent && awayRecent) {
-        recentText = ` Recent results show ${homeName} with ${homeRecent} from their last ${homeForm.length}, while ${awayName} have ${awayRecent} from their last ${awayForm.length}.`;
-      } else if (homeRecent) {
-        recentText = ` ${homeName} come into the game with ${homeRecent} from their last ${homeForm.length} recorded matches.`;
-      } else if (awayRecent) {
-        recentText = ` ${awayName} come into the game with ${awayRecent} from their last ${awayForm.length} recorded matches.`;
-      }
-
-      let goalText = "";
-      if (homeDiff !== awayDiff) {
-        const better = homeDiff > awayDiff ? homeName : awayName;
-        const betterDiff = homeDiff > awayDiff ? homeDiff : awayDiff;
-        goalText = ` ${better} also have the better goal difference (${betterDiff > 0 ? "+" : ""}${betterDiff}).`;
-      }
-
-      const commentary = `${homeName} are ${homePosition} on the ladder and ${awayName} are ${awayPosition}. ${seasonText}${recentText}${goalText}`;
-
-      return `
-        <section class="match-preview">
-          <div class="match-preview-head">
-            <h3>⚽ Match Preview</h3>
-            <span class="match-preview-tag">Form guide</span>
-          </div>
-          <p>${escapeHtml(commentary)}</p>
-          <div class="preview-stats">
-            <div class="preview-stat">
-              <span class="preview-stat-label">${escapeHtml(homeName)}</span>
-              <strong>${homePosition} • ${escapeHtml(homeRow.points ?? "—")} pts${homePpg !== null ? ` • ${homePpg.toFixed(2)} PPG` : ""}</strong>
-            </div>
-            <div class="preview-stat">
-              <span class="preview-stat-label">${escapeHtml(awayName)}</span>
-              <strong>${awayPosition} • ${escapeHtml(awayRow.points ?? "—")} pts${awayPpg !== null ? ` • ${awayPpg.toFixed(2)} PPG` : ""}</strong>
-            </div>
-          </div>
-          ${formMarkup(homeName, homeForm)}
-          ${formMarkup(awayName, awayForm)}
-        </section>`;
-    }
-
-    function softballMatchPreview(event) {
-      const data = state.softball;
-      if (!data?.team_summary) return "";
-
-      const team = data.team_summary;
-      const position = ordinal(team.position);
-      const results = Array.isArray(data.results) ? data.results : [];
-      const recent = results.slice().reverse().slice(0,5)
-        .map(result => String(result.result || "").toUpperCase())
-        .filter(value => ["W","D","L"].includes(value));
-      const recentText = recent.length
-        ? ` Recent recorded form is ${formSummary(recent)} from the last ${recent.length}.`
-        : "";
-      const commentary = `Thornlie Hawks (Blue) are currently ${position} in the ${data.division || "competition"} with ${team.points ?? "—"} points from ${team.played ?? "—"} games.${recentText}`;
-
-      return `
-        <section class="match-preview">
-          <div class="match-preview-head">
-            <h3>🥎 Match Preview</h3>
-            <span class="match-preview-tag">Form guide</span>
-          </div>
-          <p>${escapeHtml(commentary)}</p>
-          <div class="preview-stats">
-            <div class="preview-stat">
-              <span class="preview-stat-label">Thornlie Hawks (Blue)</span>
-              <strong>${position} • ${escapeHtml(team.points ?? "—")} pts • ${escapeHtml(team.won ?? "—")}W ${escapeHtml(team.drawn ?? "—")}D ${escapeHtml(team.lost ?? "—")}L</strong>
-            </div>
-          </div>
-          ${formMarkup("Thornlie Hawks (Blue)", recent)}
-        </section>`;
-    }
-
-    function matchPreview(event) {
-      return event.sport === "softball" ? softballMatchPreview(event) : soccerMatchPreview(event);
-    }
-
     function soccerLadder(person) {
       const ladders = Array.isArray(state.ladders?.ladders)
         ? state.ladders.ladders
@@ -2017,7 +1576,7 @@
         return `
           <tr class="${highlight ? "highlight-soccer" : ""}">
             <td>${escapeHtml(row.position ?? "—")}</td>
-            <td>${escapeHtml(ladderTeamDisplayName(row.team, ladder.division))}</td>
+            <td>${escapeHtml(row.team ?? "")}</td>
             <td>${escapeHtml(row.played ?? "—")}</td>
             <td>${escapeHtml(row.won ?? "—")}</td>
             <td>${escapeHtml(row.drawn ?? "—")}</td>
@@ -2148,41 +1707,6 @@
       }
 
       const next = upcoming[0];
-      const nextSport =
-        next.sport === "softball" ? "Softball" : "Soccer";
-
-      const grouped = new Map();
-
-      upcoming.forEach(event => {
-        const key = dateGroupKey(event.start);
-
-        if (!grouped.has(key)) {
-          grouped.set(key, {
-            date: event.start,
-            fixtures: []
-          });
-        }
-
-        grouped.get(key).fixtures.push(event);
-      });
-
-      const groupedHtml = [...grouped.values()]
-        .map(group => `
-          <section class="day-group">
-            <h3 class="day-heading">
-              ${escapeHtml(groupDateLabel(group.date))}
-            </h3>
-
-            <div class="fixtures">
-              ${group.fixtures
-                .map(event =>
-                  fixtureCard(event, { personTile: true })
-                )
-                .join("")}
-            </div>
-          </section>
-        `)
-        .join("");
 
       return `
         ${pageHeading("Upcoming games","All Finn and Tate matches")}
@@ -2190,19 +1714,7 @@
         <section class="next-card">
           <div>
             <div class="next-label">Next game</div>
-
-            <div
-              class="next-person ${next.person} ${next.sport}"
-            >
-              ${next.sport === "softball" ? "🥎" : "⚽"}
-              ${escapeHtml(personName(next))} •
-              ${escapeHtml(nextSport)}
-            </div>
-
-            <h3 class="next-title">
-              ${escapeHtml(matchDisplayTitle(next))}
-            </h3>
-
+            <h3 class="next-title">${escapeHtml(cleanSummary(next.summary))}</h3>
             <div class="meta">
               <span>📅 ${escapeHtml(formatDate(next.start,true))}</span>
               <span>🕒 ${escapeHtml(formatTime(next.start))}</span>
@@ -2212,32 +1724,33 @@
           </div>
         </section>
 
-        ${matchPreview(next)}
-
         <div class="section-title">All upcoming games</div>
-
-        ${groupedHtml}
-      `;
+        <div class="fixtures">
+          ${upcoming.map(fixtureCard).join("")}
+        </div>`;
     }
 
     function personSportButtons(person) {
-      if (person === "finn") return "";
+      const current = state.personSport[person];
 
-      const current = state.personSport.tate;
+      if (person === "finn") {
+        return `
+          <div class="sport-switch">
+            <button data-sport="soccer" class="${current === "soccer" ? "active" : ""}">
+              ⚽ Club Soccer
+            </button>
+            <button data-sport="school_soccer" class="${current === "school_soccer" ? "active" : ""}">
+              🏫 School Soccer
+            </button>
+          </div>`;
+      }
 
       return `
         <div class="sport-switch">
-          <button
-            data-sport="soccer"
-            class="${current === "soccer" ? "active" : ""}"
-          >
+          <button data-sport="soccer" class="${current === "soccer" ? "active" : ""}">
             ⚽ Soccer
           </button>
-
-          <button
-            data-sport="softball"
-            class="softball ${current === "softball" ? "active" : ""}"
-          >
+          <button data-sport="softball" class="softball ${current === "softball" ? "active" : ""}">
             🥎 Softball
           </button>
         </div>`;
@@ -2246,25 +1759,23 @@
     function contentButtons(person) {
       const current = state.personView[person];
 
+      if (person === "finn" && state.personSport.finn === "school_soccer") {
+        return `
+          <div class="content-switch">
+            <button data-content="fixtures" class="active">Fixtures</button>
+          </div>`;
+      }
+
       return `
         <div class="content-switch">
-          <button data-content="fixtures" class="${current === "fixtures" ? "active" : ""}">
-            Fixtures
-          </button>
-          <button data-content="results" class="${current === "results" ? "active" : ""}">
-            Results
-          </button>
-          <button data-content="ladder" class="${current === "ladder" ? "active" : ""}">
-            Ladder
-          </button>
+          <button data-content="fixtures" class="${current === "fixtures" ? "active" : ""}">Fixtures</button>
+          <button data-content="results" class="${current === "results" ? "active" : ""}">Results</button>
+          <button data-content="ladder" class="${current === "ladder" ? "active" : ""}">Ladder</button>
         </div>`;
     }
 
     function personContent(person) {
-      const sport =
-        person === "finn"
-          ? "soccer"
-          : state.personSport.tate;
+      const sport = state.personSport[person];
 
       const view = state.personView[person];
       const now = new Date();
@@ -2307,7 +1818,7 @@
           .filter(
             event =>
               event.person === person &&
-              event.sport === "soccer" &&
+              event.sport === sport &&
               (event.end || event.start) < now
           )
           .sort((a,b) => b.start - a.start);
@@ -2321,6 +1832,10 @@
             </div>`;
       }
 
+      if (sport === "school_soccer") {
+        return `<div class="empty"><span class="icon">🏫</span>School soccer fixtures are supplied by the St John Bosco College calendar.</div>`;
+      }
+
       return sport === "softball"
         ? softballLadderMarkup()
         : soccerLadderMarkup(person);
@@ -2328,14 +1843,13 @@
 
     function renderPerson(person) {
       const name = person === "finn" ? "Finn" : "Tate";
-      const sport =
-        person === "finn"
-          ? "soccer"
-          : state.personSport.tate;
+      const sport = state.personSport[person];
 
       const subtitle =
-        person === "finn"
-          ? "Soccer — fixtures, results and ladder"
+        person === "finn" && sport === "school_soccer"
+          ? "School Soccer — St John Bosco College fixtures"
+          : person === "finn"
+          ? "Club Soccer — fixtures, results and ladder"
           : sport === "soccer"
           ? "Soccer — fixtures, results and ladder"
           : "Softball — fixtures, results and ladder";
@@ -2379,8 +1893,10 @@
     function bindDynamicControls() {
       document.querySelectorAll("[data-sport]").forEach(button => {
         button.addEventListener("click", () => {
-          state.personSport.tate = button.dataset.sport;
-          state.personView.tate = "fixtures";
+          const person = state.page;
+          if (person !== "finn" && person !== "tate") return;
+          state.personSport[person] = button.dataset.sport;
+          state.personView[person] = "fixtures";
           render();
         });
       });
