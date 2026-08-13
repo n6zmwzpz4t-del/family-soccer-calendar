@@ -23,6 +23,9 @@ SOFTBALL_DATA = ROOT / "docs" / "softball.json"
 SOCCER_LADDER_DATA = ROOT / "docs" / "soccer_ladders.json"
 LADDER_PARSER_VERSION = "2026-08-09-v5-flat-row-regex"
 
+SCHOOL_CALENDAR_URL = "https://www.stjohnbosco.wa.edu.au/calendar/"
+SCHOOL_SOCCER_MATCH_TEXT = "ACC soccer Y10-12 boys"
+
 SOCCER_LADDERS = [
     {
         "player": "Finn",
@@ -3738,6 +3741,286 @@ def write_ddmsa_softball_data(data: dict[str, Any]) -> bool:
     return True
 
 
+SCHOOL_EVENT_DATE_KEYS = (
+    "start", "startDate", "startDateTime", "startTime",
+    "date", "eventDate", "dateTime",
+)
+SCHOOL_EVENT_END_KEYS = (
+    "end", "endDate", "endDateTime", "endTime",
+)
+SCHOOL_EVENT_LOCATION_KEYS = (
+    "location", "locationName", "venue", "venueName", "address", "where",
+)
+
+def school_object_matches(obj: dict[str, Any]) -> bool:
+    needle = SCHOOL_SOCCER_MATCH_TEXT.lower()
+    return any(
+        isinstance(value, str) and needle in value.lower()
+        for value in obj.values()
+    )
+
+def school_fixture_from_json(
+    obj: dict[str, Any],
+    timezone: ZoneInfo,
+) -> dict[str, Any] | None:
+    if not school_object_matches(obj):
+        return None
+
+    start = parse_datetime(first(obj, SCHOOL_EVENT_DATE_KEYS), timezone)
+    if not start:
+        return None
+
+    end = parse_datetime(first(obj, SCHOOL_EVENT_END_KEYS), timezone)
+    duration = (
+        max(15, int((end - start).total_seconds() // 60))
+        if end and end > start
+        else 60
+    )
+
+    title = next(
+        (
+            clean(obj.get(key))
+            for key in ("title", "name", "summary", "eventTitle", "eventName", "subject")
+            if clean(obj.get(key))
+            and SCHOOL_SOCCER_MATCH_TEXT.lower() in clean(obj.get(key)).lower()
+        ),
+        SCHOOL_SOCCER_MATCH_TEXT,
+    )
+
+    location = normalise_location(
+        clean(first(obj, SCHOOL_EVENT_LOCATION_KEYS))
+    )
+    source_url = clean(
+        first(obj, ("url", "link", "eventUrl", "eventURL", "href"))
+    )
+    if not source_url.startswith("http"):
+        source_url = SCHOOL_CALENDAR_URL
+
+    source_id = clean(
+        first(obj, ("id", "eventId", "eventID", "uid", "guid"))
+    )
+    if not source_id:
+        source_id = "school-" + hashlib.sha256(
+            f"{title}|{start.isoformat()}|{location}".encode("utf-8")
+        ).hexdigest()[:16]
+
+    return {
+        "start": start,
+        "home": "St John Bosco College",
+        "away": "ACC Soccer",
+        "venue": location,
+        "field": "",
+        "round": "",
+        "source_id": source_id,
+        "label": "Finn",
+        "source_url": source_url,
+        "latitude": None,
+        "longitude": None,
+        "coordinate_source": "",
+        "home_score": "",
+        "away_score": "",
+        "sport_icon": "🏫",
+        "sport_name": "School Soccer",
+        "time_label": "KO",
+        "duration_minutes": duration,
+        "reminder_minutes": int(CONFIG.get("reminder_minutes", 90)),
+        "notes": "",
+        "display_title": title,
+        "source_type": "school_calendar",
+    }
+
+def parse_school_card_datetime(text: str, timezone: ZoneInfo) -> datetime | None:
+    text = clean(text)
+    if not text:
+        return None
+    if not re.search(
+        r"\b(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)(?:day)?\b"
+        r"|\b\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)",
+        text,
+        flags=re.IGNORECASE,
+    ):
+        return None
+    try:
+        parsed = dateparser.parse(text, fuzzy=True, dayfirst=True)
+        if not parsed:
+            return None
+        if parsed.tzinfo is None:
+            parsed = parsed.replace(tzinfo=timezone)
+        return parsed.astimezone(timezone)
+    except Exception:
+        return None
+
+async def scrape_school_soccer(browser, timezone: ZoneInfo):
+    page = await browser.new_page(viewport={"width": 1440, "height": 1400})
+    payloads: list[Any] = []
+    response_log: list[dict[str, Any]] = []
+
+    async def capture(response) -> None:
+        content_type = (response.headers.get("content-type") or "").lower()
+        url_lower = response.url.lower()
+        if (
+            "json" not in content_type
+            and "calendar" not in url_lower
+            and "event" not in url_lower
+        ):
+            return
+
+        response_log.append({
+            "url": response.url,
+            "status": response.status,
+            "content_type": content_type,
+        })
+
+        if "json" in content_type:
+            try:
+                payloads.append(await response.json())
+            except Exception:
+                pass
+
+    page.on("response", capture)
+
+    try:
+        print(
+            "St John Bosco school soccer: opening "
+            + SCHOOL_CALENDAR_URL
+        )
+        await page.goto(
+            SCHOOL_CALENDAR_URL,
+            wait_until="domcontentloaded",
+            timeout=120_000,
+        )
+        await page.wait_for_timeout(12_000)
+
+        fixtures: list[dict[str, Any]] = []
+
+        # Preferred route: structured calendar/event JSON.
+        for payload in payloads:
+            for obj in walk(payload):
+                fixture = school_fixture_from_json(obj, timezone)
+                if fixture:
+                    fixtures.append(fixture)
+
+        frame_debug: list[dict[str, Any]] = []
+
+        # Fallback: search visible main-page/iframe event cards.
+        if not fixtures:
+            for frame_index, frame in enumerate(page.frames):
+                try:
+                    body_text = await frame.locator("body").inner_text(timeout=5_000)
+                except Exception:
+                    continue
+
+                contains_target = (
+                    SCHOOL_SOCCER_MATCH_TEXT.lower() in body_text.lower()
+                )
+                frame_debug.append({
+                    "frame_index": frame_index,
+                    "url": frame.url,
+                    "contains_target": contains_target,
+                    "body_text_preview": body_text[:5_000],
+                })
+
+                if not contains_target:
+                    continue
+
+                try:
+                    matches = frame.get_by_text(
+                        re.compile(re.escape(SCHOOL_SOCCER_MATCH_TEXT), re.IGNORECASE)
+                    )
+                    count = min(await matches.count(), 50)
+                except Exception:
+                    count = 0
+
+                for index in range(count):
+                    try:
+                        data = await matches.nth(index).evaluate(
+                            """el => {
+                              let node = el;
+                              let best = (el.innerText || el.textContent || '').trim();
+                              for (let i = 0; i < 8 && node; i += 1) {
+                                const text = (node.innerText || node.textContent || '')
+                                  .replace(/\\s+/g, ' ').trim();
+                                if (text.length >= best.length && text.length <= 1800) {
+                                  best = text;
+                                }
+                                node = node.parentElement;
+                              }
+                              const a = el.closest('a') || el.querySelector?.('a');
+                              return {text: best, href: a?.href || ''};
+                            }"""
+                        )
+                    except Exception:
+                        continue
+
+                    card_text = clean(data.get("text"))
+                    start = parse_school_card_datetime(card_text, timezone)
+                    if not start:
+                        continue
+
+                    location = ""
+                    loc_match = re.search(
+                        r"(?:Location|Venue|Where)\s*[:\-]\s*([^|]+)",
+                        card_text,
+                        flags=re.IGNORECASE,
+                    )
+                    if loc_match:
+                        location = normalise_location(clean(loc_match.group(1)))
+
+                    fixtures.append({
+                        "start": start,
+                        "home": "St John Bosco College",
+                        "away": "ACC Soccer",
+                        "venue": location,
+                        "field": "",
+                        "round": "",
+                        "source_id": "school-dom-" + hashlib.sha256(
+                            f"{card_text}|{start.isoformat()}".encode("utf-8")
+                        ).hexdigest()[:16],
+                        "label": "Finn",
+                        "source_url": clean(data.get("href")) or SCHOOL_CALENDAR_URL,
+                        "latitude": None,
+                        "longitude": None,
+                        "coordinate_source": "",
+                        "home_score": "",
+                        "away_score": "",
+                        "sport_icon": "🏫",
+                        "sport_name": "School Soccer",
+                        "time_label": "KO",
+                        "duration_minutes": 60,
+                        "reminder_minutes": int(CONFIG.get("reminder_minutes", 90)),
+                        "notes": card_text,
+                        "display_title": SCHOOL_SOCCER_MATCH_TEXT,
+                        "source_type": "school_calendar",
+                    })
+
+        # De-duplicate the same school event if the page exposes it more than once.
+        unique: dict[tuple[str, str], dict[str, Any]] = {}
+        for fixture in fixtures:
+            key = (
+                fixture["start"].isoformat(),
+                clean(fixture.get("display_title")).lower(),
+            )
+            unique[key] = fixture
+
+        fixtures = sorted(unique.values(), key=lambda item: item["start"])
+
+        print(
+            "St John Bosco school soccer: "
+            f"found {len(fixtures)} matching '{SCHOOL_SOCCER_MATCH_TEXT}' events."
+        )
+
+        return fixtures, {
+            "source": SCHOOL_CALENDAR_URL,
+            "match_text": SCHOOL_SOCCER_MATCH_TEXT,
+            "fixture_count": len(fixtures),
+            "json_payload_count": len(payloads),
+            "responses": response_log[:40],
+            "frames": frame_debug,
+        }
+    finally:
+        await page.close()
+
+
 def load_manual_fixtures(
     timezone: ZoneInfo,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
@@ -4035,17 +4318,30 @@ def build_calendar(
             round_text,
             result_text,
             notes,
-            ("Open in Squadi: " + source_url) if source_url else "",
+            ((("Open school calendar" if clean(fixture.get("source_type")) == "school_calendar" else "Open in Squadi") + ": " + source_url) if source_url else ""),
         ]
         description = "\n".join(filter(None, description_lines))
 
         sport_icon = clean(fixture.get("sport_icon")) or "⚽"
         time_label = clean(fixture.get("time_label")) or "KO"
-        title = (
-            f"{sport_icon} {fixture['label']} | "
+        display_title = clean(fixture.get("display_title"))
+
+        match_title = display_title or (
+
             f"{short_team_name(fixture['home'])} vs "
-            f"{short_team_name(fixture['away'])} | "
+
+            f"{short_team_name(fixture['away'])}"
+
+        )
+
+        title = (
+
+            f"{sport_icon} {fixture['label']} | "
+
+            f"{match_title} | "
+
             f"{time_label} {format_kickoff_time(start)}"
+
         )
 
         event_lines = [
@@ -4062,6 +4358,7 @@ def build_calendar(
             ),
             "X-HOME-TEAM:" + escape_ics(short_team_name(fixture["home"])),
             "X-AWAY-TEAM:" + escape_ics(short_team_name(fixture["away"])),
+            "X-SOURCE-TYPE:" + escape_ics(clean(fixture.get("source_type"))),
         ]
 
         if home_score and away_score:
@@ -4113,6 +4410,21 @@ async def main() -> None:
             fixtures, debug = await scrape_team(browser, team, timezone)
             all_fixtures.extend(fixtures)
             debug_teams.append(debug)
+
+        try:
+            school_fixtures, school_debug = await scrape_school_soccer(
+                browser,
+                timezone,
+            )
+            all_fixtures.extend(school_fixtures)
+        except Exception as exc:
+            school_debug = {
+                "source": SCHOOL_CALENDAR_URL,
+                "match_text": SCHOOL_SOCCER_MATCH_TEXT,
+                "fixture_count": 0,
+                "error": str(exc),
+            }
+            print(f"St John Bosco school soccer warning: {exc}")
 
         soccer_ladders: list[dict[str, Any]] = []
 
@@ -4190,6 +4502,7 @@ async def main() -> None:
                     )
                 ),
                 "teams": debug_teams,
+                "school_soccer": school_debug,
                 "manual_fixtures": manual_debug,
                 "manual_fixture_count": len(manual_fixtures),
                 "fixtures": [
