@@ -709,6 +709,147 @@
       color: var(--red);
     }
 
+
+    .home-weather {
+      margin-top: 32px;
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: var(--surface);
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.055);
+    }
+
+    .home-weather-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .home-weather-head h3 {
+      margin: 0;
+      font-size: 1.12rem;
+      letter-spacing: -0.025em;
+    }
+
+    .home-weather-head p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .home-weather-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .home-weather-day {
+      min-width: 0;
+      padding: 11px 7px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #fafbfc;
+      text-align: center;
+    }
+
+    .home-weather-day .day {
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 850;
+      text-transform: uppercase;
+    }
+
+    .home-weather-day .weather-icon {
+      display: block;
+      margin: 6px 0 4px;
+      font-size: 1.55rem;
+      line-height: 1;
+    }
+
+    .home-weather-day .temperature {
+      color: var(--navy);
+      font-size: 0.94rem;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .home-weather-day .minimum {
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+
+    .home-weather-day .rain {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 0.7rem;
+      white-space: nowrap;
+    }
+
+    .home-weather-loading {
+      padding: 16px;
+      border: 1px dashed var(--border);
+      border-radius: 14px;
+      color: var(--muted);
+      background: #fafbfc;
+      font-size: 0.88rem;
+      text-align: center;
+    }
+
+    @media (max-width: 700px) {
+      .home-weather-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 430px) {
+      .home-weather {
+        padding: 14px;
+      }
+
+      .home-weather-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .home-weather-day {
+        display: grid;
+        grid-template-columns: 42px 1fr auto;
+        grid-template-areas:
+          "icon day temp"
+          "icon rain min";
+        align-items: center;
+        gap: 2px 8px;
+        padding: 10px 12px;
+        text-align: left;
+      }
+
+      .home-weather-day .day {
+        grid-area: day;
+      }
+
+      .home-weather-day .weather-icon {
+        grid-area: icon;
+        margin: 0;
+        text-align: center;
+      }
+
+      .home-weather-day .temperature {
+        grid-area: temp;
+      }
+
+      .home-weather-day .minimum {
+        grid-area: min;
+        text-align: right;
+      }
+
+      .home-weather-day .rain {
+        grid-area: rain;
+        margin-top: 0;
+      }
+    }
+
     .bottom-subscribe {
       display: grid;
       gap: 10px;
@@ -916,6 +1057,12 @@
     const WEATHER_DAYS = 7;
     const WEATHER_CACHE_MINUTES = 30;
 
+    // Piara Waters, WA — used for the 7-day forecast on the Home/Upcoming page.
+    const PIARA_WATERS_COORDS = {
+      latitude: -32.13344,
+      longitude: 115.91634
+    };
+
     const KNOWN_VENUES = [
       {
         pattern: /Langford Park Sporting Complex/i,
@@ -937,6 +1084,8 @@
       fixtures: [],
       softball: null,
       ladders: null,
+      homeWeather: null,
+      homeWeatherStatus: "",
       loadedAt: null
     };
 
@@ -1355,6 +1504,12 @@
           "weather_code",
           "wind_speed_10m"
         ].join(","),
+        daily: [
+          "weather_code",
+          "temperature_2m_max",
+          "temperature_2m_min",
+          "precipitation_probability_max"
+        ].join(","),
         timezone: TIME_ZONE,
         forecast_days: "8",
         temperature_unit: "celsius",
@@ -1380,6 +1535,138 @@
       } catch (_) {}
 
       return payload;
+    }
+
+
+    function dailyForecast(payload) {
+      const daily = payload?.daily;
+
+      if (!daily?.time?.length) {
+        return [];
+      }
+
+      return daily.time.slice(0,7).map((date,index) => ({
+        date,
+        weatherCode: Number(daily.weather_code?.[index]),
+        max: Number(daily.temperature_2m_max?.[index]),
+        min: Number(daily.temperature_2m_min?.[index]),
+        rainChance: Number(daily.precipitation_probability_max?.[index])
+      }));
+    }
+
+    function forecastDayLabel(dateText,index) {
+      if (index === 0) {
+        return "Today";
+      }
+
+      const date = new Date(`${dateText}T12:00:00`);
+
+      return new Intl.DateTimeFormat("en-AU", {
+        timeZone: TIME_ZONE,
+        weekday: "short"
+      }).format(date);
+    }
+
+    function homeWeatherMarkup() {
+      if (state.homeWeatherStatus === "loading") {
+        return `
+          <section class="home-weather">
+            <div class="home-weather-head">
+              <div>
+                <h3>🌦️ Piara Waters weather</h3>
+                <p>Next 7 days</p>
+              </div>
+            </div>
+            <div class="home-weather-loading">
+              Loading 7-day forecast…
+            </div>
+          </section>`;
+      }
+
+      if (
+        state.homeWeatherStatus === "unavailable" ||
+        !Array.isArray(state.homeWeather) ||
+        !state.homeWeather.length
+      ) {
+        return state.homeWeatherStatus === "unavailable"
+          ? `
+            <section class="home-weather">
+              <div class="home-weather-head">
+                <div>
+                  <h3>🌦️ Piara Waters weather</h3>
+                  <p>Next 7 days</p>
+                </div>
+              </div>
+              <div class="home-weather-loading">
+                Forecast currently unavailable.
+              </div>
+            </section>`
+          : "";
+      }
+
+      const cards = state.homeWeather.map((day,index) => {
+        const [icon,label] = weatherCode(day.weatherCode);
+
+        const max = Number.isFinite(day.max)
+          ? `${Math.round(day.max)}°`
+          : "—";
+
+        const min = Number.isFinite(day.min)
+          ? `${Math.round(day.min)}°`
+          : "—";
+
+        const rain = Number.isFinite(day.rainChance)
+          ? `${Math.round(day.rainChance)}% rain`
+          : "";
+
+        return `
+          <div
+            class="home-weather-day"
+            title="${escapeHtml(label)}"
+          >
+            <div class="day">${escapeHtml(forecastDayLabel(day.date,index))}</div>
+            <span class="weather-icon" aria-label="${escapeHtml(label)}">${icon}</span>
+            <div class="temperature">${max}</div>
+            <div class="minimum">min ${min}</div>
+            <div class="rain">${escapeHtml(rain)}</div>
+          </div>`;
+      }).join("");
+
+      return `
+        <section class="home-weather">
+          <div class="home-weather-head">
+            <div>
+              <h3>🌦️ Piara Waters weather</h3>
+              <p>Next 7 days</p>
+            </div>
+          </div>
+
+          <div class="home-weather-grid">
+            ${cards}
+          </div>
+        </section>`;
+    }
+
+    async function loadHomeWeather() {
+      state.homeWeatherStatus = "loading";
+      render();
+
+      try {
+        const payload = await fetchForecast(
+          PIARA_WATERS_COORDS
+        );
+
+        state.homeWeather = dailyForecast(payload);
+        state.homeWeatherStatus =
+          state.homeWeather.length
+            ? "ready"
+            : "unavailable";
+      } catch (_) {
+        state.homeWeather = null;
+        state.homeWeatherStatus = "unavailable";
+      }
+
+      render();
     }
 
     async function loadWeather() {
@@ -1703,7 +1990,8 @@
           <div class="empty">
             <span class="icon">📅</span>
             No upcoming games are currently listed.
-          </div>`;
+          </div>
+          ${homeWeatherMarkup()}`;
       }
 
       const next = upcoming[0];
@@ -1727,7 +2015,9 @@
         <div class="section-title">All upcoming games</div>
         <div class="fixtures">
           ${upcoming.map(fixtureCard).join("")}
-        </div>`;
+        </div>
+
+        ${homeWeatherMarkup()}`;
     }
 
     function personSportButtons(person) {
@@ -1945,7 +2235,11 @@
         state.loadedAt = new Date();
 
         render();
-        loadWeather();
+
+        await Promise.all([
+          loadWeather(),
+          loadHomeWeather()
+        ]);
       } catch (error) {
         console.error(error);
 
