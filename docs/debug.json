@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-08-14T08:03:25.073175+08:00",
-  "fixture_count": 39,
+  "generated_at": "2026-08-14T08:12:03.608310+08:00",
+  "fixture_count": 38,
   "coordinate_fixture_count": 36,
   "teams": [
     {
@@ -10,6 +10,10 @@
       "responses": [
         {
           "url": "https://maps.googleapis.com/maps/api/mapsjs/gen_204?csp_test=true",
+          "status": 200
+        },
+        {
+          "url": "https://api.squadi.com/users/consent/config",
           "status": 200
         },
         {
@@ -34,10 +38,6 @@
         },
         {
           "url": "https://api.squadi.com/livescores/division?competitionKey=fafe940b-0a16-474a-9ac8-9dbf00035b0c",
-          "status": 200
-        },
-        {
-          "url": "https://api.squadi.com/users/consent/config",
           "status": 200
         },
         {
@@ -152,10 +152,6 @@
           "status": 200
         },
         {
-          "url": "https://api.squadi.com/common/common/reference/year",
-          "status": 200
-        },
-        {
           "url": "https://api.squadi.com/common/common/reference/year?organisationUniqueKey=f524913b-317c-4011-8f66-e4eb3f101ebe&scope=1",
           "status": 200
         },
@@ -173,6 +169,10 @@
         },
         {
           "url": "https://api.squadi.com/users/api/organisations/all",
+          "status": 200
+        },
+        {
+          "url": "https://api.squadi.com/common/common/reference/year",
           "status": 200
         },
         {
@@ -279,191 +279,53 @@
     }
   ],
   "school_soccer": {
-    "source": "https://www.stjohnbosco.wa.edu.au/calendar/",
+    "source": "https://teamup.com/ksmxivsndu1tq6ng17?view=a&showAgendaDateRange=year&showAgendaDetails=1&showAgendaHeader=1&showProfileAndInfo=0&showSidepanel=0",
     "match_text": "ACC soccer Y10-12 boys",
-    "fixture_count": 1,
-    "json_payload_count": 7,
+    "fixture_count": 0,
+    "json_payload_count": 2,
     "responses": [
       {
-        "url": "https://www.stjohnbosco.wa.edu.au/calendar/",
-        "status": 200,
-        "content_type": "text/html; charset=utf-8"
-      },
-      {
-        "url": "https://events.timely.fun/embed.js",
-        "status": 200,
-        "content_type": "text/javascript"
-      },
-      {
-        "url": "https://events.timely.fun/37c47p6q/?timely_id=timely-iframe-embed-0-event-popup",
-        "status": 301,
-        "content_type": ""
-      },
-      {
-        "url": "https://events.timely.fun/37c47p6q/?timely_id=timely-iframe-embed-0",
-        "status": 301,
-        "content_type": ""
-      },
-      {
-        "url": "https://www.stjohnbosco.wa.edu.au/calendar/wp-content/themes/Divi/includes/builder/styles/magnific_popup.css",
-        "status": 404,
-        "content_type": "text/html; charset=utf-8"
-      },
-      {
-        "url": "https://events.timely.fun/37c47p6q/month?timely_id=timely-iframe-embed-0",
-        "status": 200,
-        "content_type": "text/html; charset=utf-8"
-      },
-      {
-        "url": "https://events.timely.fun/4.2.16/runtime.js",
-        "status": 200,
-        "content_type": "text/javascript"
-      },
-      {
-        "url": "https://events.timely.fun/4.2.16/node_modules_altcha_dist_altcha_js.js",
-        "status": 200,
-        "content_type": "text/javascript"
-      },
-      {
-        "url": "https://events.timely.fun/4.2.16/polyfills.js",
-        "status": 200,
-        "content_type": "text/javascript"
-      },
-      {
-        "url": "https://events.timely.fun/4.2.16/main.js",
-        "status": 200,
-        "content_type": "text/javascript"
-      },
-      {
-        "url": "https://events.timely.fun/4.2.16/styles.css",
+        "url": "https://teamup.com/assets-20260812145208/build/calendar_styles.css",
         "status": 200,
         "content_type": "text/css"
       },
       {
-        "url": "https://events.timely.fun/37c47p6q/month?timely_id=timely-iframe-embed-0-event-popup",
+        "url": "https://teamup.com/assets-20260812145208/build/js/calendar.js",
         "status": 200,
-        "content_type": "text/html; charset=utf-8"
+        "content_type": "application/javascript; charset=utf-8"
       },
       {
-        "url": "https://events.timely.fun/4.2.16/Poppins-Regular.ttf",
-        "status": 200,
-        "content_type": "font/ttf"
-      },
-      {
-        "url": "https://events.timely.fun/4.2.16/common.js",
-        "status": 200,
-        "content_type": "text/javascript"
-      },
-      {
-        "url": "https://events.timely.fun/4.2.16/src_app_layouts_month_month_module_ts.js",
-        "status": 200,
-        "content_type": "text/javascript"
-      },
-      {
-        "url": "https://events.timely.fun/4.2.16/node_modules_altcha_dist_altcha_js.js",
-        "status": 304,
-        "content_type": ""
-      },
-      {
-        "url": "https://events.timely.fun/4.2.16/main.js",
-        "status": 304,
-        "content_type": ""
-      },
-      {
-        "url": "https://events.timely.fun/4.2.16/runtime.js",
-        "status": 304,
-        "content_type": ""
-      },
-      {
-        "url": "https://events.timely.fun/4.2.16/polyfills.js",
-        "status": 304,
-        "content_type": ""
-      },
-      {
-        "url": "https://events.timely.fun/4.2.16/styles.css",
-        "status": 304,
-        "content_type": ""
-      },
-      {
-        "url": "https://events.timely.fun/4.2.16/timely.ttf?3cenot",
-        "status": 200,
-        "content_type": "font/ttf"
-      },
-      {
-        "url": "https://events.timely.fun/4.2.16/src_app_layouts_month_month_module_ts.js",
-        "status": 304,
-        "content_type": ""
-      },
-      {
-        "url": "https://events.timely.fun/4.2.16/common.js",
-        "status": 304,
-        "content_type": ""
-      },
-      {
-        "url": "https://events.timely.fun/4.2.16/assets/i18n/en-US.json",
+        "url": "https://teamup.com/assets-20260812145208/internationalization/en_GB/calendar,preferences,FOSUserBundle/en_GB",
         "status": 200,
         "content_type": "application/json"
       },
       {
-        "url": "https://events.timely.fun/4.2.16/assets/i18n/en-US.json",
+        "url": "https://teamup.com/assets-20260812145208/build/img/calendar/arrow-forward-menu-off.png",
+        "status": 200,
+        "content_type": "image/png"
+      },
+      {
+        "url": "https://teamup.com/ksmxivsndu1tq6ng17/events?startDate=2022-02-01&endDate=2023-01-31&tz=Australia%2FPerth",
         "status": 200,
         "content_type": "application/json"
       },
       {
-        "url": "https://events.timely.fun/api/calendars/54716732/filters/custom",
+        "url": "https://teamup.com/assets-20260812145208/build/img/inline_svg/icon-calendar.svg",
         "status": 200,
-        "content_type": "application/json"
+        "content_type": "image/svg+xml"
       },
       {
-        "url": "https://events.timely.fun/api/calendars/54716732/events?group_by_date=1&timezone=Africa/Abidjan&view=month&start_date_utc=1785542400&end_date_utc=1788220799&per_page=1000&page=1",
-        "status": 200,
-        "content_type": "application/json"
-      },
-      {
-        "url": "https://events.timely.fun/api/calendars/54716732/filters/custom",
-        "status": 200,
-        "content_type": "application/json"
-      },
-      {
-        "url": "https://events.timely.fun/api/calendars/54716732/events?group_by_date=1&timezone=Africa/Abidjan&view=month&start_date_utc=1785542400&end_date_utc=1788220799&per_page=1000&page=1",
-        "status": 200,
-        "content_type": "application/json"
-      },
-      {
-        "url": "https://events.timely.fun/api/calendars/54716732/events?group_by_date=1&timezone=Africa/Abidjan&view=month&start_date_utc=1785542400&end_date_utc=1788220799&per_page=1000&page=1",
-        "status": 200,
-        "content_type": "application/json"
-      },
-      {
-        "url": "https://events.timely.fun/4.2.16/Poppins-Regular.ttf",
-        "status": 304,
-        "content_type": ""
+        "url": "https://teamup.com/api/event",
+        "status": 202,
+        "content_type": "text/plain; charset=utf-8"
       }
     ],
     "frames": [
       {
         "frame_index": 0,
-        "url": "https://www.stjohnbosco.wa.edu.au/calendar/",
+        "url": "https://teamup.com/ksmxivsndu1tq6ng17?view=a&showAgendaDateRange=year&showAgendaDetails=1&showAgendaHeader=1&showProfileAndInfo=0&showSidepanel=0",
         "contains_target": false,
-        "body_text_preview": "\ue093\n\ue09a\n\ue094\n\ue0a3\n\ue093\n\ue09a\n\ue094\n\ue0a3\nHome\nDiscover\nCommunity\nEducation\nEnrolment\nVirtual Tour\nHome\nDiscover\nCommunity\nEducation\nEnrolment\nVirtual Tour\nCalendar\nFocus Button\nContact\n\n170 Monticello Parkway, Piara Waters WA 6112\n\n(08) 9234 9600\n\nadmin@stjohnbosco.wa.edu.au\n\nCopyright \u00a9 2022 \u2013 St John Bosco College\n\nTranslate \u00bb"
-      },
-      {
-        "frame_index": 1,
-        "url": "https://events.timely.fun/37c47p6q/month?timely_id=timely-iframe-embed-0",
-        "contains_target": true,
-        "body_text_preview": "St John Bosco Community Calendar\nAugust 2026\n Africa/Abidjan \nSearch\nAdd To Calendar\nMonth\nSelect Calendar Language\n English (US) \nCategories\nOrganizers\nTags\nVenues\nMonday\nMon\t\nTuesday\nTue\t\nWednesday\nWed\t\nThursday\nThu\t\nFriday\nFri\t\nSaturday\nSat\t\nSunday\nSun\n\t\t\t\t\t\n1\n\t\n2\n\n\t\t\t\t\t\nOLNA Year 10, Year 11, Year 12\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n3\n\t\n4\n\t\n5\n\t\n6\n\t\n7\n\t\n8\n\t\n9\n\n\nOLNA Year 10, Year 11, Year 12\nSchool Nurse - Kindy Screenings\n\t\nAFL Year 10 Division 5 Boys and Girls Carnival\n12:40am (GMT) Y9 Religious Education Assessment\n2:40am (GMT) CPAF Vocal Solo [Newman College]\n\t\nFeast of St Mary of the Cross Mackillop (Solemnity)\n12:45am (GMT) Mums & Bubs\n\t\nY9 REA Catchup Session\nSEAS Netball Carnival\n1:00am (GMT) Year 5 Religious Education Assessment\n2:40am (GMT) CPAF Dance \u2013 Creative (daytime rehearsal)\n3:00am (GMT) Year 3 Religious Education Assessment\n9:30am (GMT) CPAF Dance - Creative (evening performance)\n\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\nACC soccer Y10-12 boys vs Waikiki\n10:00am (GMT) Sunday Evening Eucharist\n\n\n10\n\t\n11\n\t\n12\n\t\n13\n\t\n14\n\t\n15\n\t\n16\n\n\nYear 6 ML Carnival (All Day)\nACC soccer Y10-12 boys vs Waikiki\n\t\t\n12:45am (GMT) Mums & Bubs\n1:15am (GMT) Bosco Birthday Mass\n\t\nStudent Free Day (Catholic Day)\n\t\n5:45am (GMT) CPAF Electric Guitar Solo\n\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\nNational Science Week\n10:00am (GMT) Sunday Evening Eucharist\n\n\n17\n\t\n18\n\t\n19\n\t\n20\n\t\n21\n\t\n22\n\t\n23\n\n\nNational Science Week\nYear 4 Eucharist Retreat\nSchool Nurse - Kindy Screenings\nCPAF Liturgical Dance\n\t\n1:30am (GMT) Scitech Excursion Kindergarten\n\t\n12:45am (GMT) Mums & Bubs\n6:00am (GMT) Kindergarten to Year 6 Fruits of the Holy Spirit\n8:00am (GMT) ACC soccer Y10-12 boys\n\t\nPre-Primary Excursion to Constable Care Safety School\n8:00am (GMT) Year 4 Eucharist Rehearsal\n\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n10:00am (GMT) Year 4 Sacrament of Eucharist\n\t\nYear 3 First Nations Incursion \u2013 Creative Pathways\n10:00am (GMT) Sunday Evening Eucharist\n\n\n24\n\t\n25\n\t\n26\n\t\n27\n\t\n28\n\t\n29\n\t\n30\n\n\nCPAF Primary Choir Performance\nYear 3 First Nations Incursion \u2013 Creative Pathways\n\t\n4:40am (GMT) Y12 World\u2019s Greatest Shave\n8:00am (GMT) ACC soccer Y10-12 boys\n\t\nYear 4 excursion to Fremantle Prison\nSEAS Senior Volleyball Carnival\nPreK-Y2 Constable Care Incursion\nPK-Year 2 Constable Care Incursion\n12:45am (GMT) Mums & Bubs\n3:30am (GMT) CPAF Drum Solo (Percussion)\n10:00am (GMT) Advisory Council Meeting\n\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\nYear 2, 4 & 6 Swimming Lessons - To Be Confirmed\n10:00am (GMT) Sunday Evening Eucharist\n\n\n31\n\t\t\t\t\t\t\n\nYear 2, 4 & 6 Swimming Lessons - To Be Confirmed\nYr 12 ATAR SEPEA Assessment\nSchool Nurse - Kindy Screenings\nFather\u2019s Day Stall (all day)\n12:30am (GMT) Try a Trade Wall and Ceiling Tiling (3 day course)\n5:45am (GMT) CPAF Piano Solo [Zenith Music]\n7:00am (GMT) CPAF Piano Solo [Zenith Music]\n11:00am (GMT) CPAF Secondary Choral\n\t\t\t\t\t\t\nv4.2.16"
-      },
-      {
-        "frame_index": 2,
-        "url": "https://events.timely.fun/37c47p6q/month?timely_id=timely-iframe-embed-0-event-popup",
-        "contains_target": true,
-        "body_text_preview": "\n                \n                 St John Bosco Community Calendar  August 2026  August 2026  Africa/Abidjan  Search  Add to calendar  Month  Select calendar language  English (US) CategoriesOrganizersTagsVenues Monday  Mon  Tuesday  Tue  Wednesday  Wed  Thursday  Thu  Friday  Fri  Saturday  Sat  Sunday  Sun  3  1  3  2  OLNA Year 10, Year 11, Year 12  11:30pm (GMT)  Sunday Eucharist  10:00am (GMT)  Vigil Mass  10:00am (GMT)  Sunday Evening Eucharist  2  3  5  4  4  5  8  6  3  7  2  8  3  9  OLNA Year 10, Year 11, Year 12  School Nurse - Kindy Screenings  AFL Year 10 Division 5 Boys and Girls Carnival  12:40am (GMT)  Y9 Religious Education Assessment  2:40am (GMT)  CPAF Vocal Solo [Newman College]  Feast of St Mary of the Cross Mackillop (Solemnity)  12:45am (GMT)  Mums & Bubs  Y9 REA Catchup Session  SEAS Netball Carnival  1:00am (GMT)  Year 5 Religious Education Assessment  2:40am (GMT)  CPAF Dance \u2013 Creative (daytime rehearsal)  3:00am (GMT)  Year 3 Religious Education Assessment  9:30am (GMT)  CPAF Dance - Creative (evening performance)  11:30pm (GMT)  Sunday Eucharist  10:00am (GMT)  Vigil Mass  ACC soccer Y10-12 boys vs Waikiki  10:00am (GMT)  Sunday Evening Eucharist  2  10  1  11  2  12  1  13  2  14  2  15  3  16  Year 6 ML Carnival (All Day)  ACC soccer Y10-12 boys vs Waikiki  12:45am (GMT)  Mums & Bubs  1:15am (GMT)  Bosco Birthday Mass  Student Free Day (Catholic Day)  5:45am (GMT)  CPAF Electric Guitar Solo  11:30pm (GMT)  Sunday Eucharist  10:00am (GMT)  Vigil Mass  National Science Week  10:00am (GMT)  Sunday Evening Eucharist  4  17  5  18  4  19  3  20  2  21  4  22  4  23  National Science Week  Year 4 Eucharist Retreat  School Nurse - Kindy Screenings  CPAF Liturgical Dance  1:30am (GMT)  Scitech Excursion Kindergarten  12:45am (GMT)  Mums & Bubs  6:00am (GMT)  Kindergarten to Year 6 Fruits of the Holy Spirit  8:00am (GMT)  ACC soccer Y10-12 boys  Pre-Primary Excursion to Constable Care Safety School  8:00am (GMT)  Year 4 Eucharist Rehearsal  11:30pm (GMT)  Sunday Eucharist  10:00am (GMT)  Vigil Mass  10:00am (GMT)  Year 4 Sacrament of Eucharist  Year 3 First Nations Incursion \u2013 Creative Pathways  10:00am (GMT)  Sunday Evening Eucharist  2  24  3  25  7  26  4  27  28  2  29  3  30  CPAF Primary Choir Performance  Year 3 First Nations Incursion \u2013 Creative Pathways  4:40am (GMT)  Y12 World\u2019s Greatest Shave  8:00am (GMT)  ACC soccer Y10-12 boys  Year 4 excursion to Fremantle Prison  SEAS Senior Volleyball Carnival  PreK-Y2 Constable Care Incursion  PK-Year 2 Constable Care Incursion  12:45am (GMT)  Mums & Bubs  3:30am (GMT)  CPAF Drum Solo (Percussion)  10:00am (GMT)  Advisory Council Meeting  11:30pm (GMT)  Sunday Eucharist  10:00am (GMT)  Vigil Mass  Year 2, 4 & 6 Swimming Lessons - To Be Confirmed  10:00am (GMT)  Sunday Evening Eucharist  8  31  Year 2, 4 & 6 Swimming Lessons - To Be Confirmed  Yr 12 ATAR SEPEA Assessment  School Nurse - Kindy Screenings  Father\u2019s Day Stall (all day)  12:30am (GMT)  Try a Trade Wall and Ceiling Tiling (3 day course)  5:45am (GMT)  CPAF Piano Solo [Zenith Music]  7:00am (GMT)  CPAF Piano Solo [Zenith Music]  11:00am (GMT)  CPAF Secondary Choral  v4.2.16 \n                \n            \n            {&q;language&q;:&q;en-US&q;,&q;originalUrl&q;:&q;/37c47p6q/month?timely_id=timely-iframe-embed-0-event-popup&q;}"
-      },
-      {
-        "frame_index": 3,
-        "url": "about:blank",
-        "contains_target": false,
-        "body_text_preview": ""
+        "body_text_preview": "Chameleon Logic\nToday\n1 Feb 2022 - 31 Jan 2023\nScheduler\nDay\nWeek\n10 Weeks\nMonth\nYear\nTimeline\nTable\nAgenda\nList\nTiles\nTime zone\n: Perth\nPDF Print & Export\nPreferences\nReminders\nChange Notifications\nDaily Agenda\nSlack Integration\niCalendar Feeds\nRSS Feeds\nCalendar Resolution\n5 minutes\n10 minutes\n15 minutes\n30 minutes (default)\n60 minutes\nLanguage\nEnglish (United States)\nEnglish (United Kingdom)\n\u010ce\u0161tina\nDansk\nDeutsch\nEspa\u00f1ol\nFran\u00e7ais\nHrvatski\nMagyar\nItaliano\nNederlands\nNorsk (bokm\u00e5l)\nPolski\nPortugu\u00eas\nRom\u00e2n\u0103\nP\u0443\u0441\u0441\u043a\u0438\u0439\nSloven\u010dina\nSloven\u0161\u010dina\nSrbski\nSvenska\nSuomi\nT\u00fcrk\u00e7e\n\u65e5\u672c\u8a9e\n\u4e2d\u6587 (\u7b80\u4f53)\n\u4e2d\u6587 (\u7e41\u9ad4) (translation in progress)\nHelp\nDate range\nOne day\nOne week\nTwo weeks\nOne month\nThree months\nSix months\nOne year\nDetails\nThere are no events for the selected date range.\nPrevious|Next\n\nPerth\n\nPowered by"
       }
     ]
   },
@@ -475,30 +337,6 @@
   },
   "manual_fixture_count": 2,
   "fixtures": [
-    {
-      "start": "2012-10-06T18:00:00+08:00",
-      "home": "St John Bosco College",
-      "away": "ACC Soccer",
-      "venue": "",
-      "field": "",
-      "round": "",
-      "source_id": "school-dom-a61173751ca51852",
-      "label": "Finn",
-      "source_url": "https://www.stjohnbosco.wa.edu.au/calendar/",
-      "latitude": null,
-      "longitude": null,
-      "coordinate_source": "",
-      "home_score": "",
-      "away_score": "",
-      "sport_icon": "\ud83c\udfeb",
-      "sport_name": "School Soccer",
-      "time_label": "KO",
-      "duration_minutes": 60,
-      "reminder_minutes": 90,
-      "notes": "Year 6 ML Carnival (All Day) ACC soccer Y10-12 boys vs Waikiki 12:45am (GMT) Mums & Bubs 1:15am (GMT) Bosco Birthday Mass Student Free Day (Catholic Day) 5:45am (GMT) CPAF Electric Guitar Solo 11:30pm (GMT) Sunday Eucharist 10:00am (GMT) Vigil Mass National Science Week 10:00am (GMT) Sunday Evening Eucharist",
-      "display_title": "ACC soccer Y10-12 boys",
-      "source_type": "school_calendar"
-    },
     {
       "start": "2026-04-26T11:30:00+08:00",
       "home": "Rockingham City FC - U13 JCL SD1",
