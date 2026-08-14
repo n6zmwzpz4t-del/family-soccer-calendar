@@ -26,7 +26,7 @@ LADDER_PARSER_VERSION = "2026-08-09-v5-flat-row-regex"
 SCHOOL_CALENDAR_PAGE_URL = "https://www.stjohnbosco.wa.edu.au/calendar/"
 SCHOOL_TIMELY_FALLBACK_ID = "37c47p6q"
 SCHOOL_SOCCER_MATCH_TEXT = "ACC soccer Y10-12 boys"
-SCHOOL_SOCCER_SCRAPER_VERSION = "2026-08-14-v4-month-json-dom"
+SCHOOL_SOCCER_SCRAPER_VERSION = "2026-08-14-v5-fixed-60-minute-games"
 
 SOCCER_LADDERS = [
     {
@@ -3950,7 +3950,7 @@ def school_fixture_from_json(
         "sport_icon": "🏫",
         "sport_name": "School Soccer",
         "time_label": "KO",
-        "duration_minutes": duration,
+        "duration_minutes": 60,
         "reminder_minutes": int(CONFIG.get("reminder_minutes", 90)),
         "notes": "",
         "display_title": title,
@@ -4857,11 +4857,7 @@ async def scrape_school_soccer(
                             "School Soccer"
                         ),
                         "time_label": "KO",
-                        "duration_minutes": (
-                            timely_card_duration_minutes(
-                                card_text
-                            )
-                        ),
+                        "duration_minutes": 60,
                         "reminder_minutes": int(
                             CONFIG.get(
                                 "reminder_minutes",
