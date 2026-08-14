@@ -23,7 +23,17 @@ SOFTBALL_DATA = ROOT / "docs" / "softball.json"
 SOCCER_LADDER_DATA = ROOT / "docs" / "soccer_ladders.json"
 LADDER_PARSER_VERSION = "2026-08-09-v5-flat-row-regex"
 
-SCHOOL_CALENDAR_URL = "https://www.stjohnbosco.wa.edu.au/calendar/"
+SCHOOL_CALENDAR_PAGE_URL = "https://www.stjohnbosco.wa.edu.au/calendar/"
+SCHOOL_TEAMUP_URL = (
+    "https://teamup.com/ksmxivsndu1tq6ng17"
+    "?view=a"
+    "&showAgendaDateRange=year"
+    "&showAgendaDetails=1"
+    "&showAgendaHeader=1"
+    "&showProfileAndInfo=0"
+    "&showSidepanel=0"
+)
+SCHOOL_CALENDAR_URL = SCHOOL_TEAMUP_URL
 SCHOOL_SOCCER_MATCH_TEXT = "ACC soccer Y10-12 boys"
 
 SOCCER_LADDERS = [
@@ -3742,11 +3752,15 @@ def write_ddmsa_softball_data(data: dict[str, Any]) -> bool:
 
 
 SCHOOL_EVENT_DATE_KEYS = (
-    "start", "startDate", "startDateTime", "startTime",
+    # Teamup API/event payload names.
+    "start_dt", "start",
+    # Generic fallbacks.
+    "startDate", "startDateTime", "startTime",
     "date", "eventDate", "dateTime",
 )
 SCHOOL_EVENT_END_KEYS = (
-    "end", "endDate", "endDateTime", "endTime",
+    "end_dt", "end",
+    "endDate", "endDateTime", "endTime",
 )
 SCHOOL_EVENT_LOCATION_KEYS = (
     "location", "locationName", "venue", "venueName", "address", "where",
@@ -3794,7 +3808,7 @@ def school_fixture_from_json(
         first(obj, ("url", "link", "eventUrl", "eventURL", "href"))
     )
     if not source_url.startswith("http"):
-        source_url = SCHOOL_CALENDAR_URL
+        source_url = SCHOOL_CALENDAR_PAGE_URL
 
     source_id = clean(
         first(obj, ("id", "eventId", "eventID", "uid", "guid"))
@@ -3977,7 +3991,7 @@ async def scrape_school_soccer(browser, timezone: ZoneInfo):
                             f"{card_text}|{start.isoformat()}".encode("utf-8")
                         ).hexdigest()[:16],
                         "label": "Finn",
-                        "source_url": clean(data.get("href")) or SCHOOL_CALENDAR_URL,
+                        "source_url": clean(data.get("href")) or SCHOOL_CALENDAR_PAGE_URL,
                         "latitude": None,
                         "longitude": None,
                         "coordinate_source": "",
@@ -4005,8 +4019,10 @@ async def scrape_school_soccer(browser, timezone: ZoneInfo):
         fixtures = sorted(unique.values(), key=lambda item: item["start"])
 
         print(
-            "St John Bosco school soccer: "
-            f"found {len(fixtures)} matching '{SCHOOL_SOCCER_MATCH_TEXT}' events."
+            "St John Bosco Teamup: "
+            f"captured {len(payloads)} JSON payloads and "
+            f"found {len(fixtures)} matching "
+            f"'{SCHOOL_SOCCER_MATCH_TEXT}' events."
         )
 
         return fixtures, {
