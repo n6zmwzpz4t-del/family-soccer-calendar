@@ -35,6 +35,7 @@ SCHOOL_TEAMUP_URL = (
 )
 SCHOOL_CALENDAR_URL = SCHOOL_TEAMUP_URL
 SCHOOL_SOCCER_MATCH_TEXT = "ACC soccer Y10-12 boys"
+SCHOOL_SOCCER_SCRAPER_VERSION = "2026-08-14-v2-flexible-title-match"
 
 SOCCER_LADDERS = [
     {
@@ -3766,10 +3767,41 @@ SCHOOL_EVENT_LOCATION_KEYS = (
     "location", "locationName", "venue", "venueName", "address", "where",
 )
 
+def normalise_school_event_text(value: Any) -> str:
+    """
+    Normalise Teamup event text for matching.
+
+    This deliberately treats hyphen, en-dash and em-dash as equivalent,
+    collapses whitespace, and ignores case.
+    """
+    text = str(value or "")
+    text = text.replace("–", "-").replace("—", "-")
+    text = re.sub(r"\s+", " ", text)
+    return text.strip().lower()
+
+
+def school_event_text_matches(value: Any) -> bool:
+    text = normalise_school_event_text(value)
+
+    if not text:
+        return False
+
+    # Flexible match for variations such as:
+    # ACC soccer Y10-12 boys
+    # ACC Soccer Y10 - 12 Boys
+    # ACC SOCCER Y10–12 BOYS
+    return bool(
+        re.search(
+            r"\bacc\b.*?\bsoccer\b.*?\by\s*10\s*-\s*12\b.*?\bboys\b",
+            text,
+            flags=re.IGNORECASE,
+        )
+    )
+
+
 def school_object_matches(obj: dict[str, Any]) -> bool:
-    needle = SCHOOL_SOCCER_MATCH_TEXT.lower()
     return any(
-        isinstance(value, str) and needle in value.lower()
+        isinstance(value, str) and school_event_text_matches(value)
         for value in obj.values()
     )
 
@@ -3796,7 +3828,7 @@ def school_fixture_from_json(
             clean(obj.get(key))
             for key in ("title", "name", "summary", "eventTitle", "eventName", "subject")
             if clean(obj.get(key))
-            and SCHOOL_SOCCER_MATCH_TEXT.lower() in clean(obj.get(key)).lower()
+            and school_event_text_matches(clean(obj.get(key)))
         ),
         SCHOOL_SOCCER_MATCH_TEXT,
     )
@@ -3897,6 +3929,7 @@ async def scrape_school_soccer(browser, timezone: ZoneInfo):
         print(
             "St John Bosco school soccer: opening "
             + SCHOOL_CALENDAR_URL
+            + f" [school scraper {SCHOOL_SOCCER_SCRAPER_VERSION}]"
         )
         await page.goto(
             SCHOOL_CALENDAR_URL,
@@ -3906,6 +3939,38 @@ async def scrape_school_soccer(browser, timezone: ZoneInfo):
         await page.wait_for_timeout(12_000)
 
         fixtures: list[dict[str, Any]] = []
+
+        # Diagnostic: print Teamup titles containing ACC or soccer so the
+        # GitHub Action log reveals the exact wording returned by Teamup.
+        interesting_titles: list[str] = []
+
+        for payload in payloads:
+            for obj in walk(payload):
+                for key in ("title", "name", "summary", "eventTitle", "eventName", "subject"):
+                    value = clean(obj.get(key))
+
+                    if not value:
+                        continue
+
+                    lower = value.lower()
+
+                    if (
+                        "acc" in lower
+                        or "soccer" in lower
+                    ):
+                        if value not in interesting_titles:
+                            interesting_titles.append(value)
+
+        if interesting_titles:
+            print(
+                "St John Bosco Teamup candidate titles: "
+                + " | ".join(interesting_titles[:30])
+            )
+        else:
+            print(
+                "St John Bosco Teamup candidate titles: "
+                "none containing ACC or soccer"
+            )
 
         # Preferred route: structured calendar/event JSON.
         for payload in payloads:
@@ -3939,7 +4004,10 @@ async def scrape_school_soccer(browser, timezone: ZoneInfo):
 
                 try:
                     matches = frame.get_by_text(
-                        re.compile(re.escape(SCHOOL_SOCCER_MATCH_TEXT), re.IGNORECASE)
+                        re.compile(
+                            r"ACC.*soccer.*Y\s*10\s*[-–—]\s*12.*boys",
+                            re.IGNORECASE,
+                        )
                     )
                     count = min(await matches.count(), 50)
                 except Exception:
