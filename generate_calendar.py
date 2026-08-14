@@ -26,7 +26,7 @@ LADDER_PARSER_VERSION = "2026-08-09-v5-flat-row-regex"
 SCHOOL_CALENDAR_PAGE_URL = "https://www.stjohnbosco.wa.edu.au/calendar/"
 SCHOOL_TIMELY_FALLBACK_ID = "37c47p6q"
 SCHOOL_SOCCER_MATCH_TEXT = "ACC soccer Y10-12 boys"
-SCHOOL_SOCCER_SCRAPER_VERSION = "2026-08-14-v3-timely-calendar"
+SCHOOL_SOCCER_SCRAPER_VERSION = "2026-08-14-v4-month-json-dom"
 
 SOCCER_LADDERS = [
     {
@@ -3744,15 +3744,30 @@ def write_ddmsa_softball_data(data: dict[str, Any]) -> bool:
 
 
 SCHOOL_EVENT_DATE_KEYS = (
-    # Teamup API/event payload names.
-    "start_dt", "start",
-    # Generic fallbacks.
-    "startDate", "startDateTime", "startTime",
-    "date", "eventDate", "dateTime",
+    "start_dt",
+    "start",
+    "start_at",
+    "start_date",
+    "start_datetime",
+    "event_start",
+    "instance_id",
+    "startDate",
+    "startDateTime",
+    "startTime",
+    "date",
+    "eventDate",
+    "dateTime",
 )
 SCHOOL_EVENT_END_KEYS = (
-    "end_dt", "end",
-    "endDate", "endDateTime", "endTime",
+    "end_dt",
+    "end",
+    "end_at",
+    "end_date",
+    "end_datetime",
+    "event_end",
+    "endDate",
+    "endDateTime",
+    "endTime",
 )
 SCHOOL_EVENT_LOCATION_KEYS = (
     "location", "locationName", "venue", "venueName", "address", "where",
@@ -3760,7 +3775,7 @@ SCHOOL_EVENT_LOCATION_KEYS = (
 
 def normalise_school_event_text(value: Any) -> str:
     """
-    Normalise Teamup event text for matching.
+    Normalise Timely event text for matching.
 
     This deliberately treats hyphen, en-dash and em-dash as equivalent,
     collapses whitespace, and ignores case.
@@ -3803,11 +3818,59 @@ def school_fixture_from_json(
     if not school_object_matches(obj):
         return None
 
-    start = parse_datetime(first(obj, SCHOOL_EVENT_DATE_KEYS), timezone)
+    start = parse_datetime(
+        first(
+            obj,
+            SCHOOL_EVENT_DATE_KEYS,
+        ),
+        timezone,
+    )
+
+    # Timely sometimes exposes occurrence time only inside an event URL
+    # or a compact instance-id string such as 20260819160000.
+    if not start:
+        for value in obj.values():
+            if not isinstance(
+                value,
+                str,
+            ):
+                continue
+
+            start = timely_instance_datetime(
+                value,
+                timezone,
+            )
+
+            if start:
+                break
+
+            compact = clean(value)
+
+            if re.fullmatch(
+                r"20\d{12}",
+                compact,
+            ):
+                try:
+                    start = datetime.strptime(
+                        compact,
+                        "%Y%m%d%H%M%S",
+                    ).replace(
+                        tzinfo=timezone
+                    )
+                    break
+                except ValueError:
+                    pass
+
     if not start:
         return None
 
-    end = parse_datetime(first(obj, SCHOOL_EVENT_END_KEYS), timezone)
+    end = parse_datetime(
+        first(
+            obj,
+            SCHOOL_EVENT_END_KEYS,
+        ),
+        timezone,
+    )
     duration = (
         max(15, int((end - start).total_seconds() // 60))
         if end and end > start
@@ -3828,10 +3891,38 @@ def school_fixture_from_json(
         clean(first(obj, SCHOOL_EVENT_LOCATION_KEYS))
     )
     source_url = clean(
-        first(obj, ("url", "link", "eventUrl", "eventURL", "href"))
+        first(
+            obj,
+            (
+                "url",
+                "link",
+                "eventUrl",
+                "eventURL",
+                "href",
+                "permalink",
+                "event_url",
+            ),
+        )
     )
-    if not source_url.startswith("http"):
-        source_url = SCHOOL_CALENDAR_PAGE_URL
+
+    if not source_url.startswith(
+        "http"
+    ):
+        for value in obj.values():
+            if (
+                isinstance(value, str)
+                and "events.timely.fun" in value
+                and "/event/" in value
+            ):
+                source_url = value
+                break
+
+    if not source_url.startswith(
+        "http"
+    ):
+        source_url = (
+            SCHOOL_CALENDAR_PAGE_URL
+        )
 
     source_id = clean(
         first(obj, ("id", "eventId", "eventID", "uid", "guid"))
@@ -3972,18 +4063,51 @@ async def discover_school_timely_calendar(
         await page.close()
 
 
-def timely_agenda_url(
+def timely_month_url(
     calendar_id: str,
-    start_date: str,
-    end_date: str,
+    month_start: datetime,
 ) -> str:
     return (
-        f"https://events.timely.fun/{calendar_id}/agenda"
-        f"?range=custom"
-        f"&start_date={start_date}"
-        f"&end_date={end_date}"
+        f"https://events.timely.fun/{calendar_id}/month"
+        f"?start_date={month_start.date().isoformat()}"
         f"&timely_id=timely-iframe-embed-0"
     )
+
+
+def school_month_starts(
+    now: datetime,
+    months_ahead: int = 13,
+) -> list[datetime]:
+    """
+    Return the first day of the current month and each following month.
+    Month-by-month loading is more reliable than Timely's long custom Agenda
+    range, which can omit events that still have valid direct event pages.
+    """
+    result: list[datetime] = []
+
+    year = now.year
+    month = now.month
+
+    for offset in range(months_ahead):
+        absolute = (
+            year * 12
+            + (month - 1)
+            + offset
+        )
+
+        item_year = absolute // 12
+        item_month = absolute % 12 + 1
+
+        result.append(
+            datetime(
+                item_year,
+                item_month,
+                1,
+                tzinfo=now.tzinfo,
+            )
+        )
+
+    return result
 
 
 def timely_instance_datetime(
@@ -4142,12 +4266,20 @@ async def scrape_school_soccer(
     timezone: ZoneInfo,
 ):
     """
-    Scrape Finn's school soccer fixtures from the CURRENT St John Bosco
-    Timely calendar.
+    Scrape Finn's St John Bosco school soccer fixtures month-by-month from
+    Timely.
 
-    The school website's current /calendar/ page embeds Timely.  A legacy
-    /teamup/ page also exists but is not the source used by the current
-    calendar page.
+    Why month-by-month:
+      * the public direct event pages are valid;
+      * Timely's long custom Agenda view can omit events;
+      * St John Bosco has historically published this calendar using
+        /month?start_date=... links.
+
+    For each month we inspect BOTH:
+      1. Timely's JSON/network responses; and
+      2. rendered DOM text / event links.
+
+    This avoids depending on one particular Timely front-end structure.
     """
     (
         calendar_id,
@@ -4160,418 +4292,918 @@ async def scrape_school_soccer(
         timezone
     )
 
-    start_date = (
-        now.date()
-        - timedelta(days=31)
-    ).isoformat()
+    fixtures: list[
+        dict[str, Any]
+    ] = []
 
-    end_date = (
-        now.date()
-        + timedelta(days=365)
-    ).isoformat()
+    month_debug: list[
+        dict[str, Any]
+    ] = []
 
-    agenda_url = timely_agenda_url(
-        calendar_id,
-        start_date,
-        end_date,
+    all_interesting: list[
+        str
+    ] = []
+
+    month_starts = school_month_starts(
+        now,
+        months_ahead=13,
     )
 
     print(
-        "St John Bosco school soccer: opening "
-        f"{agenda_url} "
+        "St John Bosco school soccer: "
+        f"calendar_id={calendar_id}; "
+        f"checking {len(month_starts)} month views "
         f"[school scraper "
         f"{SCHOOL_SOCCER_SCRAPER_VERSION}]"
     )
 
-    page = await browser.new_page(
-        viewport={
-            "width": 1440,
-            "height": 1600,
-        }
-    )
-
-    try:
-        await page.goto(
-            agenda_url,
-            wait_until="domcontentloaded",
-            timeout=120_000,
+    for month_start in month_starts:
+        month_label = (
+            month_start.strftime(
+                "%Y-%m"
+            )
         )
 
-        await page.wait_for_timeout(
-            10_000
+        month_url = timely_month_url(
+            calendar_id,
+            month_start,
         )
 
-        # Timely may progressively render agenda events. Scroll repeatedly
-        # and click a visible "load more" control when present.
-        for _ in range(10):
+        page = await browser.new_page(
+            viewport={
+                "width": 1440,
+                "height": 1600,
+            }
+        )
+
+        payloads: list[Any] = []
+        response_log: list[
+            dict[str, Any]
+        ] = []
+
+        async def capture(
+            response
+        ) -> None:
+            content_type = (
+                response.headers.get(
+                    "content-type"
+                )
+                or ""
+            ).lower()
+
+            url_lower = (
+                response.url.lower()
+            )
+
+            if (
+                "json" not in content_type
+                and "event" not in url_lower
+                and "calendar" not in url_lower
+            ):
+                return
+
+            response_log.append(
+                {
+                    "url": response.url,
+                    "status": (
+                        response.status
+                    ),
+                    "content_type": (
+                        content_type
+                    ),
+                }
+            )
+
+            if "json" in content_type:
+                try:
+                    payloads.append(
+                        await response.json()
+                    )
+                except Exception:
+                    pass
+
+        page.on(
+            "response",
+            capture,
+        )
+
+        month_fixtures_before = len(
+            fixtures
+        )
+
+        dom_match_count = 0
+        raw_event_link_count = 0
+        body_text = ""
+
+        try:
+            await page.goto(
+                month_url,
+                wait_until=(
+                    "domcontentloaded"
+                ),
+                timeout=120_000,
+            )
+
+            await page.wait_for_timeout(
+                7_000
+            )
+
             try:
                 await page.evaluate(
-                    "window.scrollTo(0, document.body.scrollHeight)"
+                    "window.scrollTo("
+                    "0, document.body.scrollHeight"
+                    ")"
+                )
+                await page.wait_for_timeout(
+                    1_000
                 )
             except Exception:
                 pass
 
-            await page.wait_for_timeout(
-                800
+            try:
+                body_text = (
+                    await page.locator(
+                        "body"
+                    ).inner_text()
+                )
+            except Exception:
+                body_text = ""
+
+            # ---------------------------------------------------------
+            # 1. Structured JSON/network responses.
+            # ---------------------------------------------------------
+            json_seen: set[
+                tuple[str, str]
+            ] = set()
+
+            for payload in payloads:
+                for obj in walk(
+                    payload
+                ):
+                    # Log candidate titles/strings even if the object shape
+                    # cannot yet be converted into a fixture.
+                    for key in (
+                        "title",
+                        "name",
+                        "summary",
+                        "eventTitle",
+                        "eventName",
+                        "subject",
+                    ):
+                        value = clean(
+                            obj.get(
+                                key
+                            )
+                        )
+
+                        if not value:
+                            continue
+
+                        lower = (
+                            value.lower()
+                        )
+
+                        if (
+                            "acc" in lower
+                            or "soccer" in lower
+                        ):
+                            candidate_text = (
+                                f"{month_label}: "
+                                f"{value}"
+                            )
+
+                            if (
+                                candidate_text
+                                not in all_interesting
+                            ):
+                                all_interesting.append(
+                                    candidate_text
+                                )
+
+                    fixture = (
+                        school_fixture_from_json(
+                            obj,
+                            timezone,
+                        )
+                    )
+
+                    if not fixture:
+                        continue
+
+                    # Restrict a month's payload to a generous window around
+                    # that month, preventing unrelated cached payload data.
+                    fixture_start = (
+                        fixture["start"]
+                    )
+
+                    if (
+                        fixture_start.year
+                        != month_start.year
+                        or fixture_start.month
+                        != month_start.month
+                    ):
+                        continue
+
+                    key = (
+                        fixture_start.isoformat(),
+                        clean(
+                            fixture.get(
+                                "display_title"
+                            )
+                        ).lower(),
+                    )
+
+                    if key in json_seen:
+                        continue
+
+                    json_seen.add(
+                        key
+                    )
+                    fixtures.append(
+                        fixture
+                    )
+
+            # ---------------------------------------------------------
+            # 2. Rendered DOM text, not limited to <a> tags.
+            # ---------------------------------------------------------
+            target_regex = re.compile(
+                r"ACC.*soccer.*"
+                r"Y\s*10\s*[-–—]\s*12"
+                r".*boys",
+                re.IGNORECASE,
             )
 
-            for label in (
-                "Load more",
-                "Show more",
-                "More events",
+            try:
+                matches = page.get_by_text(
+                    target_regex
+                )
+
+                dom_match_count = min(
+                    await matches.count(),
+                    100,
+                )
+            except Exception:
+                matches = None
+                dom_match_count = 0
+
+            for index in range(
+                dom_match_count
             ):
+                locator = matches.nth(
+                    index
+                )
+
                 try:
-                    button = page.get_by_text(
-                        re.compile(
-                            rf"^{re.escape(label)}$",
-                            re.IGNORECASE,
-                        )
-                    ).first
+                    item = (
+                        await locator.evaluate(
+                            """
+                            el => {
+                              let node = el;
+                              let bestText = (
+                                el.innerText ||
+                                el.textContent ||
+                                ''
+                              ).trim();
 
-                    if await button.is_visible(
-                        timeout=500
-                    ):
-                        await button.click(
-                            timeout=2_000
-                        )
-                        await page.wait_for_timeout(
-                            1_000
-                        )
-                        break
+                              let href = '';
+                              let attributes = [];
 
+                              for (
+                                let i = 0;
+                                i < 10 && node;
+                                i += 1
+                              ) {
+                                const text = (
+                                  node.innerText ||
+                                  node.textContent ||
+                                  ''
+                                )
+                                  .replace(/\\s+/g, ' ')
+                                  .trim();
+
+                                if (
+                                  text.length >= bestText.length &&
+                                  text.length <= 1800
+                                ) {
+                                  bestText = text;
+                                }
+
+                                if (!href) {
+                                  const a =
+                                    node.matches?.('a')
+                                      ? node
+                                      : node.querySelector?.('a[href*="/event/"]');
+
+                                  if (a?.href) {
+                                    href = a.href;
+                                  }
+                                }
+
+                                for (
+                                  const name of [
+                                    'data-date',
+                                    'data-start',
+                                    'data-datetime',
+                                    'data-event-id',
+                                    'data-instance-id',
+                                    'datetime',
+                                    'aria-label',
+                                    'title'
+                                  ]
+                                ) {
+                                  const value =
+                                    node.getAttribute?.(name);
+
+                                  if (value) {
+                                    attributes.push(
+                                      `${name}=${value}`
+                                    );
+                                  }
+                                }
+
+                                const time =
+                                  node.querySelector?.('time[datetime]');
+
+                                if (time?.getAttribute('datetime')) {
+                                  attributes.push(
+                                    `time=${time.getAttribute('datetime')}`
+                                  );
+                                }
+
+                                node =
+                                  node.parentElement;
+                              }
+
+                              return {
+                                href,
+                                text: bestText,
+                                attributes:
+                                  Array.from(
+                                    new Set(attributes)
+                                  )
+                              };
+                            }
+                            """
+                        )
+                    )
                 except Exception:
                     continue
 
-        body_text = await page.locator(
-            "body"
-        ).inner_text()
-
-        # Collect every Timely event link together with a sensible amount
-        # of surrounding card text.  We then do the title filtering in
-        # Python so punctuation/capitalisation differences do not matter.
-        raw_events = await page.locator(
-            'a[href*="/event/"]'
-        ).evaluate_all(
-            """
-            links => links.map(link => {
-              let node = link;
-              let best = (
-                link.innerText ||
-                link.textContent ||
-                ''
-              ).trim();
-
-              for (
-                let i = 0;
-                i < 7 && node;
-                i += 1
-              ) {
-                const text = (
-                  node.innerText ||
-                  node.textContent ||
-                  ''
-                )
-                  .replace(/\\s+/g, ' ')
-                  .trim();
-
-                if (
-                  text.length >= best.length &&
-                  text.length <= 1600
-                ) {
-                  best = text;
-                }
-
-                node = node.parentElement;
-              }
-
-              return {
-                href: link.href || '',
-                link_text: (
-                  link.innerText ||
-                  link.textContent ||
-                  ''
-                ).trim(),
-                card_text: best
-              };
-            })
-            """
-        )
-
-        candidates: list[
-            dict[str, Any]
-        ] = []
-
-        for item in raw_events:
-            combined = " ".join(
-                filter(
-                    None,
-                    (
-                        clean(
-                            item.get(
-                                "link_text"
-                            )
-                        ),
-                        clean(
-                            item.get(
-                                "card_text"
-                            )
-                        ),
-                    ),
-                )
-            )
-
-            if school_event_text_matches(
-                combined
-            ):
-                candidates.append(
-                    item
-                )
-
-        # Diagnostic titles make any future Timely wording change obvious
-        # in the GitHub Actions log.
-        interesting: list[str] = []
-
-        for item in raw_events:
-            combined = " ".join(
-                filter(
-                    None,
-                    (
-                        clean(
-                            item.get(
-                                "link_text"
-                            )
-                        ),
-                        clean(
-                            item.get(
-                                "card_text"
-                            )
-                        ),
-                    ),
-                )
-            )
-
-            lower = combined.lower()
-
-            if (
-                "acc" in lower
-                or "soccer" in lower
-            ):
-                compact = combined[:300]
-
-                if (
-                    compact
-                    and compact
-                    not in interesting
-                ):
-                    interesting.append(
-                        compact
+                card_text = clean(
+                    item.get(
+                        "text"
                     )
-
-        if interesting:
-            print(
-                "St John Bosco Timely candidate events: "
-                + " | ".join(
-                    interesting[:20]
                 )
-            )
-        else:
-            print(
-                "St John Bosco Timely candidate events: "
-                "none containing ACC or soccer"
-            )
 
-        fixtures: list[
-            dict[str, Any]
-        ] = []
-
-        for index, item in enumerate(
-            candidates,
-            start=1,
-        ):
-            href = clean(
-                item.get(
-                    "href"
-                )
-            )
-
-            card_text = clean(
-                item.get(
-                    "card_text"
-                )
-            )
-
-            start = timely_instance_datetime(
-                href,
-                timezone,
-            )
-
-            if not start:
-                start = (
-                    parse_school_card_datetime(
+                context_text = " ".join(
+                    [
                         card_text,
-                        timezone,
+                        " ".join(
+                            item.get(
+                                "attributes"
+                            )
+                            or []
+                        ),
+                    ]
+                )
+
+                href = clean(
+                    item.get(
+                        "href"
                     )
                 )
 
-            if not start:
-                print(
-                    "St John Bosco Timely warning: "
-                    "matched soccer event but could "
-                    "not determine date/time: "
+                start = timely_instance_datetime(
+                    href,
+                    timezone,
+                )
+
+                if not start:
+                    # Look for a 14-digit Timely instance id in attributes.
+                    instance_match = re.search(
+                        r"\b(20\d{12})\b",
+                        context_text,
+                    )
+
+                    if instance_match:
+                        try:
+                            start = (
+                                datetime.strptime(
+                                    instance_match.group(
+                                        1
+                                    ),
+                                    "%Y%m%d%H%M%S",
+                                ).replace(
+                                    tzinfo=timezone
+                                )
+                            )
+                        except ValueError:
+                            pass
+
+                if not start:
+                    start = (
+                        parse_school_card_datetime(
+                            context_text,
+                            timezone,
+                        )
+                    )
+
+                if (
+                    not start
+                    and re.search(
+                        r"\b(?:0?[1-9]|[12]\d|3[01])\b",
+                        context_text,
+                    )
+                ):
+                    # Month-grid fallback: if the card/ancestor contains only
+                    # a day number plus a time, combine it with the month URL.
+                    day_match = re.search(
+                        r"\b([0-2]?\d|3[01])\b",
+                        context_text,
+                    )
+                    time_match = re.search(
+                        r"\b(\d{1,2}:\d{2})"
+                        r"\s*(am|pm)?\b",
+                        context_text,
+                        flags=re.IGNORECASE,
+                    )
+
+                    if day_match:
+                        day = int(
+                            day_match.group(
+                                1
+                            )
+                        )
+
+                        hour = 0
+                        minute = 0
+
+                        if time_match:
+                            hour = int(
+                                time_match.group(
+                                    1
+                                ).split(":")[0]
+                            )
+                            minute = int(
+                                time_match.group(
+                                    1
+                                ).split(":")[1]
+                            )
+
+                            meridiem = (
+                                time_match.group(
+                                    2
+                                )
+                                or ""
+                            ).lower()
+
+                            if (
+                                meridiem == "pm"
+                                and hour < 12
+                            ):
+                                hour += 12
+
+                            if (
+                                meridiem == "am"
+                                and hour == 12
+                            ):
+                                hour = 0
+
+                        try:
+                            start = datetime(
+                                month_start.year,
+                                month_start.month,
+                                day,
+                                hour,
+                                minute,
+                                tzinfo=timezone,
+                            )
+                        except ValueError:
+                            start = None
+
+                candidate_preview = (
+                    f"{month_label}: "
                     f"{card_text[:300]}"
                 )
-                continue
 
-            title = timely_card_title(
-                item.get(
-                    "card_text"
-                )
-                or item.get(
-                    "link_text"
-                )
-                or ""
-            )
-
-            source_id = (
-                "school-timely-"
-                + hashlib.sha256(
-                    (
-                        href
-                        + "|"
-                        + start.isoformat()
-                        + "|"
-                        + title
-                    ).encode(
-                        "utf-8"
+                if (
+                    candidate_preview
+                    not in all_interesting
+                ):
+                    all_interesting.append(
+                        candidate_preview
                     )
-                ).hexdigest()[:16]
+
+                if not start:
+                    print(
+                        "St John Bosco Timely warning: "
+                        f"{month_label} matched title "
+                        "but could not determine "
+                        f"date/time | "
+                        f"{context_text[:500]}"
+                    )
+                    continue
+
+                title = timely_card_title(
+                    card_text
+                )
+
+                source_id = (
+                    "school-timely-dom-"
+                    + hashlib.sha256(
+                        (
+                            href
+                            + "|"
+                            + start.isoformat()
+                            + "|"
+                            + title
+                        ).encode(
+                            "utf-8"
+                        )
+                    ).hexdigest()[:16]
+                )
+
+                fixtures.append(
+                    {
+                        "start": start,
+                        "home": (
+                            "St John Bosco College"
+                        ),
+                        "away": (
+                            "ACC Soccer"
+                        ),
+                        "venue": (
+                            timely_card_location(
+                                card_text
+                            )
+                        ),
+                        "field": "",
+                        "round": "",
+                        "source_id": (
+                            source_id
+                        ),
+                        "label": "Finn",
+                        "source_url": (
+                            href
+                            or SCHOOL_CALENDAR_PAGE_URL
+                        ),
+                        "latitude": None,
+                        "longitude": None,
+                        "coordinate_source": "",
+                        "home_score": "",
+                        "away_score": "",
+                        "sport_icon": "🏫",
+                        "sport_name": (
+                            "School Soccer"
+                        ),
+                        "time_label": "KO",
+                        "duration_minutes": (
+                            timely_card_duration_minutes(
+                                card_text
+                            )
+                        ),
+                        "reminder_minutes": int(
+                            CONFIG.get(
+                                "reminder_minutes",
+                                90,
+                            )
+                        ),
+                        "notes": "",
+                        "display_title": title,
+                        "source_type": (
+                            "school_calendar"
+                        ),
+                    }
+                )
+
+            # ---------------------------------------------------------
+            # 3. Event links as another fallback / diagnostic.
+            # ---------------------------------------------------------
+            try:
+                raw_links = await page.locator(
+                    'a[href*="/event/"]'
+                ).evaluate_all(
+                    """
+                    links => links.map(
+                      link => ({
+                        href:
+                          link.href || '',
+                        text:
+                          (
+                            link.innerText ||
+                            link.textContent ||
+                            ''
+                          )
+                            .replace(/\\s+/g,' ')
+                            .trim()
+                      })
+                    )
+                    """
+                )
+            except Exception:
+                raw_links = []
+
+            raw_event_link_count = len(
+                raw_links
             )
 
-            fixtures.append(
+            for link in raw_links:
+                combined = clean(
+                    link.get(
+                        "text"
+                    )
+                )
+
+                if not school_event_text_matches(
+                    combined
+                ):
+                    continue
+
+                href = clean(
+                    link.get(
+                        "href"
+                    )
+                )
+
+                start = timely_instance_datetime(
+                    href,
+                    timezone,
+                )
+
+                if not start:
+                    continue
+
+                fixtures.append(
+                    {
+                        "start": start,
+                        "home": (
+                            "St John Bosco College"
+                        ),
+                        "away": (
+                            "ACC Soccer"
+                        ),
+                        "venue": "",
+                        "field": "",
+                        "round": "",
+                        "source_id": (
+                            "school-timely-link-"
+                            + hashlib.sha256(
+                                href.encode(
+                                    "utf-8"
+                                )
+                            ).hexdigest()[:16]
+                        ),
+                        "label": "Finn",
+                        "source_url": (
+                            href
+                        ),
+                        "latitude": None,
+                        "longitude": None,
+                        "coordinate_source": "",
+                        "home_score": "",
+                        "away_score": "",
+                        "sport_icon": "🏫",
+                        "sport_name": (
+                            "School Soccer"
+                        ),
+                        "time_label": "KO",
+                        "duration_minutes": 60,
+                        "reminder_minutes": int(
+                            CONFIG.get(
+                                "reminder_minutes",
+                                90,
+                            )
+                        ),
+                        "notes": "",
+                        "display_title": (
+                            timely_card_title(
+                                combined
+                            )
+                        ),
+                        "source_type": (
+                            "school_calendar"
+                        ),
+                    }
+                )
+
+            month_added = (
+                len(fixtures)
+                - month_fixtures_before
+            )
+
+            print(
+                "St John Bosco Timely month: "
+                f"{month_label} | "
+                f"JSON payloads={len(payloads)} | "
+                f"event links={raw_event_link_count} | "
+                f"DOM matches={dom_match_count} | "
+                f"raw matches added={month_added}"
+            )
+
+            month_debug.append(
                 {
-                    "start": start,
-                    "home": (
-                        "St John Bosco College"
+                    "month": (
+                        month_label
                     ),
-                    "away": "ACC Soccer",
-                    "venue": (
-                        timely_card_location(
-                            card_text
+                    "url": month_url,
+                    "json_payload_count": (
+                        len(payloads)
+                    ),
+                    "response_urls": (
+                        response_log[:40]
+                    ),
+                    "event_link_count": (
+                        raw_event_link_count
+                    ),
+                    "dom_match_count": (
+                        dom_match_count
+                    ),
+                    "raw_matches_added": (
+                        month_added
+                    ),
+                    "body_contains_target": (
+                        school_event_text_matches(
+                            body_text
                         )
                     ),
-                    "field": "",
-                    "round": "",
-                    "source_id": source_id,
-                    "label": "Finn",
-                    "source_url": (
-                        href
-                        or SCHOOL_CALENDAR_PAGE_URL
-                    ),
-                    "latitude": None,
-                    "longitude": None,
-                    "coordinate_source": "",
-                    "home_score": "",
-                    "away_score": "",
-                    "sport_icon": "🏫",
-                    "sport_name": (
-                        "School Soccer"
-                    ),
-                    "time_label": "KO",
-                    "duration_minutes": (
-                        timely_card_duration_minutes(
-                            card_text
-                        )
-                    ),
-                    "reminder_minutes": int(
-                        CONFIG.get(
-                            "reminder_minutes",
-                            90,
-                        )
-                    ),
-                    "notes": "",
-                    "display_title": title,
-                    "source_type": (
-                        "school_calendar"
+                    "body_text_preview": (
+                        body_text[:4_000]
                     ),
                 }
             )
 
-        # Timely may expose the same event link more than once in the DOM.
-        unique: dict[
-            tuple[str, str],
-            dict[str, Any],
-        ] = {}
-
-        for fixture in fixtures:
-            key = (
-                fixture[
-                    "start"
-                ].isoformat(),
-                clean(
-                    fixture.get(
-                        "display_title"
-                    )
-                ).lower(),
+        except Exception as exc:
+            print(
+                "St John Bosco Timely month "
+                f"{month_label} warning: {exc}"
             )
 
+            month_debug.append(
+                {
+                    "month": (
+                        month_label
+                    ),
+                    "url": month_url,
+                    "error": str(
+                        exc
+                    ),
+                }
+            )
+
+        finally:
+            await page.close()
+
+    # -------------------------------------------------------------
+    # Final de-duplication across JSON, DOM and link extraction.
+    # -------------------------------------------------------------
+    unique: dict[
+        tuple[str, str],
+        dict[str, Any],
+    ] = {}
+
+    for fixture in fixtures:
+        start = fixture.get(
+            "start"
+        )
+
+        if not isinstance(
+            start,
+            datetime,
+        ):
+            continue
+
+        if (
+            start
+            < now
+            - timedelta(days=31)
+        ):
+            continue
+
+        key = (
+            start.isoformat(),
+            normalise_school_event_text(
+                fixture.get(
+                    "display_title"
+                )
+            ),
+        )
+
+        existing = unique.get(
+            key
+        )
+
+        # Prefer the candidate with a direct Timely event URL and location.
+        score = (
+            int(
+                "/event/"
+                in clean(
+                    fixture.get(
+                        "source_url"
+                    )
+                )
+            )
+            + int(
+                bool(
+                    clean(
+                        fixture.get(
+                            "venue"
+                        )
+                    )
+                )
+            )
+        )
+
+        old_score = (
+            -1
+            if not existing
+            else (
+                int(
+                    "/event/"
+                    in clean(
+                        existing.get(
+                            "source_url"
+                        )
+                    )
+                )
+                + int(
+                    bool(
+                        clean(
+                            existing.get(
+                                "venue"
+                            )
+                        )
+                    )
+                )
+            )
+        )
+
+        if (
+            existing is None
+            or score > old_score
+        ):
             unique[
                 key
             ] = fixture
 
-        fixtures = sorted(
-            unique.values(),
-            key=lambda item: item[
-                "start"
-            ],
-        )
+    fixtures = sorted(
+        unique.values(),
+        key=lambda item: item[
+            "start"
+        ],
+    )
 
+    if all_interesting:
         print(
-            "St John Bosco Timely: "
-            f"calendar_id={calendar_id}; "
-            f"found {len(fixtures)} matching "
-            f"'{SCHOOL_SOCCER_MATCH_TEXT}' events."
+            "St John Bosco Timely candidate events: "
+            + " | ".join(
+                all_interesting[:30]
+            )
+        )
+    else:
+        print(
+            "St John Bosco Timely candidate events: "
+            "none containing ACC or soccer"
         )
 
-        for fixture in fixtures:
-            print(
-                "St John Bosco Timely fixture: "
-                f"{fixture['start'].isoformat()} | "
-                f"{fixture.get('display_title','')} | "
-                f"{fixture.get('venue','')}"
-            )
+    print(
+        "St John Bosco Timely: "
+        f"calendar_id={calendar_id}; "
+        f"found {len(fixtures)} matching "
+        f"'{SCHOOL_SOCCER_MATCH_TEXT}' events."
+    )
 
-        return fixtures, {
-            "source": (
-                SCHOOL_CALENDAR_PAGE_URL
-            ),
-            "provider": "Timely",
-            "calendar_id": calendar_id,
-            "agenda_url": agenda_url,
-            "match_text": (
-                SCHOOL_SOCCER_MATCH_TEXT
-            ),
-            "fixture_count": len(
-                fixtures
-            ),
-            "event_link_count": len(
-                raw_events
-            ),
-            "candidate_count": len(
-                candidates
-            ),
-            "candidate_events": (
-                interesting[:30]
-            ),
-            "discovery": (
-                discovery_debug
-            ),
-            "body_text_preview": (
-                body_text[:8_000]
-            ),
-        }
+    for fixture in fixtures:
+        print(
+            "St John Bosco Timely fixture: "
+            f"{fixture['start'].isoformat()} | "
+            f"{fixture.get('display_title','')} | "
+            f"{fixture.get('venue','')} | "
+            f"{fixture.get('source_url','')}"
+        )
 
-    finally:
-        await page.close()
+    return fixtures, {
+        "source": (
+            SCHOOL_CALENDAR_PAGE_URL
+        ),
+        "provider": "Timely",
+        "calendar_id": calendar_id,
+        "scraper_version": (
+            SCHOOL_SOCCER_SCRAPER_VERSION
+        ),
+        "match_text": (
+            SCHOOL_SOCCER_MATCH_TEXT
+        ),
+        "fixture_count": len(
+            fixtures
+        ),
+        "candidate_events": (
+            all_interesting[:50]
+        ),
+        "months": month_debug,
+        "discovery": (
+            discovery_debug
+        ),
+    }
 
 
 
