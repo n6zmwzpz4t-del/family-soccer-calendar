@@ -24,18 +24,9 @@ SOCCER_LADDER_DATA = ROOT / "docs" / "soccer_ladders.json"
 LADDER_PARSER_VERSION = "2026-08-09-v5-flat-row-regex"
 
 SCHOOL_CALENDAR_PAGE_URL = "https://www.stjohnbosco.wa.edu.au/calendar/"
-SCHOOL_TEAMUP_URL = (
-    "https://teamup.com/ksmxivsndu1tq6ng17"
-    "?view=a"
-    "&showAgendaDateRange=year"
-    "&showAgendaDetails=1"
-    "&showAgendaHeader=1"
-    "&showProfileAndInfo=0"
-    "&showSidepanel=0"
-)
-SCHOOL_CALENDAR_URL = SCHOOL_TEAMUP_URL
+SCHOOL_TIMELY_FALLBACK_ID = "37c47p6q"
 SCHOOL_SOCCER_MATCH_TEXT = "ACC soccer Y10-12 boys"
-SCHOOL_SOCCER_SCRAPER_VERSION = "2026-08-14-v2-flexible-title-match"
+SCHOOL_SOCCER_SCRAPER_VERSION = "2026-08-14-v3-timely-calendar"
 
 SOCCER_LADDERS = [
     {
@@ -3896,213 +3887,692 @@ def parse_school_card_datetime(text: str, timezone: ZoneInfo) -> datetime | None
     except Exception:
         return None
 
-async def scrape_school_soccer(browser, timezone: ZoneInfo):
-    page = await browser.new_page(viewport={"width": 1440, "height": 1400})
-    payloads: list[Any] = []
-    response_log: list[dict[str, Any]] = []
-
-    async def capture(response) -> None:
-        content_type = (response.headers.get("content-type") or "").lower()
-        url_lower = response.url.lower()
-        if (
-            "json" not in content_type
-            and "calendar" not in url_lower
-            and "event" not in url_lower
-        ):
-            return
-
-        response_log.append({
-            "url": response.url,
-            "status": response.status,
-            "content_type": content_type,
-        })
-
-        if "json" in content_type:
-            try:
-                payloads.append(await response.json())
-            except Exception:
-                pass
-
-    page.on("response", capture)
+async def discover_school_timely_calendar(
+    browser,
+) -> tuple[str, dict[str, Any]]:
+    """
+    Discover the live Timely calendar from St John Bosco's current
+    /calendar/ page.  The old /teamup/ page is a separate legacy page
+    and must not be used for current school events.
+    """
+    page = await browser.new_page(
+        viewport={
+            "width": 1440,
+            "height": 1200,
+        }
+    )
 
     try:
-        print(
-            "St John Bosco school soccer: opening "
-            + SCHOOL_CALENDAR_URL
-            + f" [school scraper {SCHOOL_SOCCER_SCRAPER_VERSION}]"
-        )
         await page.goto(
-            SCHOOL_CALENDAR_URL,
+            SCHOOL_CALENDAR_PAGE_URL,
             wait_until="domcontentloaded",
             timeout=120_000,
         )
-        await page.wait_for_timeout(12_000)
 
-        fixtures: list[dict[str, Any]] = []
+        await page.wait_for_timeout(
+            8_000
+        )
 
-        # Diagnostic: print Teamup titles containing ACC or soccer so the
-        # GitHub Action log reveals the exact wording returned by Teamup.
-        interesting_titles: list[str] = []
+        iframe_sources = await page.locator(
+            "iframe"
+        ).evaluate_all(
+            """
+            frames => frames
+              .map(frame => frame.src || frame.getAttribute('src') || '')
+              .filter(Boolean)
+            """
+        )
 
-        for payload in payloads:
-            for obj in walk(payload):
-                for key in ("title", "name", "summary", "eventTitle", "eventName", "subject"):
-                    value = clean(obj.get(key))
+        timely_sources = [
+            source
+            for source in iframe_sources
+            if "events.timely.fun" in source.lower()
+        ]
 
-                    if not value:
-                        continue
+        chosen = (
+            timely_sources[0]
+            if timely_sources
+            else ""
+        )
 
-                    lower = value.lower()
+        calendar_id = ""
 
-                    if (
-                        "acc" in lower
-                        or "soccer" in lower
+        if chosen:
+            match = re.search(
+                r"events\.timely\.fun/([^/?#]+)",
+                chosen,
+                flags=re.IGNORECASE,
+            )
+
+            if match:
+                calendar_id = match.group(1)
+
+        if not calendar_id:
+            calendar_id = (
+                SCHOOL_TIMELY_FALLBACK_ID
+            )
+
+        return calendar_id, {
+            "school_page": (
+                SCHOOL_CALENDAR_PAGE_URL
+            ),
+            "iframe_sources": (
+                iframe_sources[:30]
+            ),
+            "timely_sources": (
+                timely_sources[:10]
+            ),
+            "calendar_id": calendar_id,
+            "used_fallback_id": (
+                not bool(timely_sources)
+            ),
+        }
+
+    finally:
+        await page.close()
+
+
+def timely_agenda_url(
+    calendar_id: str,
+    start_date: str,
+    end_date: str,
+) -> str:
+    return (
+        f"https://events.timely.fun/{calendar_id}/agenda"
+        f"?range=custom"
+        f"&start_date={start_date}"
+        f"&end_date={end_date}"
+        f"&timely_id=timely-iframe-embed-0"
+    )
+
+
+def timely_instance_datetime(
+    url: str,
+    timezone: ZoneInfo,
+) -> datetime | None:
+    """
+    Timely occurrence links commonly end with a YYYYMMDDHHMMSS instance
+    timestamp, or include it as instance_id=.  Prefer that over parsing
+    human-readable card text.
+    """
+    value = str(url or "")
+
+    match = re.search(
+        r"/(20\d{12})(?:[/?#]|$)",
+        value,
+    )
+
+    if not match:
+        match = re.search(
+            r"[?&]instance_id=(20\d{12})(?:&|$)",
+            value,
+        )
+
+    if not match:
+        return None
+
+    try:
+        parsed = datetime.strptime(
+            match.group(1),
+            "%Y%m%d%H%M%S",
+        )
+
+        return parsed.replace(
+            tzinfo=timezone
+        )
+
+    except ValueError:
+        return None
+
+
+def timely_card_title(
+    card_text: str,
+) -> str:
+    """
+    Return the line/string containing the school soccer title when the
+    card contains extra date, time or location text.
+    """
+    text = clean(card_text)
+
+    if not text:
+        return SCHOOL_SOCCER_MATCH_TEXT
+
+    # First try line boundaries retained by Timely.
+    for part in re.split(
+        r"[\r\n|]+",
+        str(card_text or ""),
+    ):
+        candidate = clean(part)
+
+        if (
+            candidate
+            and school_event_text_matches(
+                candidate
+            )
+        ):
+            return candidate
+
+    # Otherwise retain the configured friendly title rather than dumping
+    # a large Timely card into the calendar event title.
+    return SCHOOL_SOCCER_MATCH_TEXT
+
+
+def timely_card_duration_minutes(
+    card_text: str,
+) -> int:
+    text = clean(card_text)
+
+    # Examples:
+    #   3:30pm - 4:30pm
+    #   3:30 PM – 5:00 PM
+    match = re.search(
+        r"\b(\d{1,2}:\d{2}\s*(?:am|pm))"
+        r"\s*[-–—]\s*"
+        r"(\d{1,2}:\d{2}\s*(?:am|pm))\b",
+        text,
+        flags=re.IGNORECASE,
+    )
+
+    if not match:
+        return 60
+
+    try:
+        start_time = dateparser.parse(
+            match.group(1)
+        )
+        end_time = dateparser.parse(
+            match.group(2)
+        )
+
+        if not start_time or not end_time:
+            return 60
+
+        start_minutes = (
+            start_time.hour * 60
+            + start_time.minute
+        )
+        end_minutes = (
+            end_time.hour * 60
+            + end_time.minute
+        )
+
+        if end_minutes <= start_minutes:
+            end_minutes += 24 * 60
+
+        return max(
+            15,
+            end_minutes - start_minutes,
+        )
+
+    except Exception:
+        return 60
+
+
+def timely_card_location(
+    card_text: str,
+) -> str:
+    text = clean(card_text)
+
+    patterns = (
+        r"(?:Location|Venue|Where)\s*[:\-]\s*([^|]+)",
+        r"\bat\s+([A-Z][A-Za-z0-9 '&().,/.-]+"
+        r"(?:College|School|Reserve|Oval|Park|Stadium|"
+        r"Sports Centre|Sporting Complex|Complex))",
+    )
+
+    for pattern in patterns:
+        match = re.search(
+            pattern,
+            text,
+            flags=re.IGNORECASE,
+        )
+
+        if match:
+            return normalise_location(
+                clean(
+                    match.group(1)
+                )
+            )
+
+    return ""
+
+
+async def scrape_school_soccer(
+    browser,
+    timezone: ZoneInfo,
+):
+    """
+    Scrape Finn's school soccer fixtures from the CURRENT St John Bosco
+    Timely calendar.
+
+    The school website's current /calendar/ page embeds Timely.  A legacy
+    /teamup/ page also exists but is not the source used by the current
+    calendar page.
+    """
+    (
+        calendar_id,
+        discovery_debug,
+    ) = await discover_school_timely_calendar(
+        browser
+    )
+
+    now = datetime.now(
+        timezone
+    )
+
+    start_date = (
+        now.date()
+        - timedelta(days=31)
+    ).isoformat()
+
+    end_date = (
+        now.date()
+        + timedelta(days=365)
+    ).isoformat()
+
+    agenda_url = timely_agenda_url(
+        calendar_id,
+        start_date,
+        end_date,
+    )
+
+    print(
+        "St John Bosco school soccer: opening "
+        f"{agenda_url} "
+        f"[school scraper "
+        f"{SCHOOL_SOCCER_SCRAPER_VERSION}]"
+    )
+
+    page = await browser.new_page(
+        viewport={
+            "width": 1440,
+            "height": 1600,
+        }
+    )
+
+    try:
+        await page.goto(
+            agenda_url,
+            wait_until="domcontentloaded",
+            timeout=120_000,
+        )
+
+        await page.wait_for_timeout(
+            10_000
+        )
+
+        # Timely may progressively render agenda events. Scroll repeatedly
+        # and click a visible "load more" control when present.
+        for _ in range(10):
+            try:
+                await page.evaluate(
+                    "window.scrollTo(0, document.body.scrollHeight)"
+                )
+            except Exception:
+                pass
+
+            await page.wait_for_timeout(
+                800
+            )
+
+            for label in (
+                "Load more",
+                "Show more",
+                "More events",
+            ):
+                try:
+                    button = page.get_by_text(
+                        re.compile(
+                            rf"^{re.escape(label)}$",
+                            re.IGNORECASE,
+                        )
+                    ).first
+
+                    if await button.is_visible(
+                        timeout=500
                     ):
-                        if value not in interesting_titles:
-                            interesting_titles.append(value)
+                        await button.click(
+                            timeout=2_000
+                        )
+                        await page.wait_for_timeout(
+                            1_000
+                        )
+                        break
 
-        if interesting_titles:
+                except Exception:
+                    continue
+
+        body_text = await page.locator(
+            "body"
+        ).inner_text()
+
+        # Collect every Timely event link together with a sensible amount
+        # of surrounding card text.  We then do the title filtering in
+        # Python so punctuation/capitalisation differences do not matter.
+        raw_events = await page.locator(
+            'a[href*="/event/"]'
+        ).evaluate_all(
+            """
+            links => links.map(link => {
+              let node = link;
+              let best = (
+                link.innerText ||
+                link.textContent ||
+                ''
+              ).trim();
+
+              for (
+                let i = 0;
+                i < 7 && node;
+                i += 1
+              ) {
+                const text = (
+                  node.innerText ||
+                  node.textContent ||
+                  ''
+                )
+                  .replace(/\\s+/g, ' ')
+                  .trim();
+
+                if (
+                  text.length >= best.length &&
+                  text.length <= 1600
+                ) {
+                  best = text;
+                }
+
+                node = node.parentElement;
+              }
+
+              return {
+                href: link.href || '',
+                link_text: (
+                  link.innerText ||
+                  link.textContent ||
+                  ''
+                ).trim(),
+                card_text: best
+              };
+            })
+            """
+        )
+
+        candidates: list[
+            dict[str, Any]
+        ] = []
+
+        for item in raw_events:
+            combined = " ".join(
+                filter(
+                    None,
+                    (
+                        clean(
+                            item.get(
+                                "link_text"
+                            )
+                        ),
+                        clean(
+                            item.get(
+                                "card_text"
+                            )
+                        ),
+                    ),
+                )
+            )
+
+            if school_event_text_matches(
+                combined
+            ):
+                candidates.append(
+                    item
+                )
+
+        # Diagnostic titles make any future Timely wording change obvious
+        # in the GitHub Actions log.
+        interesting: list[str] = []
+
+        for item in raw_events:
+            combined = " ".join(
+                filter(
+                    None,
+                    (
+                        clean(
+                            item.get(
+                                "link_text"
+                            )
+                        ),
+                        clean(
+                            item.get(
+                                "card_text"
+                            )
+                        ),
+                    ),
+                )
+            )
+
+            lower = combined.lower()
+
+            if (
+                "acc" in lower
+                or "soccer" in lower
+            ):
+                compact = combined[:300]
+
+                if (
+                    compact
+                    and compact
+                    not in interesting
+                ):
+                    interesting.append(
+                        compact
+                    )
+
+        if interesting:
             print(
-                "St John Bosco Teamup candidate titles: "
-                + " | ".join(interesting_titles[:30])
+                "St John Bosco Timely candidate events: "
+                + " | ".join(
+                    interesting[:20]
+                )
             )
         else:
             print(
-                "St John Bosco Teamup candidate titles: "
+                "St John Bosco Timely candidate events: "
                 "none containing ACC or soccer"
             )
 
-        # Preferred route: structured calendar/event JSON.
-        for payload in payloads:
-            for obj in walk(payload):
-                fixture = school_fixture_from_json(obj, timezone)
-                if fixture:
-                    fixtures.append(fixture)
+        fixtures: list[
+            dict[str, Any]
+        ] = []
 
-        frame_debug: list[dict[str, Any]] = []
-
-        # Fallback: search visible main-page/iframe event cards.
-        if not fixtures:
-            for frame_index, frame in enumerate(page.frames):
-                try:
-                    body_text = await frame.locator("body").inner_text(timeout=5_000)
-                except Exception:
-                    continue
-
-                contains_target = (
-                    SCHOOL_SOCCER_MATCH_TEXT.lower() in body_text.lower()
+        for index, item in enumerate(
+            candidates,
+            start=1,
+        ):
+            href = clean(
+                item.get(
+                    "href"
                 )
-                frame_debug.append({
-                    "frame_index": frame_index,
-                    "url": frame.url,
-                    "contains_target": contains_target,
-                    "body_text_preview": body_text[:5_000],
-                })
+            )
 
-                if not contains_target:
-                    continue
+            card_text = clean(
+                item.get(
+                    "card_text"
+                )
+            )
 
-                try:
-                    matches = frame.get_by_text(
-                        re.compile(
-                            r"ACC.*soccer.*Y\s*10\s*[-–—]\s*12.*boys",
-                            re.IGNORECASE,
-                        )
-                    )
-                    count = min(await matches.count(), 50)
-                except Exception:
-                    count = 0
+            start = timely_instance_datetime(
+                href,
+                timezone,
+            )
 
-                for index in range(count):
-                    try:
-                        data = await matches.nth(index).evaluate(
-                            """el => {
-                              let node = el;
-                              let best = (el.innerText || el.textContent || '').trim();
-                              for (let i = 0; i < 8 && node; i += 1) {
-                                const text = (node.innerText || node.textContent || '')
-                                  .replace(/\\s+/g, ' ').trim();
-                                if (text.length >= best.length && text.length <= 1800) {
-                                  best = text;
-                                }
-                                node = node.parentElement;
-                              }
-                              const a = el.closest('a') || el.querySelector?.('a');
-                              return {text: best, href: a?.href || ''};
-                            }"""
-                        )
-                    except Exception:
-                        continue
-
-                    card_text = clean(data.get("text"))
-                    start = parse_school_card_datetime(card_text, timezone)
-                    if not start:
-                        continue
-
-                    location = ""
-                    loc_match = re.search(
-                        r"(?:Location|Venue|Where)\s*[:\-]\s*([^|]+)",
+            if not start:
+                start = (
+                    parse_school_card_datetime(
                         card_text,
-                        flags=re.IGNORECASE,
+                        timezone,
                     )
-                    if loc_match:
-                        location = normalise_location(clean(loc_match.group(1)))
+                )
 
-                    fixtures.append({
-                        "start": start,
-                        "home": "St John Bosco College",
-                        "away": "ACC Soccer",
-                        "venue": location,
-                        "field": "",
-                        "round": "",
-                        "source_id": "school-dom-" + hashlib.sha256(
-                            f"{card_text}|{start.isoformat()}".encode("utf-8")
-                        ).hexdigest()[:16],
-                        "label": "Finn",
-                        "source_url": clean(data.get("href")) or SCHOOL_CALENDAR_PAGE_URL,
-                        "latitude": None,
-                        "longitude": None,
-                        "coordinate_source": "",
-                        "home_score": "",
-                        "away_score": "",
-                        "sport_icon": "🏫",
-                        "sport_name": "School Soccer",
-                        "time_label": "KO",
-                        "duration_minutes": 60,
-                        "reminder_minutes": int(CONFIG.get("reminder_minutes", 90)),
-                        "notes": card_text,
-                        "display_title": SCHOOL_SOCCER_MATCH_TEXT,
-                        "source_type": "school_calendar",
-                    })
+            if not start:
+                print(
+                    "St John Bosco Timely warning: "
+                    "matched soccer event but could "
+                    "not determine date/time: "
+                    f"{card_text[:300]}"
+                )
+                continue
 
-        # De-duplicate the same school event if the page exposes it more than once.
-        unique: dict[tuple[str, str], dict[str, Any]] = {}
+            title = timely_card_title(
+                item.get(
+                    "card_text"
+                )
+                or item.get(
+                    "link_text"
+                )
+                or ""
+            )
+
+            source_id = (
+                "school-timely-"
+                + hashlib.sha256(
+                    (
+                        href
+                        + "|"
+                        + start.isoformat()
+                        + "|"
+                        + title
+                    ).encode(
+                        "utf-8"
+                    )
+                ).hexdigest()[:16]
+            )
+
+            fixtures.append(
+                {
+                    "start": start,
+                    "home": (
+                        "St John Bosco College"
+                    ),
+                    "away": "ACC Soccer",
+                    "venue": (
+                        timely_card_location(
+                            card_text
+                        )
+                    ),
+                    "field": "",
+                    "round": "",
+                    "source_id": source_id,
+                    "label": "Finn",
+                    "source_url": (
+                        href
+                        or SCHOOL_CALENDAR_PAGE_URL
+                    ),
+                    "latitude": None,
+                    "longitude": None,
+                    "coordinate_source": "",
+                    "home_score": "",
+                    "away_score": "",
+                    "sport_icon": "🏫",
+                    "sport_name": (
+                        "School Soccer"
+                    ),
+                    "time_label": "KO",
+                    "duration_minutes": (
+                        timely_card_duration_minutes(
+                            card_text
+                        )
+                    ),
+                    "reminder_minutes": int(
+                        CONFIG.get(
+                            "reminder_minutes",
+                            90,
+                        )
+                    ),
+                    "notes": "",
+                    "display_title": title,
+                    "source_type": (
+                        "school_calendar"
+                    ),
+                }
+            )
+
+        # Timely may expose the same event link more than once in the DOM.
+        unique: dict[
+            tuple[str, str],
+            dict[str, Any],
+        ] = {}
+
         for fixture in fixtures:
             key = (
-                fixture["start"].isoformat(),
-                clean(fixture.get("display_title")).lower(),
+                fixture[
+                    "start"
+                ].isoformat(),
+                clean(
+                    fixture.get(
+                        "display_title"
+                    )
+                ).lower(),
             )
-            unique[key] = fixture
 
-        fixtures = sorted(unique.values(), key=lambda item: item["start"])
+            unique[
+                key
+            ] = fixture
+
+        fixtures = sorted(
+            unique.values(),
+            key=lambda item: item[
+                "start"
+            ],
+        )
 
         print(
-            "St John Bosco Teamup: "
-            f"captured {len(payloads)} JSON payloads and "
+            "St John Bosco Timely: "
+            f"calendar_id={calendar_id}; "
             f"found {len(fixtures)} matching "
             f"'{SCHOOL_SOCCER_MATCH_TEXT}' events."
         )
 
+        for fixture in fixtures:
+            print(
+                "St John Bosco Timely fixture: "
+                f"{fixture['start'].isoformat()} | "
+                f"{fixture.get('display_title','')} | "
+                f"{fixture.get('venue','')}"
+            )
+
         return fixtures, {
-            "source": SCHOOL_CALENDAR_URL,
-            "match_text": SCHOOL_SOCCER_MATCH_TEXT,
-            "fixture_count": len(fixtures),
-            "json_payload_count": len(payloads),
-            "responses": response_log[:40],
-            "frames": frame_debug,
+            "source": (
+                SCHOOL_CALENDAR_PAGE_URL
+            ),
+            "provider": "Timely",
+            "calendar_id": calendar_id,
+            "agenda_url": agenda_url,
+            "match_text": (
+                SCHOOL_SOCCER_MATCH_TEXT
+            ),
+            "fixture_count": len(
+                fixtures
+            ),
+            "event_link_count": len(
+                raw_events
+            ),
+            "candidate_count": len(
+                candidates
+            ),
+            "candidate_events": (
+                interesting[:30]
+            ),
+            "discovery": (
+                discovery_debug
+            ),
+            "body_text_preview": (
+                body_text[:8_000]
+            ),
         }
+
     finally:
         await page.close()
+
 
 
 def load_manual_fixtures(
@@ -4503,7 +4973,7 @@ async def main() -> None:
             all_fixtures.extend(school_fixtures)
         except Exception as exc:
             school_debug = {
-                "source": SCHOOL_CALENDAR_URL,
+                "source": SCHOOL_CALENDAR_PAGE_URL,
                 "match_text": SCHOOL_SOCCER_MATCH_TEXT,
                 "fixture_count": 0,
                 "error": str(exc),
