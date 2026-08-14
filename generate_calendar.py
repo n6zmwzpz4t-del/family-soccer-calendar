@@ -26,7 +26,7 @@ LADDER_PARSER_VERSION = "2026-08-09-v5-flat-row-regex"
 SCHOOL_CALENDAR_PAGE_URL = "https://www.stjohnbosco.wa.edu.au/calendar/"
 SCHOOL_TIMELY_FALLBACK_ID = "37c47p6q"
 SCHOOL_SOCCER_MATCH_TEXT = "ACC soccer Y10-12 boys"
-SCHOOL_SOCCER_SCRAPER_VERSION = "2026-08-14-v5-fixed-60-minute-games"
+SCHOOL_SOCCER_SCRAPER_VERSION = "2026-08-14-v6-safe-dom-events"
 
 SOCCER_LADDERS = [
     {
@@ -4524,7 +4524,21 @@ async def scrape_school_soccer(
                     )
 
             # ---------------------------------------------------------
-            # 2. Rendered DOM text, not limited to <a> tags.
+            # 2. Rendered DOM fallback.
+            #
+            # IMPORTANT:
+            # Timely's month page contains large ancestor containers holding
+            # many unrelated school events.  Earlier versions climbed too far
+            # up the DOM and could accidentally turn the entire calendar
+            # section into one "fixture".
+            #
+            # We now accept a DOM match ONLY when:
+            #   * the matched element itself contains the soccer title; AND
+            #   * we can recover a genuine Timely occurrence timestamp from
+            #     a direct /event/.../YYYYMMDDHHMMSS URL or data attribute.
+            #
+            # We deliberately DO NOT fuzzy-parse dates/times from a large
+            # parent container.
             # ---------------------------------------------------------
             target_regex = re.compile(
                 r"ACC.*soccer.*"
@@ -4554,117 +4568,122 @@ async def scrape_school_soccer(
                 )
 
                 try:
-                    item = (
-                        await locator.evaluate(
-                            """
-                            el => {
-                              let node = el;
-                              let bestText = (
-                                el.innerText ||
-                                el.textContent ||
-                                ''
-                              ).trim();
+                    item = await locator.evaluate(
+                        """
+                        el => {
+                          const ownText = (
+                            el.innerText ||
+                            el.textContent ||
+                            ''
+                          )
+                            .replace(/\\s+/g, ' ')
+                            .trim();
 
-                              let href = '';
-                              let attributes = [];
+                          let node = el;
+                          let href = '';
+                          let cardText = ownText;
+                          let attributes = [];
 
-                              for (
-                                let i = 0;
-                                i < 10 && node;
-                                i += 1
-                              ) {
-                                const text = (
-                                  node.innerText ||
-                                  node.textContent ||
-                                  ''
-                                )
-                                  .replace(/\\s+/g, ' ')
-                                  .trim();
+                          // Only walk a few ancestors and only retain compact
+                          // event-card text. Never capture a whole calendar.
+                          for (
+                            let i = 0;
+                            i < 5 && node;
+                            i += 1
+                          ) {
+                            if (!href) {
+                              const directLink =
+                                node.matches?.('a[href*="/event/"]')
+                                  ? node
+                                  : node.querySelector?.('a[href*="/event/"]');
 
-                                if (
-                                  text.length >= bestText.length &&
-                                  text.length <= 1800
-                                ) {
-                                  bestText = text;
-                                }
-
-                                if (!href) {
-                                  const a =
-                                    node.matches?.('a')
-                                      ? node
-                                      : node.querySelector?.('a[href*="/event/"]');
-
-                                  if (a?.href) {
-                                    href = a.href;
-                                  }
-                                }
-
-                                for (
-                                  const name of [
-                                    'data-date',
-                                    'data-start',
-                                    'data-datetime',
-                                    'data-event-id',
-                                    'data-instance-id',
-                                    'datetime',
-                                    'aria-label',
-                                    'title'
-                                  ]
-                                ) {
-                                  const value =
-                                    node.getAttribute?.(name);
-
-                                  if (value) {
-                                    attributes.push(
-                                      `${name}=${value}`
-                                    );
-                                  }
-                                }
-
-                                const time =
-                                  node.querySelector?.('time[datetime]');
-
-                                if (time?.getAttribute('datetime')) {
-                                  attributes.push(
-                                    `time=${time.getAttribute('datetime')}`
-                                  );
-                                }
-
-                                node =
-                                  node.parentElement;
+                              if (directLink?.href) {
+                                href = directLink.href;
                               }
-
-                              return {
-                                href,
-                                text: bestText,
-                                attributes:
-                                  Array.from(
-                                    new Set(attributes)
-                                  )
-                              };
                             }
-                            """
-                        )
+
+                            const text = (
+                              node.innerText ||
+                              node.textContent ||
+                              ''
+                            )
+                              .replace(/\\s+/g, ' ')
+                              .trim();
+
+                            if (
+                              text.length >= ownText.length &&
+                              text.length <= 500
+                            ) {
+                              cardText = text;
+                            }
+
+                            for (
+                              const name of [
+                                'data-date',
+                                'data-start',
+                                'data-datetime',
+                                'data-event-id',
+                                'data-instance-id',
+                                'datetime'
+                              ]
+                            ) {
+                              const value =
+                                node.getAttribute?.(name);
+
+                              if (value) {
+                                attributes.push(
+                                  `${name}=${value}`
+                                );
+                              }
+                            }
+
+                            const time =
+                              node.querySelector?.('time[datetime]');
+
+                            if (time?.getAttribute('datetime')) {
+                              attributes.push(
+                                `time=${time.getAttribute('datetime')}`
+                              );
+                            }
+
+                            node = node.parentElement;
+                          }
+
+                          return {
+                            own_text: ownText,
+                            card_text: cardText,
+                            href,
+                            attributes:
+                              Array.from(
+                                new Set(attributes)
+                              )
+                          };
+                        }
+                        """
                     )
                 except Exception:
                     continue
 
-                card_text = clean(
+                own_text = clean(
                     item.get(
-                        "text"
+                        "own_text"
                     )
                 )
 
-                context_text = " ".join(
-                    [
-                        card_text,
-                        " ".join(
-                            item.get(
-                                "attributes"
-                            )
-                            or []
-                        ),
-                    ]
+                # The matched element itself must look like the soccer event,
+                # not a large container which merely contains that text.
+                if (
+                    not school_event_text_matches(
+                        own_text
+                    )
+                    or len(own_text) > 300
+                ):
+                    continue
+
+                card_text = clean(
+                    item.get(
+                        "card_text"
+                    )
                 )
 
                 href = clean(
@@ -4673,117 +4692,60 @@ async def scrape_school_soccer(
                     )
                 )
 
+                attributes_text = " ".join(
+                    item.get(
+                        "attributes"
+                    )
+                    or []
+                )
+
                 start = timely_instance_datetime(
                     href,
                     timezone,
                 )
 
+                # If the link is absent, allow a proper Timely 14-digit
+                # occurrence id from an element/data attribute.
                 if not start:
-                    # Look for a 14-digit Timely instance id in attributes.
                     instance_match = re.search(
                         r"\b(20\d{12})\b",
-                        context_text,
+                        attributes_text,
                     )
 
                     if instance_match:
                         try:
-                            start = (
-                                datetime.strptime(
-                                    instance_match.group(
-                                        1
-                                    ),
-                                    "%Y%m%d%H%M%S",
-                                ).replace(
-                                    tzinfo=timezone
-                                )
-                            )
-                        except ValueError:
-                            pass
-
-                if not start:
-                    start = (
-                        parse_school_card_datetime(
-                            context_text,
-                            timezone,
-                        )
-                    )
-
-                if (
-                    not start
-                    and re.search(
-                        r"\b(?:0?[1-9]|[12]\d|3[01])\b",
-                        context_text,
-                    )
-                ):
-                    # Month-grid fallback: if the card/ancestor contains only
-                    # a day number plus a time, combine it with the month URL.
-                    day_match = re.search(
-                        r"\b([0-2]?\d|3[01])\b",
-                        context_text,
-                    )
-                    time_match = re.search(
-                        r"\b(\d{1,2}:\d{2})"
-                        r"\s*(am|pm)?\b",
-                        context_text,
-                        flags=re.IGNORECASE,
-                    )
-
-                    if day_match:
-                        day = int(
-                            day_match.group(
-                                1
-                            )
-                        )
-
-                        hour = 0
-                        minute = 0
-
-                        if time_match:
-                            hour = int(
-                                time_match.group(
+                            start = datetime.strptime(
+                                instance_match.group(
                                     1
-                                ).split(":")[0]
-                            )
-                            minute = int(
-                                time_match.group(
-                                    1
-                                ).split(":")[1]
-                            )
-
-                            meridiem = (
-                                time_match.group(
-                                    2
-                                )
-                                or ""
-                            ).lower()
-
-                            if (
-                                meridiem == "pm"
-                                and hour < 12
-                            ):
-                                hour += 12
-
-                            if (
-                                meridiem == "am"
-                                and hour == 12
-                            ):
-                                hour = 0
-
-                        try:
-                            start = datetime(
-                                month_start.year,
-                                month_start.month,
-                                day,
-                                hour,
-                                minute,
-                                tzinfo=timezone,
+                                ),
+                                "%Y%m%d%H%M%S",
+                            ).replace(
+                                tzinfo=timezone
                             )
                         except ValueError:
                             start = None
 
+                # No trustworthy Timely occurrence = no fixture.
+                # Do NOT guess a date from surrounding calendar text.
+                if not start:
+                    print(
+                        "St John Bosco Timely DOM skipped: "
+                        "matched school soccer text but no "
+                        "trusted occurrence timestamp | "
+                        f"{own_text[:250]}"
+                    )
+                    continue
+
+                # Restrict the DOM result to the month currently being scraped.
+                if (
+                    start.year != month_start.year
+                    or start.month != month_start.month
+                ):
+                    continue
+
                 candidate_preview = (
                     f"{month_label}: "
-                    f"{card_text[:300]}"
+                    f"{own_text[:300]}"
                 )
 
                 if (
@@ -4794,19 +4756,8 @@ async def scrape_school_soccer(
                         candidate_preview
                     )
 
-                if not start:
-                    print(
-                        "St John Bosco Timely warning: "
-                        f"{month_label} matched title "
-                        "but could not determine "
-                        f"date/time | "
-                        f"{context_text[:500]}"
-                    )
-                    continue
-
-                title = timely_card_title(
-                    card_text
-                )
+                # Keep the calendar title deliberately short and stable.
+                title = SCHOOL_SOCCER_MATCH_TEXT
 
                 source_id = (
                     "school-timely-dom-"
@@ -5061,6 +5012,26 @@ async def scrape_school_soccer(
         start = fixture.get(
             "start"
         )
+
+        # Defensive guard: school soccer event titles should never be a
+        # concatenation of unrelated school-calendar entries.
+        display_title = clean(
+            fixture.get(
+                "display_title"
+            )
+        )
+
+        if (
+            len(display_title) > 160
+            or not school_event_text_matches(
+                display_title
+            )
+        ):
+            print(
+                "St John Bosco Timely rejected malformed fixture: "
+                f"{display_title[:250]}"
+            )
+            continue
 
         if not isinstance(
             start,
