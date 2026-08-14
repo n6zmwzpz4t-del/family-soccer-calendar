@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-14T09:03:08.831005+08:00",
+  "generated_at": "2026-08-14T09:18:28.561495+08:00",
   "fixture_count": 38,
   "coordinate_fixture_count": 36,
   "teams": [
@@ -17,10 +17,6 @@
           "status": 200
         },
         {
-          "url": "https://api.squadi.com/common/common/reference/year?organisationUniqueKey=f524913b-317c-4011-8f66-e4eb3f101ebe&scope=1",
-          "status": 200
-        },
-        {
           "url": "https://api.squadi.com/common/common/reference/year",
           "status": 200
         },
@@ -29,11 +25,15 @@
           "status": 200
         },
         {
-          "url": "https://api.squadi.com/livescores/competitions/list?organisationUniqueKey=f524913b-317c-4011-8f66-e4eb3f101ebe&yearRefId=8",
+          "url": "https://api.squadi.com/users/api/organisations/all",
           "status": 200
         },
         {
-          "url": "https://api.squadi.com/users/api/organisations/all",
+          "url": "https://api.squadi.com/common/common/reference/year?organisationUniqueKey=f524913b-317c-4011-8f66-e4eb3f101ebe&scope=1",
+          "status": 200
+        },
+        {
+          "url": "https://api.squadi.com/livescores/competitions/list?organisationUniqueKey=f524913b-317c-4011-8f66-e4eb3f101ebe&yearRefId=8",
           "status": 200
         },
         {
@@ -279,55 +279,29 @@
     }
   ],
   "school_soccer": {
-    "source": "https://teamup.com/ksmxivsndu1tq6ng17?view=a&showAgendaDateRange=year&showAgendaDetails=1&showAgendaHeader=1&showProfileAndInfo=0&showSidepanel=0",
+    "source": "https://www.stjohnbosco.wa.edu.au/calendar/",
+    "provider": "Timely",
+    "calendar_id": "37c47p6q",
+    "agenda_url": "https://events.timely.fun/37c47p6q/agenda?range=custom&start_date=2026-07-14&end_date=2027-08-14&timely_id=timely-iframe-embed-0",
     "match_text": "ACC soccer Y10-12 boys",
     "fixture_count": 0,
-    "json_payload_count": 2,
-    "responses": [
-      {
-        "url": "https://teamup.com/assets-20260812145208/build/calendar_styles.css",
-        "status": 200,
-        "content_type": "text/css"
-      },
-      {
-        "url": "https://teamup.com/assets-20260812145208/build/js/calendar.js",
-        "status": 200,
-        "content_type": "application/javascript; charset=utf-8"
-      },
-      {
-        "url": "https://teamup.com/assets-20260812145208/internationalization/en_GB/calendar,preferences,FOSUserBundle/en_GB",
-        "status": 200,
-        "content_type": "application/json"
-      },
-      {
-        "url": "https://teamup.com/ksmxivsndu1tq6ng17/events?startDate=2022-02-01&endDate=2023-01-31&tz=Australia%2FPerth",
-        "status": 200,
-        "content_type": "application/json"
-      },
-      {
-        "url": "https://teamup.com/assets-20260812145208/build/img/calendar/arrow-forward-menu-off.png",
-        "status": 200,
-        "content_type": "image/png"
-      },
-      {
-        "url": "https://teamup.com/api/event",
-        "status": 202,
-        "content_type": "text/plain; charset=utf-8"
-      },
-      {
-        "url": "https://teamup.com/assets-20260812145208/build/img/inline_svg/icon-calendar.svg",
-        "status": 200,
-        "content_type": "image/svg+xml"
-      }
-    ],
-    "frames": [
-      {
-        "frame_index": 0,
-        "url": "https://teamup.com/ksmxivsndu1tq6ng17?view=a&showAgendaDateRange=year&showAgendaDetails=1&showAgendaHeader=1&showProfileAndInfo=0&showSidepanel=0",
-        "contains_target": false,
-        "body_text_preview": "Chameleon Logic\nToday\n1 Feb 2022 - 31 Jan 2023\nScheduler\nDay\nWeek\n10 Weeks\nMonth\nYear\nTimeline\nTable\nAgenda\nList\nTiles\nTime zone\n: Perth\nPDF Print & Export\nPreferences\nReminders\nChange Notifications\nDaily Agenda\nSlack Integration\niCalendar Feeds\nRSS Feeds\nCalendar Resolution\n5 minutes\n10 minutes\n15 minutes\n30 minutes (default)\n60 minutes\nLanguage\nEnglish (United States)\nEnglish (United Kingdom)\n\u010ce\u0161tina\nDansk\nDeutsch\nEspa\u00f1ol\nFran\u00e7ais\nHrvatski\nMagyar\nItaliano\nNederlands\nNorsk (bokm\u00e5l)\nPolski\nPortugu\u00eas\nRom\u00e2n\u0103\nP\u0443\u0441\u0441\u043a\u0438\u0439\nSloven\u010dina\nSloven\u0161\u010dina\nSrbski\nSvenska\nSuomi\nT\u00fcrk\u00e7e\n\u65e5\u672c\u8a9e\n\u4e2d\u6587 (\u7b80\u4f53)\n\u4e2d\u6587 (\u7e41\u9ad4) (translation in progress)\nHelp\nDate range\nOne day\nOne week\nTwo weeks\nOne month\nThree months\nSix months\nOne year\nDetails\nThere are no events for the selected date range.\nPrevious|Next\n\nPerth\n\nPowered by"
-      }
-    ]
+    "event_link_count": 0,
+    "candidate_count": 0,
+    "candidate_events": [],
+    "discovery": {
+      "school_page": "https://www.stjohnbosco.wa.edu.au/calendar/",
+      "iframe_sources": [
+        "https://events.timely.fun/37c47p6q/?timely_id=timely-iframe-embed-0",
+        "https://events.timely.fun/37c47p6q/?timely_id=timely-iframe-embed-0-event-popup"
+      ],
+      "timely_sources": [
+        "https://events.timely.fun/37c47p6q/?timely_id=timely-iframe-embed-0",
+        "https://events.timely.fun/37c47p6q/?timely_id=timely-iframe-embed-0-event-popup"
+      ],
+      "calendar_id": "37c47p6q",
+      "used_fallback_id": false
+    },
+    "body_text_preview": "St John Bosco Community Calendar\nTue, July 14\n Africa/Abidjan \nExpand\nSearch\nAdd To Calendar\nAgenda\nSelect Calendar Language\n English (US) \nCategories\nOrganizers\nTags\nVenues\nJUL\n15\nWEDNESDAY\nWED\nMums & Bubs \n Jul 15, 2026 @ 12:45am (GMT)\nCollege Administration Opens for Term 3 \n Jul 15, 2026 \u2014 Jul 16, 2026\nJUL\n18\nSATURDAY\nSAT\nVigil Mass \n Jul 18, 2026 @ 10:00am (GMT)\nSunday Eucharist \n Jul 18, 2026 @ 11:30pm (GMT) \u2014 Jul 19, 2026 @ 12:30am (GMT)\nJUL\n19\nSUNDAY\nSUN\nSunday Evening Eucharist \n Jul 19, 2026 @ 10:00am (GMT)\nStudent Free Day \n Jul 19, 2026 \u2014 Jul 20, 2026\nSTUDENT FREE DAY College closed to students \n Jul 19, 2026 \u2014 Jul 20, 2026\n2027 Year 11 Course Selection \n Jul 19, 2026 \u2014 Jul 24, 2026\nJUL\n20\nMONDAY\nMON\nKindergarten to Year 12 students Commence Term 3 \n Jul 20, 2026 \u2014 Jul 21, 2026\nJUL\n21\nTUESDAY\nTUE\nGrandparent Afternoon \n Jul 21, 2026 \u2014 Jul 22, 2026\nJUL\n22\nWEDNESDAY\nWED\nMums & Bubs \n Jul 22, 2026 @ 12:45am (GMT)\nTerm 3 Pre-Kindergarten Program commences \n Jul 22, 2026 \u2014 Jul 23, 2026\nYear 7 immunisations \n Jul 22, 2026 \u2014 Jul 23, 2026\nJUL\n23\nTHURSDAY\nTHU\nYear 7 immunisations (catch up) \n Jul 23, 2026 \u2014 Jul 24, 2026\nJUL\n25\nSATURDAY\nSAT\nVigil Mass \n Jul 25, 2026 @ 10:00am (GMT)\nYear 4 Eucharist Commitment Mass \n Jul 25, 2026 @ 10:00am (GMT)\nSunday Eucharist \n Jul 25, 2026 @ 11:30pm (GMT) \u2014 Jul 26, 2026 @ 12:30am (GMT)\nJUL\n26\nSUNDAY\nSUN\nYear 4 Eucharist Commitment Mass \n Jul 26, 2026 @ 1:30am (GMT)\nSunday Evening Eucharist \n Jul 26, 2026 @ 10:00am (GMT)\nYear 4 Eucharist Commitment Mass \n Jul 26, 2026 @ 10:00am (GMT)\nOLNA Year 10, Year 11, Year 12 \n Jul 26, 2026 \u2014 Aug 7, 2026\nJUL\n28\nTUESDAY\nTUE\nOHSC Educators Day \n Jul 28, 2026 \u2014 Jul 29, 2026\nYear 10 AFL Division 5 Boys and Girls Carnival (All day) \n Jul 28, 2026 \u2014 Jul 29, 2026\nJUL\n29\nWEDNESDAY\nWED\nMums & Bubs \n Jul 29, 2026 @ 12:45am (GMT)\nLiturgy for Year 6 (Student Leadership Roles) \n Jul 29, 2026 @ 6:00am (GMT)\nYear 4 Eucharist Parent/Child Workshop \n Jul 29, 2026 @ 8:00am (GMT)\nYear 4 Eucharist Parent/Child Workshop \n Jul 29, 2026 @ 9:15am (GMT)\nREA Practice (Y3 and Y5) \n Jul 29, 2026 \u2014 Jul 30, 2026\nYear 2 Literature Centre Book Incursion \n Jul 29, 2026 \u2014 Jul 30, 2026\nJUL\n30\nTHURSDAY\nTHU\nYear 4 Eucharist Parent/Child Workshop \n Jul 30, 2026 @ 8:00am (GMT)\nYear 4 Eucharist Parent/Child Workshops \n Jul 30, 2026 @ 9:15am (GMT)\nFSJB Quiz Night \n Jul 30, 2026 \u2014 Jul 31, 2026\nAUG\n1\nSATURDAY\nSAT\nVigil Mass \n Aug 1, 2026 @ 10:00am (GMT)\nSunday Eucharist \n Aug 1, 2026 @ 11:30pm (GMT) \u2014 Aug 2, 2026 @ 12:30am (GMT)\nAUG\n2\nSUNDAY\nSUN\nSunday Evening Eucharist \n Aug 2, 2026 @ 10:00am (GMT)\nAUG\n3\nMONDAY\nMON\nSchool Nurse - Kindy Screenings \n Aug 3, 2026 \u2014 Aug 4, 2026\nAUG\n4\nTUESDAY\nTUE\nY9 Religious Education Assessment \n Aug 4, 2026 @ 12:40am (GMT)\nCPAF Vocal Solo [Newman College] \n Aug 4, 2026 @ 2:40am (GMT)\nAFL Year 10 Division 5 Boys and Girls Carnival \n Aug 4, 2026 \u2014 Aug 5, 2026\nAUG\n5\nWEDNESDAY\nWED\nMums & Bubs \n Aug 5, 2026 @ 12:45am (GMT)\nFeast of St Mary of the Cross Mackillop (Solemnity) \n Aug 5, 2026 \u2014 Aug 6, 2026\nAUG\n6\nTHURSDAY\nTHU\nYear 5 Religious Education Assessment \n Aug 6, 2026 @ 1:00am (GMT)\nCPAF Dance \u2013 Creative (daytime rehearsal) \n Aug 6, 2026 @ 2:40am (GMT)\nYear 3 Religious Education Assessment \n Aug 6, 2026 @ 3:00am (GMT)\nCPAF Dance - Creative (evening performance) \n Aug 6, 2026 @ 9:30am (GMT)\nSEAS Netball Carnival \n Aug 6, 2026 \u2014 Aug 7, 2026\nY9 REA Catchup Session \n Aug 6, 2026 \u2014 Aug 7, 2026\nAUG\n8\nSATURDAY\nSAT\nVigil Mass \n Aug 8, 2026 @ 10:00am (GMT)\nSunday Eucharist \n Aug 8, 2026 @ 11:30pm (GMT) \u2014 Aug 9, 2026 @ 12:30am (GMT)\nAUG\n9\nSUNDAY\nSUN\nSunday Evening Eucharist \n Aug 9, 2026 @ 10:00am (GMT)\nACC soccer Y10-12 boys vs Waikiki \n Aug 9, 2026 \u2014 Aug 10, 2026\nAUG\n10\nMONDAY\nMON\nYear 6 ML Carnival (All Day) \n Aug 10, 2026 \u2014 Aug 11, 2026\nAUG\n12\nWEDNESDAY\nWED\nMums & Bubs \n Aug 12, 2026 @ 12:45am (GMT)\nBosco Birthday Mass \n Aug 12, 2026 @ 1:15am (GMT)\nAUG\n13\nTHURSDAY\nTHU\nStudent Free Day (Catholic Day) \n Aug 13, 2026 \u2014 Aug 14, 2026\nAUG\n14\nFRIDAY\nFRI\nCPAF Electric Guitar Solo \n Aug 14, 2026 @ 5:45am (GMT)\nAUG\n15\nSATURDAY\nSAT\nVigil Mass \n Aug 15, 2026 @ 10:00am (GMT)\nSunday Eucharist \n Aug 15, 2026 @ 11:30pm (GMT) \u2014 Aug 16, 2026 @ 12:30am (GMT)\nAUG\n16\nSUNDAY\nSUN\nSunday Evening Eucharist \n Aug 16, 2026 @ 10:00am (GMT)\nNational Science Week \n Aug 16, 2026 \u2014 Aug 23, 2026\nAUG\n17\nMONDAY\nMON\nYear 4 Eucharist Retreat \n Aug 17, 2026 \u2014 Aug 18, 2026\nSchool Nurse - Kindy Screenings \n Aug 17, 2026 \u2014 Aug 18, 2026\nCPAF Liturgical Dance \n Aug 17, 2026 \u2014 Aug 18, 2026\nAUG\n18\nTUESDAY\nTUE\nScitech Excursion Kindergarten \n Aug 18, 2026 @ 1:30am (GMT)\nAUG\n19\nWEDNESDAY\nWED\nMums & Bubs \n Aug 19, 2026 @ 12:45am (GMT)\nKindergarten to Year 6 Fruits of the Holy Spirit \n Aug 19, 2026 @ 6:00am (GMT)\nACC soccer Y10-12 boys \n Aug 19, 2026 @ 8:00am (GMT)\nAUG\n20\nTHURSDAY\nTHU\nYear 4 Eucharist Rehearsal \n Aug 20, 2026 @ 8:00am (GMT)\nPre-Primary Excursion to Constable Care Safety School \n Aug 20, 2026 \u2014 Aug 21, 2026\nAUG\n22\nSATURDAY\nSAT\nVigil Mass \n Aug 22, 2026 @ 10:00am (GMT)\nYear 4 Sacrament of Eucharist \n Aug 22, 2026 @ 10:00am (GMT)\nSunday Eucharist \n Aug 22, 2026 @ 11:30pm (GMT) \u2014 Aug 23, 2026 @ 12:30am (GMT)\nAUG\n23\nSUNDAY\nSUN\nSunday Evening Eucharist \n Aug 23, 2026 @ 10:00am (GMT)\nYear 3 First Nations Incursion \u2013 Creative Pathways \n Aug 23, 2026 \u2014 Aug 24, 2026\nAUG\n24\nMONDAY\nMON\nCPAF Primary Choir Performance \n Aug 24, 2026 \u2014 Aug 25, 2026\nAUG\n25\nTUESDAY\nTUE\nY12 World\u2019s Greatest Shave \n Aug 25, 2026 @ 4:40am (GMT)\nACC soccer Y10-12 boys \n Aug 25, 2026 @ 8:00am (GMT)\nAUG\n26\nWEDNESDAY\nWED\nMums & Bubs \n Aug 26, 2026 @ 12:45am (GMT)\nCPAF Drum Solo (Percussion) \n Aug 26, 2026 @ 3:30am (GMT)\nAdvisory Council Meeting \n Aug 26, 2026 @ 10:00am (GMT)\nSEAS Senior Volleyball Carnival \n Aug 26, 2026 \u2014 Aug 27, 2026\nPK-Year 2 Constable Care Incursion \n Aug 26, 2026 \u2014 Aug 27, 2026\nPreK-Y2 Constable Care Incursion \n Aug 26, 2026 \u2014 Aug 27, 2026\nYear 4 excursion to Fremantle Prison \n Aug 26, 2026 \u2014 Aug 27, 2026\nAUG\n29\nSATURDAY\nSAT\nVigil Mass \n Aug 29, 2026 @ 10:00am (GMT)\nSunday Eucharist \n Aug 29, 2026 @ 11:30pm (GMT) \u2014 Aug 30, 2026 @ 12:30am (GMT)\nAUG\n30\nSUNDAY\nSUN\nSunday Evening Eucharist \n Aug 30, 2026 @ 10:00am (GMT)\nYear 2, 4 & 6 Swimming Lessons - To Be Confirmed \n Aug 30, 2026 \u2014 Sep 11, 2026\nAUG\n31\nMONDAY\nMON\nTry a Trade Wall and Ceiling Tiling (3 day course) \n Aug 31, 2026 @ 12:30am (GMT)\nCPAF Piano Solo [Zenith Music] \n Aug 31, 2026 @ 5:45am (GMT)\nCPAF Piano Solo [Zenith Music] \n Aug 31, 2026 @ 7:00am (GMT)\nCPAF Secondary Choral \n Aug 31, 2026 @ 11:00am (GMT)\nSchool Nurse - Kindy Screenings \n Aug 31, 2026 \u2014 Sep 1, 2026\nYr 12 ATAR SEPEA Assessment \n Aug 31, 2026 \u2014 Sep 1, 2026\nFather\u2019s Day Stall (all day) \n Aug 31, 2026 \u2014 Sep 1, 2026\nSEP\n1\nTUESDAY\nTUE\nTry a Trade Wall and Ceiling Tiling (3 day course) \n Sep 1, 2026 @ 12:30am (GMT)\nCPAF Drama Solo [Yrs 11 \u2013 12] \n Sep 1, 2026 @ 4:15am (GMT)\nSEP\n2\nWEDNESDAY\nWED\nTry a Trade Wall and Ceiling Tiling (3 day course) \n Sep 2, 2026 @ 12:30am (GMT)\nMums & Bubs \n Sep 2, 2026 @ 12:45am (GMT)\nY11/12 ATAR PES Biomechanics Excursion (High Flyers WA) \n Sep 2, 2026 \u2014 Sep 3, 2026\nSEP\n3\nTHURSDAY\nTHU\nFSJB Father's Day Breakfast \n Sep 3, 2026 @ 11:30pm (GMT) \u2014 Sep 4, 2026 @ 3:59pm (GMT)\nSEP\n4\nFRIDAY\nFRI\nPost Eucharist Celebration at SFX Hall with 24/7 Ministry \n Sep 4, 2026 @ 8:00am (GMT)\nSEP\n5\nSATURDAY\nSAT\nVigil Mass \n Sep 5, 2026 @ 10:00am (GMT)\nSunday Eucharist \n Sep 5, 2026 @ 11:30pm (GMT) \u2014 Sep 6, 2026 @ 12:30am (GMT)\nSEP\n6\nSUNDAY\nSUN\nSunday Evening Eucharist \n Sep 6, 2026 @ 10:00am (GMT)\nBook Week - To Be Confirmed \n Sep 6, 2026 \u2014 Sep 11, 2026\nSEP\n7\nMONDAY\nMON\nACC Athletics Carnival G Division \n Sep 7, 2026 @ 12:40am (GMT)\nCPAF Electric Guitar Ensemble \n Sep 7, 2026 @ 5:30am (GMT)\nSEP\n8\nTUESDAY\nTUE\nPerform Education Book Week Incursion for Primary students (K-3 09:30 & 4-6 11:10) \n Sep 8, 2026 @ 1:30am (GMT)\nExcursion Perth Zoo (Human Bio 12) \n Sep 8, 2026 @ 1:30am (GMT)\nFriends of St John Bosco Meeting \n Sep 8, 2026 @ 10:00am (GMT)\nSEP\n9\nWEDNESDAY\nWED\nMums & Bubs \n Sep 9, 2026 @ 12:45am (GMT)\nYear 7 to "
   },
   "manual_fixtures": {
     "file": "manual_fixtures.json",
