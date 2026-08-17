@@ -1,0 +1,1218 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Fixture Admin | Finn & Tate Sports</title>
+  <style>
+    :root {
+      --navy: #12233f;
+      --blue: #2f67e8;
+      --blue-dark: #2455c2;
+      --blue-soft: #edf3ff;
+      --surface: #ffffff;
+      --background: #f4f7fb;
+      --border: #dfe5ee;
+      --muted: #667085;
+      --green: #198754;
+      --green-soft: #ebf8f1;
+      --red: #c73535;
+      --red-soft: #fff0f0;
+      --orange: #d97706;
+      --shadow: 0 10px 30px rgba(15, 23, 42, .07);
+      --radius: 20px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--navy);
+      background: var(--background);
+    }
+
+    button, input, select, textarea { font: inherit; }
+
+    a { color: var(--blue-dark); }
+
+    .shell {
+      width: min(980px, calc(100% - 28px));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      padding: 24px 0 20px;
+      background: linear-gradient(135deg, #102342, #244b88);
+      color: #fff;
+    }
+
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .topbar h1 {
+      margin: 0;
+      font-size: clamp(1.5rem, 4vw, 2.15rem);
+      letter-spacing: -.035em;
+    }
+
+    .topbar p {
+      margin: 6px 0 0;
+      color: rgba(255,255,255,.76);
+      font-size: .9rem;
+    }
+
+    .site-link {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 10px 13px;
+      border: 1px solid rgba(255,255,255,.25);
+      border-radius: 12px;
+      color: #fff;
+      text-decoration: none;
+      font-size: .82rem;
+      font-weight: 800;
+      background: rgba(255,255,255,.08);
+    }
+
+    main { padding: 26px 0 42px; }
+
+    .card {
+      margin-bottom: 18px;
+      padding: 20px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .card h2 {
+      margin: 0;
+      font-size: 1.15rem;
+      letter-spacing: -.02em;
+    }
+
+    .card .sub {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: .84rem;
+      line-height: 1.5;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: .72rem;
+      font-weight: 900;
+      white-space: nowrap;
+      background: #eef1f5;
+      color: var(--muted);
+    }
+
+    .status.connected {
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    .status.error {
+      background: var(--red-soft);
+      color: var(--red);
+    }
+
+    .notice {
+      margin: 0 0 16px;
+      padding: 12px 14px;
+      border-radius: 13px;
+      border: 1px solid #dbe7ff;
+      color: #34507f;
+      background: #f3f7ff;
+      font-size: .82rem;
+      line-height: 1.5;
+    }
+
+    .notice strong { color: var(--navy); }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .full { grid-column: 1 / -1; }
+
+    label {
+      display: block;
+      color: #344054;
+      font-size: .78rem;
+      font-weight: 800;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      margin-top: 6px;
+      padding: 10px 11px;
+      border: 1px solid #ccd5e1;
+      border-radius: 11px;
+      outline: none;
+      color: var(--navy);
+      background: #fff;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: #7da2f5;
+      box-shadow: 0 0 0 3px rgba(47,103,232,.12);
+    }
+
+    textarea {
+      min-height: 82px;
+      resize: vertical;
+    }
+
+    .token-wrap {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 9px;
+      align-items: end;
+    }
+
+    .checkbox {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 11px;
+      color: var(--muted);
+      font-size: .78rem;
+    }
+
+    .checkbox input {
+      width: auto;
+      margin: 0;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 18px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 11px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-weight: 850;
+    }
+
+    button.primary {
+      color: #fff;
+      background: var(--blue);
+    }
+
+    button.primary:hover { background: var(--blue-dark); }
+
+    button.secondary {
+      color: var(--navy);
+      background: #edf0f4;
+    }
+
+    button.danger {
+      color: var(--red);
+      background: var(--red-soft);
+    }
+
+    button.small {
+      padding: 7px 9px;
+      font-size: .74rem;
+      border-radius: 9px;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: .55;
+    }
+
+    .message {
+      display: none;
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: .82rem;
+      line-height: 1.45;
+    }
+
+    .message.show { display: block; }
+
+    .message.success {
+      color: #17653d;
+      background: var(--green-soft);
+      border: 1px solid #ccebdc;
+    }
+
+    .message.error {
+      color: #a22f2f;
+      background: var(--red-soft);
+      border: 1px solid #f1cccc;
+    }
+
+    .hidden { display: none !important; }
+
+    .fixture-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .fixture-row {
+      display: grid;
+      grid-template-columns: 105px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 13px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #fbfcfe;
+    }
+
+    .fixture-date {
+      text-align: center;
+    }
+
+    .fixture-date strong {
+      display: block;
+      font-size: .82rem;
+    }
+
+    .fixture-date span {
+      color: var(--muted);
+      font-size: .75rem;
+    }
+
+    .fixture-title {
+      min-width: 0;
+    }
+
+    .fixture-title strong {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: .9rem;
+    }
+
+    .fixture-title span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: .75rem;
+      line-height: 1.35;
+    }
+
+    .fixture-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .empty {
+      padding: 22px 12px;
+      border: 1px dashed var(--border);
+      border-radius: 14px;
+      color: var(--muted);
+      text-align: center;
+      font-size: .86rem;
+    }
+
+    .working {
+      opacity: .65;
+      pointer-events: none;
+    }
+
+    .setup-steps {
+      margin: 12px 0 0 20px;
+      padding: 0;
+      color: var(--muted);
+      font-size: .81rem;
+      line-height: 1.55;
+    }
+
+    footer {
+      padding: 0 0 34px;
+      color: var(--muted);
+      text-align: center;
+      font-size: .75rem;
+    }
+
+    @media (max-width: 700px) {
+      .topbar-inner {
+        align-items: start;
+        flex-direction: column;
+      }
+
+      .grid,
+      .grid.three,
+      .token-wrap {
+        grid-template-columns: 1fr;
+      }
+
+      .fixture-row {
+        grid-template-columns: 74px 1fr;
+      }
+
+      .fixture-actions {
+        grid-column: 1 / -1;
+        justify-content: flex-end;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <div>
+        <h1>⚙️ Fixture Admin</h1>
+        <p>Add or update manual Finn &amp; Tate fixtures.</p>
+      </div>
+      <a class="site-link" href="./">← Sports website</a>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="card" id="loginCard">
+      <div class="card-head">
+        <div>
+          <h2>Sign in to GitHub</h2>
+          <p class="sub">Your token is used only by this page to update <code>manual_fixtures.json</code>.</p>
+        </div>
+        <span class="status" id="loginStatus">Not connected</span>
+      </div>
+
+      <div class="notice">
+        <strong>Recommended:</strong> use a fine-grained GitHub token limited to
+        <strong>family-soccer-calendar</strong> with <strong>Contents: Read and write</strong>.
+        Do not use your GitHub password here.
+      </div>
+
+      <div class="token-wrap">
+        <label>
+          GitHub fine-grained token
+          <input
+            id="token"
+            type="password"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="github_pat_…"
+          >
+        </label>
+        <button class="primary" id="connectBtn" type="button">Connect</button>
+      </div>
+
+      <label class="checkbox">
+        <input type="checkbox" id="rememberTab" checked>
+        Keep me signed in until this browser tab is closed
+      </label>
+
+      <ol class="setup-steps">
+        <li>Create a fine-grained token for your GitHub account.</li>
+        <li>Select only the <strong>family-soccer-calendar</strong> repository.</li>
+        <li>Set repository <strong>Contents</strong> permission to <strong>Read and write</strong>.</li>
+      </ol>
+
+      <div class="actions">
+        <a
+          href="https://github.com/settings/personal-access-tokens/new?name=Family%20Sports%20Fixture%20Admin&description=Edit%20manual_fixtures.json%20from%20the%20family%20sports%20admin%20page&target_name=n6zmwzpz4t-del&expires_in=90&contents=write"
+          target="_blank"
+          rel="noopener"
+        >Create a fine-grained token ↗</a>
+      </div>
+
+      <div class="message" id="loginMessage"></div>
+    </section>
+
+    <div id="adminArea" class="hidden">
+      <section class="card">
+        <div class="card-head">
+          <div>
+            <h2 id="formHeading">Add fixture</h2>
+            <p class="sub">Saving commits the fixture to GitHub and your existing refresh workflow will regenerate the calendar.</p>
+          </div>
+          <button class="secondary small" id="logoutBtn" type="button">Sign out</button>
+        </div>
+
+        <form id="fixtureForm">
+          <input type="hidden" id="fixtureId">
+
+          <div class="grid three">
+            <label>
+              Player
+              <select id="player" required>
+                <option value="Finn">Finn</option>
+                <option value="Tate">Tate</option>
+              </select>
+            </label>
+
+            <label>
+              Sport
+              <select id="sport" required>
+                <option value="club_soccer">⚽ Club Soccer</option>
+                <option value="school_soccer">🏫 School Soccer</option>
+                <option value="softball">🥎 Softball</option>
+                <option value="other">🏅 Other</option>
+              </select>
+            </label>
+
+            <label>
+              Duration
+              <select id="duration">
+                <option value="60">60 minutes</option>
+                <option value="75">75 minutes</option>
+                <option value="90">90 minutes</option>
+                <option value="120">120 minutes</option>
+              </select>
+            </label>
+
+            <label>
+              Date
+              <input id="date" type="date" required>
+            </label>
+
+            <label>
+              Start time
+              <input id="time" type="time" required>
+            </label>
+
+            <label>
+              Round / label
+              <input id="round" type="text" placeholder="e.g. Round 6">
+            </label>
+
+            <label>
+              Home team
+              <input id="home" type="text" required placeholder="e.g. Armadale SC">
+            </label>
+
+            <label>
+              Away team
+              <input id="away" type="text" required placeholder="e.g. Sutherland Park FC">
+            </label>
+
+            <label>
+              Reminder
+              <select id="reminder">
+                <option value="0">No reminder</option>
+                <option value="30">30 minutes</option>
+                <option value="60">60 minutes</option>
+                <option value="90" selected>90 minutes</option>
+                <option value="120">2 hours</option>
+              </select>
+            </label>
+
+            <label>
+              Venue
+              <input id="venue" type="text" placeholder="e.g. Hossack Reserve">
+            </label>
+
+            <label>
+              Pitch / field
+              <input id="field" type="text" placeholder="e.g. Pitch 1">
+            </label>
+
+            <label>
+              Source URL
+              <input id="sourceUrl" type="url" placeholder="https://…">
+            </label>
+
+            <label>
+              Latitude (optional)
+              <input id="latitude" type="number" step="any" placeholder="-32.0000">
+            </label>
+
+            <label>
+              Longitude (optional)
+              <input id="longitude" type="number" step="any" placeholder="115.9000">
+            </label>
+
+            <label class="full">
+              Notes
+              <textarea id="notes" placeholder="Optional notes"></textarea>
+            </label>
+          </div>
+
+          <div class="actions">
+            <button class="primary" id="saveBtn" type="submit">Add fixture</button>
+            <button class="secondary hidden" id="cancelEditBtn" type="button">Cancel edit</button>
+          </div>
+
+          <div class="message" id="saveMessage"></div>
+        </form>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <div>
+            <h2>Manual fixtures</h2>
+            <p class="sub">These are the entries currently stored in <code>manual_fixtures.json</code>.</p>
+          </div>
+          <span class="status connected" id="fixtureCount">0 fixtures</span>
+        </div>
+
+        <div class="fixture-list" id="fixtureList"></div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="shell">
+    Authentication is handled by GitHub. The token is never written into the repository.
+  </footer>
+
+  <script>
+    const OWNER = "n6zmwzpz4t-del";
+    const REPO = "family-soccer-calendar";
+    const BRANCH = "main";
+    const FILE_PATH = "manual_fixtures.json";
+    const API_VERSION = "2022-11-28";
+
+    let token = "";
+    let manualFixtures = [];
+    let currentSha = "";
+
+    const $ = id => document.getElementById(id);
+
+    function headers(includeJson = false) {
+      const result = {
+        "Accept": "application/vnd.github+json",
+        "Authorization": `Bearer ${token}`,
+        "X-GitHub-Api-Version": API_VERSION
+      };
+
+      if (includeJson) {
+        result["Content-Type"] = "application/json";
+      }
+
+      return result;
+    }
+
+    function showMessage(element, text, type = "success") {
+      element.textContent = text;
+      element.className = `message show ${type}`;
+    }
+
+    function clearMessage(element) {
+      element.textContent = "";
+      element.className = "message";
+    }
+
+    function encodeBase64Utf8(value) {
+      const bytes = new TextEncoder().encode(value);
+      let binary = "";
+      const chunk = 0x8000;
+
+      for (let i = 0; i < bytes.length; i += chunk) {
+        binary += String.fromCharCode(...bytes.subarray(i, i + chunk));
+      }
+
+      return btoa(binary);
+    }
+
+    function decodeBase64Utf8(value) {
+      const binary = atob(value.replace(/\n/g, ""));
+      const bytes = Uint8Array.from(binary, ch => ch.charCodeAt(0));
+      return new TextDecoder().decode(bytes);
+    }
+
+    function slug(value) {
+      return String(value || "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .slice(0, 32);
+    }
+
+    function sportSettings(value) {
+      const settings = {
+        club_soccer: {
+          sport_icon: "⚽",
+          sport_name: "Soccer",
+          time_label: "KO",
+          duration: 60
+        },
+        school_soccer: {
+          sport_icon: "🏫",
+          sport_name: "School Soccer",
+          time_label: "KO",
+          duration: 60
+        },
+        softball: {
+          sport_icon: "🥎",
+          sport_name: "Softball",
+          time_label: "Start",
+          duration: 90
+        },
+        other: {
+          sport_icon: "🏅",
+          sport_name: "Sport",
+          time_label: "Start",
+          duration: 60
+        }
+      };
+
+      return settings[value] || settings.other;
+    }
+
+    function sportFromFixture(item) {
+      const name = String(item.sport_name || "").toLowerCase();
+
+      if (name.includes("school soccer")) return "school_soccer";
+      if (name.includes("softball")) return "softball";
+      if (name.includes("soccer")) return "club_soccer";
+      return "other";
+    }
+
+    async function githubGet(path) {
+      const response = await fetch(
+        `https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}?ref=${encodeURIComponent(BRANCH)}&v=${Date.now()}`,
+        {
+          headers: headers(),
+          cache: "no-store"
+        }
+      );
+
+      if (response.status === 404) {
+        return null;
+      }
+
+      if (!response.ok) {
+        const detail = await response.json().catch(() => ({}));
+        throw new Error(detail.message || `GitHub returned ${response.status}`);
+      }
+
+      return response.json();
+    }
+
+    async function loadManualFixtures() {
+      const file = await githubGet(FILE_PATH);
+
+      if (!file) {
+        manualFixtures = [];
+        currentSha = "";
+        renderFixtureList();
+        return;
+      }
+
+      currentSha = file.sha || "";
+
+      const decoded = decodeBase64Utf8(file.content || "");
+      const payload = JSON.parse(decoded);
+
+      manualFixtures = Array.isArray(payload.fixtures)
+        ? payload.fixtures
+        : [];
+
+      renderFixtureList();
+    }
+
+    async function connect() {
+      clearMessage($("loginMessage"));
+
+      const candidate = $("token").value.trim();
+
+      if (!candidate) {
+        showMessage($("loginMessage"), "Enter your GitHub token first.", "error");
+        return;
+      }
+
+      token = candidate;
+      $("connectBtn").disabled = true;
+      $("loginStatus").textContent = "Connecting…";
+
+      try {
+        const [file, userResponse] = await Promise.all([
+          githubGet(FILE_PATH),
+          fetch("https://api.github.com/user", {
+            headers: headers(),
+            cache: "no-store"
+          })
+        ]);
+
+        let userName = "GitHub";
+
+        if (userResponse.ok) {
+          const user = await userResponse.json();
+          userName = user.login || userName;
+        }
+
+        if ($("rememberTab").checked) {
+          sessionStorage.setItem("fixtureAdminToken", token);
+        } else {
+          sessionStorage.removeItem("fixtureAdminToken");
+        }
+
+        if (file) {
+          currentSha = file.sha || "";
+          const payload = JSON.parse(decodeBase64Utf8(file.content || ""));
+          manualFixtures = Array.isArray(payload.fixtures) ? payload.fixtures : [];
+        } else {
+          currentSha = "";
+          manualFixtures = [];
+        }
+
+        $("loginStatus").textContent = `Connected: ${userName}`;
+        $("loginStatus").className = "status connected";
+        $("loginCard").classList.add("hidden");
+        $("adminArea").classList.remove("hidden");
+        renderFixtureList();
+        setDefaults();
+      } catch (error) {
+        token = "";
+        $("loginStatus").textContent = "Connection failed";
+        $("loginStatus").className = "status error";
+        showMessage(
+          $("loginMessage"),
+          `${error.message}. Check that the token has Contents: Read and write access to this repository.`,
+          "error"
+        );
+      } finally {
+        $("connectBtn").disabled = false;
+      }
+    }
+
+    function logout() {
+      token = "";
+      manualFixtures = [];
+      currentSha = "";
+      sessionStorage.removeItem("fixtureAdminToken");
+      $("token").value = "";
+      $("loginStatus").textContent = "Not connected";
+      $("loginStatus").className = "status";
+      $("adminArea").classList.add("hidden");
+      $("loginCard").classList.remove("hidden");
+      resetForm();
+    }
+
+    function setDefaults() {
+      if (!$("date").value) {
+        const today = new Date();
+        const local = new Date(today.getTime() - today.getTimezoneOffset() * 60000);
+        $("date").value = local.toISOString().slice(0, 10);
+      }
+
+      if (!$("time").value) {
+        $("time").value = "09:00";
+      }
+
+      applySportDefaults();
+    }
+
+    function applySportDefaults(force = false) {
+      const settings = sportSettings($("sport").value);
+
+      if (force || !$("duration").dataset.edited) {
+        $("duration").value = String(settings.duration);
+      }
+    }
+
+    function fixtureFromForm() {
+      const player = $("player").value;
+      const date = $("date").value;
+      const time = $("time").value;
+      const home = $("home").value.trim();
+      const away = $("away").value.trim();
+      const sportKey = $("sport").value;
+      const sport = sportSettings(sportKey);
+
+      if (!date || !time || !home || !away) {
+        throw new Error("Player, date, time, home team and away team are required.");
+      }
+
+      const existingId = $("fixtureId").value.trim();
+      const generatedId = [
+        "manual",
+        slug(player),
+        date,
+        time.replace(":", ""),
+        slug(home),
+        slug(away)
+      ].join("-");
+
+      const result = {
+        id: existingId || generatedId,
+        label: player,
+        sport_icon: sport.sport_icon,
+        sport_name: sport.sport_name,
+        time_label: sport.time_label,
+        start: `${date}T${time}:00`,
+        duration_minutes: Number($("duration").value || sport.duration),
+        reminder_minutes: Number($("reminder").value || 0),
+        home,
+        away
+      };
+
+      const optionalText = {
+        round: $("round").value.trim(),
+        venue: $("venue").value.trim(),
+        field: $("field").value.trim(),
+        notes: $("notes").value.trim(),
+        source_url: $("sourceUrl").value.trim()
+      };
+
+      Object.entries(optionalText).forEach(([key, value]) => {
+        if (value) result[key] = value;
+      });
+
+      const latitude = $("latitude").value.trim();
+      const longitude = $("longitude").value.trim();
+
+      if (latitude && longitude) {
+        result.latitude = Number(latitude);
+        result.longitude = Number(longitude);
+      }
+
+      return result;
+    }
+
+    async function commitFixtures(fixtures, message) {
+      const latest = await githubGet(FILE_PATH);
+      const latestSha = latest?.sha || "";
+
+      // Use the array passed by the caller but always write against the latest SHA.
+      const payload = {
+        fixtures: fixtures.slice().sort((a, b) =>
+          String(a.start || "").localeCompare(String(b.start || ""))
+        )
+      };
+
+      const content = JSON.stringify(payload, null, 2) + "\n";
+
+      const body = {
+        message,
+        content: encodeBase64Utf8(content),
+        branch: BRANCH
+      };
+
+      if (latestSha) {
+        body.sha = latestSha;
+      }
+
+      const response = await fetch(
+        `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`,
+        {
+          method: "PUT",
+          headers: headers(true),
+          body: JSON.stringify(body)
+        }
+      );
+
+      if (!response.ok) {
+        const detail = await response.json().catch(() => ({}));
+        throw new Error(detail.message || `GitHub returned ${response.status}`);
+      }
+
+      const result = await response.json();
+      currentSha = result.content?.sha || "";
+      manualFixtures = payload.fixtures;
+
+      return result;
+    }
+
+    async function saveFixture(event) {
+      event.preventDefault();
+      clearMessage($("saveMessage"));
+
+      let fixture;
+
+      try {
+        fixture = fixtureFromForm();
+      } catch (error) {
+        showMessage($("saveMessage"), error.message, "error");
+        return;
+      }
+
+      const editId = $("fixtureId").value.trim();
+      $("saveBtn").disabled = true;
+      $("fixtureForm").classList.add("working");
+
+      try {
+        // Re-read latest data immediately before merge to avoid overwriting a
+        // change made elsewhere.
+        const latest = await githubGet(FILE_PATH);
+        const latestPayload = latest
+          ? JSON.parse(decodeBase64Utf8(latest.content || ""))
+          : { fixtures: [] };
+
+        const latestFixtures = Array.isArray(latestPayload.fixtures)
+          ? latestPayload.fixtures
+          : [];
+
+        const existingIndex = latestFixtures.findIndex(item =>
+          String(item.id || "") === String(editId || fixture.id)
+        );
+
+        if (existingIndex >= 0) {
+          latestFixtures[existingIndex] = fixture;
+        } else {
+          const duplicate = latestFixtures.find(item =>
+            String(item.start || "") === fixture.start &&
+            String(item.label || "").toLowerCase() === fixture.label.toLowerCase() &&
+            String(item.home || "").toLowerCase() === fixture.home.toLowerCase() &&
+            String(item.away || "").toLowerCase() === fixture.away.toLowerCase()
+          );
+
+          if (duplicate) {
+            throw new Error("That fixture already appears to exist.");
+          }
+
+          latestFixtures.push(fixture);
+        }
+
+        await commitFixtures(
+          latestFixtures,
+          editId
+            ? `Update manual fixture: ${fixture.label} ${fixture.home} vs ${fixture.away}`
+            : `Add manual fixture: ${fixture.label} ${fixture.home} vs ${fixture.away}`
+        );
+
+        showMessage(
+          $("saveMessage"),
+          "Saved to GitHub. The sports refresh workflow should start automatically and update the ICS/site shortly.",
+          "success"
+        );
+
+        resetForm(false);
+        renderFixtureList();
+      } catch (error) {
+        showMessage($("saveMessage"), error.message, "error");
+      } finally {
+        $("saveBtn").disabled = false;
+        $("fixtureForm").classList.remove("working");
+      }
+    }
+
+    function editFixture(id) {
+      const item = manualFixtures.find(f => String(f.id) === String(id));
+      if (!item) return;
+
+      $("fixtureId").value = item.id || "";
+      $("player").value = item.label === "Tate" ? "Tate" : "Finn";
+      $("sport").value = sportFromFixture(item);
+
+      const start = String(item.start || "");
+      $("date").value = start.slice(0, 10);
+      $("time").value = start.slice(11, 16);
+
+      $("duration").value = String(item.duration_minutes || sportSettings($("sport").value).duration);
+      $("duration").dataset.edited = "1";
+      $("reminder").value = String(item.reminder_minutes ?? 90);
+      $("home").value = item.home || "";
+      $("away").value = item.away || "";
+      $("round").value = item.round || "";
+      $("venue").value = item.venue || "";
+      $("field").value = item.field || "";
+      $("sourceUrl").value = item.source_url || "";
+      $("latitude").value = item.latitude ?? "";
+      $("longitude").value = item.longitude ?? "";
+      $("notes").value = item.notes || "";
+
+      $("formHeading").textContent = "Edit fixture";
+      $("saveBtn").textContent = "Update fixture";
+      $("cancelEditBtn").classList.remove("hidden");
+
+      window.scrollTo({
+        top: $("fixtureForm").getBoundingClientRect().top + window.scrollY - 110,
+        behavior: "smooth"
+      });
+    }
+
+    async function deleteFixture(id) {
+      const item = manualFixtures.find(f => String(f.id) === String(id));
+      if (!item) return;
+
+      const ok = confirm(
+        `Delete ${item.label || "this"} fixture?\n\n${item.home || ""} vs ${item.away || ""}\n${item.start || ""}`
+      );
+
+      if (!ok) return;
+
+      clearMessage($("saveMessage"));
+
+      try {
+        const latest = await githubGet(FILE_PATH);
+        const latestPayload = latest
+          ? JSON.parse(decodeBase64Utf8(latest.content || ""))
+          : { fixtures: [] };
+
+        const latestFixtures = Array.isArray(latestPayload.fixtures)
+          ? latestPayload.fixtures
+          : [];
+
+        const updated = latestFixtures.filter(f => String(f.id || "") !== String(id));
+
+        if (updated.length === latestFixtures.length) {
+          throw new Error("The fixture could not be found in the latest GitHub file.");
+        }
+
+        await commitFixtures(
+          updated,
+          `Delete manual fixture: ${item.label || ""} ${item.home || ""} vs ${item.away || ""}`
+        );
+
+        showMessage(
+          $("saveMessage"),
+          "Fixture deleted. The sports refresh workflow should update the calendar automatically.",
+          "success"
+        );
+
+        renderFixtureList();
+      } catch (error) {
+        showMessage($("saveMessage"), error.message, "error");
+      }
+    }
+
+    function resetForm(clearMessageToo = true) {
+      $("fixtureForm").reset();
+      $("fixtureId").value = "";
+      $("duration").dataset.edited = "";
+      $("formHeading").textContent = "Add fixture";
+      $("saveBtn").textContent = "Add fixture";
+      $("cancelEditBtn").classList.add("hidden");
+
+      if (clearMessageToo) {
+        clearMessage($("saveMessage"));
+      }
+
+      setDefaults();
+    }
+
+    function formatFixtureDate(value) {
+      const date = new Date(`${String(value).slice(0, 16)}:00`);
+
+      if (Number.isNaN(date.getTime())) {
+        return {
+          date: String(value || "").slice(0, 10),
+          time: String(value || "").slice(11, 16)
+        };
+      }
+
+      return {
+        date: new Intl.DateTimeFormat("en-AU", {
+          weekday: "short",
+          day: "numeric",
+          month: "short"
+        }).format(date),
+        time: new Intl.DateTimeFormat("en-AU", {
+          hour: "numeric",
+          minute: "2-digit"
+        }).format(date)
+      };
+    }
+
+    function renderFixtureList() {
+      $("fixtureCount").textContent =
+        `${manualFixtures.length} fixture${manualFixtures.length === 1 ? "" : "s"}`;
+
+      const list = $("fixtureList");
+
+      if (!manualFixtures.length) {
+        list.innerHTML = `<div class="empty">No manual fixtures currently saved.</div>`;
+        return;
+      }
+
+      const sorted = manualFixtures
+        .slice()
+        .sort((a, b) => String(a.start || "").localeCompare(String(b.start || "")));
+
+      list.innerHTML = sorted.map(item => {
+        const when = formatFixtureDate(item.start);
+        const icon = item.sport_icon || "🏅";
+        const venue = [item.venue, item.field].filter(Boolean).join(" — ");
+        const meta = [
+          item.label,
+          item.sport_name,
+          venue
+        ].filter(Boolean).join(" • ");
+
+        return `
+          <div class="fixture-row">
+            <div class="fixture-date">
+              <strong>${escapeHtml(when.date)}</strong>
+              <span>${escapeHtml(when.time)}</span>
+            </div>
+            <div class="fixture-title">
+              <strong>${icon} ${escapeHtml(item.home || "")} vs ${escapeHtml(item.away || "")}</strong>
+              <span>${escapeHtml(meta)}</span>
+            </div>
+            <div class="fixture-actions">
+              <button
+                type="button"
+                class="secondary small"
+                data-edit="${escapeHtml(item.id || "")}"
+              >Edit</button>
+              <button
+                type="button"
+                class="danger small"
+                data-delete="${escapeHtml(item.id || "")}"
+              >Delete</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      list.querySelectorAll("[data-edit]").forEach(button => {
+        button.addEventListener("click", () => editFixture(button.dataset.edit));
+      });
+
+      list.querySelectorAll("[data-delete]").forEach(button => {
+        button.addEventListener("click", () => deleteFixture(button.dataset.delete));
+      });
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    $("connectBtn").addEventListener("click", connect);
+    $("logoutBtn").addEventListener("click", logout);
+    $("fixtureForm").addEventListener("submit", saveFixture);
+    $("cancelEditBtn").addEventListener("click", () => resetForm());
+    $("sport").addEventListener("change", () => applySportDefaults(true));
+    $("duration").addEventListener("change", () => {
+      $("duration").dataset.edited = "1";
+    });
+
+    $("token").addEventListener("keydown", event => {
+      if (event.key === "Enter") connect();
+    });
+
+    const savedToken = sessionStorage.getItem("fixtureAdminToken");
+
+    if (savedToken) {
+      $("token").value = savedToken;
+      connect();
+    }
+  </script>
+</body>
+</html>
