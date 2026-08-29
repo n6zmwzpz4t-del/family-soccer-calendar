@@ -1,0 +1,135 @@
+from pathlib import Path
+
+path = Path("docs/index.html")
+text = path.read_text(encoding="utf-8")
+
+if 'class="softball-map-card"' in text:
+    print("Tate softball map is already present.")
+    raise SystemExit(0)
+
+css_anchor = "    .result-list {"
+css = """    .softball-map-card {
+      margin: 0 0 20px;
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      background: white;
+      box-shadow: 0 5px 16px rgba(15,23,42,.045);
+      overflow: hidden;
+    }
+
+    .softball-map-card summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      min-height: 58px;
+      padding: 13px 15px;
+      color: var(--navy);
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .softball-map-card summary::-webkit-details-marker { display: none; }
+
+    .softball-map-card summary strong {
+      display: block;
+      font-size: .92rem;
+    }
+
+    .softball-map-card summary small {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: .76rem;
+      font-weight: 650;
+    }
+
+    .softball-map-action {
+      flex: 0 0 auto;
+      padding: 6px 9px;
+      border-radius: 9px;
+      color: #913c14;
+      background: var(--orange-soft);
+      font-size: .74rem;
+      font-weight: 850;
+    }
+
+    .softball-map-card[open] .softball-map-action::after { content: ' ▲'; }
+    .softball-map-card:not([open]) .softball-map-action::after { content: ' ▼'; }
+
+    .softball-map-body {
+      padding: 0 14px 14px;
+      border-top: 1px solid var(--border);
+      background: #fafbfc;
+    }
+
+    .softball-map-link {
+      display: flex;
+      justify-content: center;
+      margin-top: 14px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: white;
+    }
+
+    .softball-map-link img {
+      display: block;
+      width: auto;
+      max-width: 100%;
+      height: auto;
+      max-height: 560px;
+    }
+
+    .softball-map-note {
+      margin: 9px 2px 0;
+      color: var(--muted);
+      font-size: .74rem;
+      line-height: 1.4;
+      text-align: center;
+    }
+
+"""
+if text.count(css_anchor) != 1:
+    raise RuntimeError("Could not find unique CSS insertion point")
+text = text.replace(css_anchor, css + css_anchor, 1)
+
+function_anchor = "    function renderPerson(person) {"
+helper = """    function softballMapMarkup() {
+      return `
+        <details class="softball-map-card">
+          <summary>
+            <span>
+              <strong>🥎 Diamond locations</strong>
+              <small>Langford Park Sporting Complex</small>
+            </span>
+            <span class="softball-map-action">View map</span>
+          </summary>
+          <div class="softball-map-body">
+            <a class="softball-map-link" href="images/tate-softball-diamonds-map.webp" target="_blank" rel="noopener" aria-label="Open Tate softball diamond location map full size">
+              <img src="images/tate-softball-diamonds-map.webp" alt="Map showing softball diamond locations at Langford Park Sporting Complex" loading="lazy">
+            </a>
+            <p class="softball-map-note">Tap the map to open it full size.</p>
+          </div>
+        </details>`;
+    }
+
+"""
+if text.count(function_anchor) != 1:
+    raise RuntimeError("Could not find unique renderPerson insertion point")
+text = text.replace(function_anchor, helper + function_anchor, 1)
+
+old = """        ${personSportButtons(person)}
+        ${contentButtons(person)}
+        ${personContent(person)}"""
+new = """        ${personSportButtons(person)}
+        ${contentButtons(person)}
+        ${person === "tate" && sport === "softball" ? softballMapMarkup() : ""}
+        ${personContent(person)}"""
+
+if old not in text:
+    raise RuntimeError("Could not find Tate content insertion point")
+text = text.replace(old, new, 1)
+
+path.write_text(text, encoding="utf-8")
+print("Added Tate softball diamond map to docs/index.html")
