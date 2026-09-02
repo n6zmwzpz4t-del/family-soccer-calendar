@@ -1236,6 +1236,19 @@
         );
       }
 
+      const dateOnly = value.match(/^(\d{4})(\d{2})(\d{2})$/);
+
+      if (dateOnly) {
+        return new Date(
+          Date.UTC(
+            Number(dateOnly[1]),
+            Number(dateOnly[2]) - 1,
+            Number(dateOnly[3]),
+            -8
+          )
+        );
+      }
+
       return null;
     }
 
@@ -1308,6 +1321,9 @@
           const wazeUrl = property(block, "URL");
           const start = parseDate(block, "DTSTART");
           const end = parseDate(block, "DTEND");
+          const allDay =
+            /^DTSTART;VALUE=DATE:/mi.test(block) ||
+            property(block, "X-ALL-DAY").toUpperCase() === "TRUE";
           const lower = summary.toLowerCase();
 
           const sportProperty = decodeIcs(property(block, "X-SPORT")).toLowerCase();
@@ -1334,6 +1350,7 @@
             description,
             start,
             end,
+            allDay,
             sport,
             person,
             sourceType,
@@ -1822,10 +1839,10 @@
             <h3>${escapeHtml(cleanSummary(event.summary))}</h3>
 
             <div class="meta">
-              <span>
+              ${event.allDay ? `<span>🕒 Time TBC</span>` : `<span>
                 🕒 ${escapeHtml(formatTime(event.start))}
                 ${event.end ? ` – ${escapeHtml(formatTime(event.end))}` : ""}
-              </span>
+              </span>`}
               ${locationMarkup(event)}
               ${round ? `<span>🏆 ${escapeHtml(round)}</span>` : ""}
               ${weatherMarkup(event)}
@@ -2086,7 +2103,7 @@
             <h3 class="next-title">${escapeHtml(cleanSummary(next.summary))}</h3>
             <div class="meta">
               <span>📅 ${escapeHtml(formatDate(next.start,true))}</span>
-              <span>🕒 ${escapeHtml(formatTime(next.start))}</span>
+              <span>🕒 ${next.allDay ? "Time TBC" : escapeHtml(formatTime(next.start))}</span>
               ${locationMarkup(next)}
               ${weatherMarkup(next)}
             </div>

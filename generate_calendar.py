@@ -5259,6 +5259,13 @@ def load_manual_fixtures(
                 "sport_icon": clean(item.get("sport_icon")) or "🏅",
                 "sport_name": clean(item.get("sport_name")),
                 "time_label": clean(item.get("time_label")) or "Start",
+                "display_title": clean(item.get("display_title")),
+                "all_day": item.get("all_day") is True,
+                "status": clean(item.get("status")).upper() or "CONFIRMED",
+                "replace_when_squadi_fixture_on_date": (
+                    item.get("replace_when_squadi_fixture_on_date") is True
+                ),
+                "source_type": "manual",
                 "duration_minutes": int(
                     item.get(
                         "duration_minutes",
@@ -5283,6 +5290,45 @@ def load_manual_fixtures(
         "fixture_count": len(fixtures),
         "errors": errors,
     }
+
+
+def suppress_manual_placeholders(
+    manual_fixtures: list[dict[str, Any]],
+    live_fixtures: list[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], list[dict[str, str]]]:
+    """Hide a dated manual placeholder once Squadi publishes that fixture."""
+
+    published: list[dict[str, Any]] = []
+    suppressed: list[dict[str, str]] = []
+
+    for manual_fixture in manual_fixtures:
+        live_fixture = next(
+            (
+                fixture
+                for fixture in live_fixtures
+                if manual_fixture.get("replace_when_squadi_fixture_on_date")
+                and fixture["label"].casefold()
+                == manual_fixture["label"].casefold()
+                and fixture["start"].date()
+                == manual_fixture["start"].date()
+                and "squadi.com"
+                in clean(fixture.get("source_url")).casefold()
+            ),
+            None,
+        )
+
+        if live_fixture:
+            suppressed.append(
+                {
+                    "manual_source_id": manual_fixture["source_id"],
+                    "live_source_id": clean(live_fixture.get("source_id")),
+                    "date": manual_fixture["start"].date().isoformat(),
+                }
+            )
+        else:
+            published.append(manual_fixture)
+
+    return published, suppressed
 
 
 async def scrape_team(
@@ -5430,13 +5476,18 @@ def build_calendar(
 
     for fixture in fixtures:
         start = fixture["start"]
+        all_day = bool(fixture.get("all_day"))
         duration_minutes = int(
             fixture.get("duration_minutes", default_match_minutes)
         )
         reminder_minutes = int(
             fixture.get("reminder_minutes", default_reminder_minutes)
         )
-        end = start + timedelta(minutes=duration_minutes)
+        end = (
+            start + timedelta(days=1)
+            if all_day
+            else start + timedelta(minutes=duration_minutes)
+        )
 
         uid_seed = (
             f"{fixture['label']}|{fixture['source_id']}|{start.isoformat()}|"
@@ -5455,7 +5506,11 @@ def build_calendar(
 
         latitude = fixture.get("latitude")
         longitude = fixture.get("longitude")
-        navigation_url = waze_url(location, latitude, longitude)
+        navigation_url = (
+            ""
+            if re.search(r"\bTBC\b", location, flags=re.IGNORECASE)
+            else waze_url(location, latitude, longitude)
+        )
 
         round_text = format_round_text(fixture["round"])
         source_url = clean(fixture.get("source_url"))
@@ -5487,22 +5542,31 @@ def build_calendar(
 
         )
 
-        title = (
+        title = f"{sport_icon} {fixture['label']} | {match_title}"
+        if not all_day:
+            title += f" | {time_label} {format_kickoff_time(start)}"
 
-            f"{sport_icon} {fixture['label']} | "
+        event_status = clean(fixture.get("status")).upper()
+        if event_status not in {"CONFIRMED", "TENTATIVE", "CANCELLED"}:
+            event_status = "CONFIRMED"
 
-            f"{match_title} | "
-
-            f"{time_label} {format_kickoff_time(start)}"
-
+        date_lines = (
+            [
+                f"DTSTART;VALUE=DATE:{start.strftime('%Y%m%d')}",
+                f"DTEND;VALUE=DATE:{end.strftime('%Y%m%d')}",
+            ]
+            if all_day
+            else [
+                f"DTSTART;TZID={timezone_name}:{start.strftime('%Y%m%dT%H%M%S')}",
+                f"DTEND;TZID={timezone_name}:{end.strftime('%Y%m%dT%H%M%S')}",
+            ]
         )
 
         event_lines = [
             "BEGIN:VEVENT",
             f"UID:{uid}",
             f"DTSTAMP:{now}",
-            f"DTSTART;TZID={timezone_name}:{start.strftime('%Y%m%dT%H%M%S')}",
-            f"DTEND;TZID={timezone_name}:{end.strftime('%Y%m%dT%H%M%S')}",
+            *date_lines,
             "SUMMARY:" + escape_ics(title),
             "LOCATION:" + escape_ics(location),
             "X-PERSON:" + escape_ics(clean(fixture.get("label"))),
@@ -5512,6 +5576,7 @@ def build_calendar(
             "X-HOME-TEAM:" + escape_ics(short_team_name(fixture["home"])),
             "X-AWAY-TEAM:" + escape_ics(short_team_name(fixture["away"])),
             "X-SOURCE-TYPE:" + escape_ics(clean(fixture.get("source_type"))),
+            "X-ALL-DAY:" + ("TRUE" if all_day else "FALSE"),
         ]
 
         if home_score and away_score:
@@ -5534,16 +5599,23 @@ def build_calendar(
         event_lines.extend(
             [
                 "DESCRIPTION:" + escape_ics(description),
-                "STATUS:CONFIRMED",
+                "STATUS:" + event_status,
+            ]
+        )
+
+        if reminder_minutes > 0:
+            event_lines.extend(
+                [
                 "BEGIN:VALARM",
                 f"TRIGGER:-PT{reminder_minutes}M",
                 "ACTION:DISPLAY",
                 "DESCRIPTION:"
                 + escape_ics(f"{fixture['label']} fixture reminder"),
                 "END:VALARM",
-                "END:VEVENT",
-            ]
-        )
+                ]
+            )
+
+        event_lines.append("END:VEVENT")
 
         lines.extend(event_lines)
 
@@ -5626,7 +5698,17 @@ async def main() -> None:
         await browser.close()
 
     manual_fixtures, manual_debug = load_manual_fixtures(timezone)
-    all_fixtures.extend(manual_fixtures)
+    (
+        published_manual_fixtures,
+        suppressed_manual_fixtures,
+    ) = suppress_manual_placeholders(
+        manual_fixtures,
+        all_fixtures,
+    )
+
+    manual_debug["published_fixture_count"] = len(published_manual_fixtures)
+    manual_debug["suppressed_by_squadi"] = suppressed_manual_fixtures
+    all_fixtures.extend(published_manual_fixtures)
 
     unique: dict[tuple[str, str, str, str], dict[str, Any]] = {}
 
@@ -5657,7 +5739,7 @@ async def main() -> None:
                 "teams": debug_teams,
                 "school_soccer": school_debug,
                 "manual_fixtures": manual_debug,
-                "manual_fixture_count": len(manual_fixtures),
+                "manual_fixture_count": len(published_manual_fixtures),
                 "fixtures": [
                     {
                         **fixture,
