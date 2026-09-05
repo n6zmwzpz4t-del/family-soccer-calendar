@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-05T23:04:58.643547+08:00",
+  "generated_at": "2026-09-05T23:35:16.901064+08:00",
   "fixture_count": 42,
   "coordinate_fixture_count": 36,
   "teams": [
@@ -14,6 +14,14 @@
         },
         {
           "url": "https://api.squadi.com/users/consent/config",
+          "status": 200
+        },
+        {
+          "url": "https://api.squadi.com/common/common/reference/year?organisationUniqueKey=f524913b-317c-4011-8f66-e4eb3f101ebe&scope=1",
+          "status": 200
+        },
+        {
+          "url": "https://api.squadi.com/common/common/reference/year",
           "status": 200
         },
         {
@@ -33,15 +41,7 @@
           "status": 200
         },
         {
-          "url": "https://api.squadi.com/common/common/reference/year",
-          "status": 200
-        },
-        {
           "url": "https://api.squadi.com/livescores/round/matches?competitionId=1514&divisionId=10761&teamIds=[111827]&ignoreStatuses=[1]",
-          "status": 200
-        },
-        {
-          "url": "https://api.squadi.com/common/common/reference/year?organisationUniqueKey=f524913b-317c-4011-8f66-e4eb3f101ebe&scope=1",
           "status": 200
         }
       ],
@@ -280,9 +280,1225 @@
   ],
   "school_soccer": {
     "source": "https://www.stjohnbosco.wa.edu.au/calendar/",
+    "provider": "Timely",
+    "calendar_id": "37c47p6q",
+    "scraper_version": "2026-08-14-v6-safe-dom-events",
     "match_text": "ACC soccer Y10-12 boys",
     "fixture_count": 0,
-    "error": "Page.goto: Timeout 120000ms exceeded.\nCall log:\n  - navigating to \"https://www.stjohnbosco.wa.edu.au/calendar/\", waiting until \"domcontentloaded\"\n"
+    "candidate_events": [
+      "2026-09: ACC Athletics Carnival G Division"
+    ],
+    "months": [
+      {
+        "month": "2026-09",
+        "url": "https://events.timely.fun/37c47p6q/month?start_date=2026-09-01&timely_id=timely-iframe-embed-0",
+        "json_payload_count": 4,
+        "response_urls": [
+          {
+            "url": "https://events.timely.fun/37c47p6q/month?start_date=2026-09-01&timely_id=timely-iframe-embed-0",
+            "status": 200,
+            "content_type": "text/html; charset=utf-8"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/runtime.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/node_modules_altcha_dist_altcha_js.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/polyfills.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/main.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/styles.css",
+            "status": 200,
+            "content_type": "text/css"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/Poppins-Regular.ttf",
+            "status": 200,
+            "content_type": "font/ttf"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/src_app_layouts_month_month_module_ts.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/common.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/timely.ttf?3cenot",
+            "status": 200,
+            "content_type": "font/ttf"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/assets/i18n/en-US.json",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6930h2v899452056za200zd899452056&_p=1788622328784&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=1467887677&_eu=AAAAAGA&are=1&cid=331066859.1788622329&ec_mode=a&frm=0&pscdl=noapi&rcb=17&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=6.17.0&uaw=0&ul=en-us%40posix&gaf=2&_s=1&tag_exp=115938466~115938469~118897920~118897930~120213116~120385423~120469145~120469153&sid=1788622329&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2026-09-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&epn.calendar_id=54716732&ep.event_category=general&tfd=865",
+            "status": 204,
+            "content_type": "text/plain"
+          },
+          {
+            "url": "https://events.timely.fun/api/calendars/54716732/filters/custom",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://events.timely.fun/api/calendars/54716732/events?group_by_date=1&timezone=Africa/Abidjan&view=month&start_date_utc=1788220800&end_date_utc=1790812799&per_page=1000&page=1",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://events.timely.fun/api/calendars/54716732/events?group_by_date=1&timezone=Africa/Abidjan&view=month&start_date_utc=1788220800&end_date_utc=1790812799&per_page=1000&page=1",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6930h2v899452056za200zd899452056&_p=1788622328784&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=1467887677&_eu=AAAAAGQ&are=1&cid=331066859.1788622329&frm=0&pscdl=noapi&rcb=17&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=6.17.0&uaw=0&ul=en-us%40posix&gaf=2&tag_exp=115938466~115938469~118897920~118897930~120213116~120385423~120469145~120469153&sid=1788622329&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2026-09-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&_s=2&tfd=5871",
+            "status": 204,
+            "content_type": "text/plain"
+          }
+        ],
+        "event_link_count": 0,
+        "dom_match_count": 0,
+        "raw_matches_added": 0,
+        "body_contains_target": false,
+        "body_text_preview": "St John Bosco Community Calendar\nSeptember 2026\n Africa/Abidjan \nSearch\nAdd To Calendar\nMonth\nSelect Calendar Language\n English (US) \nCategories\nOrganizers\nTags\nVenues\nMonday\nMon\t\nTuesday\nTue\t\nWednesday\nWed\t\nThursday\nThu\t\nFriday\nFri\t\nSaturday\nSat\t\nSunday\nSun\n\t\n1\n\t\n2\n\t\n3\n\t\n4\n\t\n5\n\t\n6\n\n\t\nYear 2, 4 & 6 Swimming Lessons\nYr 12 ATAR SEPEA Assessment\nSchool Nurse - Kindy Screenings\nFather\u2019s Day Stall (all day)\n12:30am (GMT) Try a Trade Wall and Ceiling Tiling (3 day course)\n4:15am (GMT) CPAF Drama Solo [Yrs 11 \u2013 12]\n\t\nY11/12 ATAR PES Biomechanics Excursion (High Flyers WA)\n12:30am (GMT) Try a Trade Wall and Ceiling Tiling (3 day course)\n12:45am (GMT) Mums & Bubs\n\t\n11:30pm (GMT) FSJB Father's Day Breakfast\n\t\n8:00am (GMT) Post Eucharist Celebration at SFX Hall with 24/7 Ministry\n\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\nBook Week\n10:00am (GMT) Sunday Evening Eucharist\n\n\n7\n\t\n8\n\t\n9\n\t\n10\n\t\n11\n\t\n12\n\t\n13\n\n\nBook Week\nYear 2, 4 & 6 Swimming Lessons\n12:40am (GMT) ACC Athletics Carnival G Division\n5:30am (GMT) CPAF Electric Guitar Ensemble\n\t\n1:30am (GMT) Excursion Perth Zoo (Human Bio 12)\n1:30am (GMT) Perform Education Book Week Incursion for Primary students (K-3 09:30 & 4-6 11:10)\n10:00am (GMT) Friends of St John Bosco Meeting\n\t\n12:45am (GMT) Mums & Bubs\n6:00am (GMT) Year 7 to Year 12 Fruits of the Holy Spirit (Gentleness and Goodness) Assembly\n\t\n10:30am (GMT) Dance Showcase\n\t\n1:30am (GMT) Primary Book Week Dress Up Parade\n\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n10:00am (GMT) Year 6 Confirmation Commitment Mass\n\t\nBook Fair\n1:30am (GMT) Year 6 Confirmation commitment Mass 9.30am and 6pm\n10:00am (GMT) Sunday Evening Eucharist\n\n\n14\n\t\n15\n\t\n16\n\t\n17\n\t\n18\n\t\n19\n\t\n20\n\n\nBook Fair\nPrimary Learning Journey\n\t\nPaul Litherland Y7 - 12 Presentations (x3) plus parent information night\n9:30am (GMT) Secondary Art Exhibition Opening 5.30pm Awards presented 6pm\n\t\n8:00am (GMT) Confirmation Parent/Child Workshops 4pm and 5.15pm\n12:30am (GMT) Art Exhibition - Open until 5pm\n12:45am (GMT) Mums & Bubs\n\t\n12:30am (GMT) Art Exhibition until 5pm\n\t\t\n11:30pm (GMT) Sunday Eucharist\n1:30am (GMT) College Tour\n10:00am (GMT) Vigil Mass\n\t\nY4, 5 and 6 Australian Earth Science Incursion\n10:00am (GMT) Sunday Evening Eucharist\n\n\n21\n\t\n22\n\t\n23\n\t\n24\n\t\n25\n\t\n26\n\t\n27\n\n\nY4, 5 and 6 Australian Earth Science Incursion\n\t\t\nSEAS Junior Volleyball Carnival\n12:45am (GMT) Mums & Bubs\n\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n28\n\t\n29\n\t\n30\n\t\t\t\t\n\t\t\n12:45am (GMT) Mums & Bubs\n\t\t\t\t\nv4.2.22"
+      },
+      {
+        "month": "2026-10",
+        "url": "https://events.timely.fun/37c47p6q/month?start_date=2026-10-01&timely_id=timely-iframe-embed-0",
+        "json_payload_count": 4,
+        "response_urls": [
+          {
+            "url": "https://events.timely.fun/37c47p6q/month?start_date=2026-10-01&timely_id=timely-iframe-embed-0",
+            "status": 200,
+            "content_type": "text/html; charset=utf-8"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/runtime.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/node_modules_altcha_dist_altcha_js.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/polyfills.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/main.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/styles.css",
+            "status": 200,
+            "content_type": "text/css"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/Poppins-Regular.ttf",
+            "status": 200,
+            "content_type": "font/ttf"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/common.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/src_app_layouts_month_month_module_ts.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/timely.ttf?3cenot",
+            "status": 200,
+            "content_type": "font/ttf"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/assets/i18n/en-US.json",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6921v899452056za200zd899452056&_p=1788622337528&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=1977577626&_eu=AAAAAGA&are=1&cid=1444696865.1788622338&ec_mode=a&frm=0&pscdl=noapi&rcb=3&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=6.17.0&uaw=0&ul=en-us%40posix&gaf=2&_s=1&tag_exp=115616985~115938466~115938468~118897920~118897930~120213116~120385422~120469145~120469153&sid=1788622337&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2026-10-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&epn.calendar_id=54716732&ep.event_category=general&tfd=726",
+            "status": 204,
+            "content_type": "text/plain"
+          },
+          {
+            "url": "https://events.timely.fun/api/calendars/54716732/filters/custom",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://events.timely.fun/api/calendars/54716732/events?group_by_date=1&timezone=Africa/Abidjan&view=month&start_date_utc=1790812800&end_date_utc=1793491199&per_page=1000&page=1",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://events.timely.fun/api/calendars/54716732/events?group_by_date=1&timezone=Africa/Abidjan&view=month&start_date_utc=1790812800&end_date_utc=1793491199&per_page=1000&page=1",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6921v899452056za200zd899452056&_p=1788622337528&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=1977577626&_eu=AAAAAGQ&are=1&cid=1444696865.1788622338&frm=0&pscdl=noapi&rcb=3&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=6.17.0&uaw=0&ul=en-us%40posix&gaf=2&tag_exp=115616985~115938466~115938468~118897920~118897930~120213116~120385422~120469145~120469153&sid=1788622337&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2026-10-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&_s=2&tfd=5732",
+            "status": 204,
+            "content_type": "text/plain"
+          }
+        ],
+        "event_link_count": 0,
+        "dom_match_count": 0,
+        "raw_matches_added": 0,
+        "body_contains_target": false,
+        "body_text_preview": "St John Bosco Community Calendar\nOctober 2026\n Africa/Abidjan \nSearch\nAdd To Calendar\nMonth\nSelect Calendar Language\n English (US) \nCategories\nOrganizers\nTags\nVenues\nMonday\nMon\t\nTuesday\nTue\t\nWednesday\nWed\t\nThursday\nThu\t\nFriday\nFri\t\nSaturday\nSat\t\nSunday\nSun\n\t\t\t\n1\n\t\n2\n\t\n3\n\t\n4\n\n\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\nYEAR 12 END OF YEAR EXAMS\n10:00am (GMT) Sunday Evening Eucharist\n\n\n5\n\t\n6\n\t\n7\n\t\n8\n\t\n9\n\t\n10\n\t\n11\n\n\nYEAR 12 END OF YEAR EXAMS\n\t\t\nADMINISTRATION OPEN TO THE COMMUNITY\n12:45am (GMT) Mums & Bubs\n\t\t\n12:00am (GMT) Uniform Shop Open 8-10am\n\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\nStudent Free Day\n10:00am (GMT) Sunday Evening Eucharist\n\n\n12\n\t\n13\n\t\n14\n\t\n15\n\t\n16\n\t\n17\n\t\n18\n\n\nYEAR 12 END OF YEAR EXAMS\nKindergarten to Year 11 Students Commence Term 4\nStudent Free Day\n\t\nSchool Nurse - Kindy Screenings\n\t\n12:40am (GMT) Year 6 Confirmation Retreat with 24/7 Ministry in Assembly Space\n12:45am (GMT) Mums & Bubs\n\t\nPrimary Bosco Athletics Carnival (all day) on Senior Oval\n12:40am (GMT) Year 11 ATAR History Excursion-Perth Holocaust Museum\n\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n19\n\t\n20\n\t\n21\n\t\n22\n\t\n23\n\t\n24\n\t\n25\n\n\nSocktober Fundraiser (Catholic Mission)\n1:00am (GMT) Water Corporation Incursion Y3-Y6\n\t\t\nYear 12 Graduation and Awards Day/Evening\n12:45am (GMT) Mums & Bubs\n1:00am (GMT) Water Corporation Incursion PP, Y1 and Y2\n10:00am (GMT) Friends of St John Bosco Meeting\n\t\nFSJB Primary Disco\n\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n26\n\t\n27\n\t\n28\n\t\n29\n\t\n30\n\t\n31\n\t\n\nSchool Nurse - Kindy Screenings\n12:30am (GMT) Year 2 Constable Care School Excursion\n1:00am (GMT) Year 4 Purple PIRLS Assessment\n\t\nWACE EXAM\n\t\n12:45am (GMT) Mums & Bubs\n\t\nTeacher Appreciation Day\n\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\nv4.2.22"
+      },
+      {
+        "month": "2026-11",
+        "url": "https://events.timely.fun/37c47p6q/month?start_date=2026-11-01&timely_id=timely-iframe-embed-0",
+        "json_payload_count": 4,
+        "response_urls": [
+          {
+            "url": "https://events.timely.fun/37c47p6q/month?start_date=2026-11-01&timely_id=timely-iframe-embed-0",
+            "status": 200,
+            "content_type": "text/html; charset=utf-8"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/runtime.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/node_modules_altcha_dist_altcha_js.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/polyfills.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/styles.css",
+            "status": 200,
+            "content_type": "text/css"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/main.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/Poppins-Regular.ttf",
+            "status": 200,
+            "content_type": "font/ttf"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/common.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/src_app_layouts_month_month_module_ts.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/timely.ttf?3cenot",
+            "status": 200,
+            "content_type": "font/ttf"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/assets/i18n/en-US.json",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6921v899452056za200zd899452056&_p=1788622346222&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=1687513833&_eu=AAAAAGA&are=1&cid=2058838517.1788622347&ec_mode=a&frm=0&pscdl=noapi&rcb=11&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=6.17.0&uaw=0&ul=en-us%40posix&gaf=2&_s=1&tag_exp=115938466~115938469~118897920~118897930~120213116~120385423~120469145~120469153&sid=1788622346&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2026-11-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&epn.calendar_id=54716732&ep.event_category=general&tfd=667",
+            "status": 204,
+            "content_type": "text/plain"
+          },
+          {
+            "url": "https://events.timely.fun/api/calendars/54716732/filters/custom",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://events.timely.fun/api/calendars/54716732/events?group_by_date=1&timezone=Africa/Abidjan&view=month&start_date_utc=1793491200&end_date_utc=1796083199&per_page=1000&page=1",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://events.timely.fun/api/calendars/54716732/events?group_by_date=1&timezone=Africa/Abidjan&view=month&start_date_utc=1793491200&end_date_utc=1796083199&per_page=1000&page=1",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6921v899452056za200zd899452056&_p=1788622346222&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=1687513833&_eu=AAAAAGQ&are=1&cid=2058838517.1788622347&frm=0&pscdl=noapi&rcb=11&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=6.17.0&uaw=0&ul=en-us%40posix&gaf=2&tag_exp=115938466~115938469~118897920~118897930~120213116~120385423~120469145~120469153&sid=1788622346&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2026-11-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&_s=2&tfd=5673",
+            "status": 204,
+            "content_type": "text/plain"
+          }
+        ],
+        "event_link_count": 0,
+        "dom_match_count": 0,
+        "raw_matches_added": 0,
+        "body_contains_target": false,
+        "body_text_preview": "St John Bosco Community Calendar\nNovember 2026\n Africa/Abidjan \nSearch\nAdd To Calendar\nMonth\nSelect Calendar Language\n English (US) \nCategories\nOrganizers\nTags\nVenues\nMonday\nMon\t\nTuesday\nTue\t\nWednesday\nWed\t\nThursday\nThu\t\nFriday\nFri\t\nSaturday\nSat\t\nSunday\nSun\n\t\t\t\t\t\t\n1\n\n\t\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Sunday Evening Eucharist\n\n\n2\n\t\n3\n\t\n4\n\t\n5\n\t\n6\n\t\n7\n\t\n8\n\n\nPrimary Interschools Athletics Carnival\n8:00am (GMT) College Tour\n\t\t\n12:45am (GMT) Mums & Bubs\n\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n9\n\t\n10\n\t\n11\n\t\n12\n\t\n13\n\t\n14\n\t\n15\n\n\nSchool Nurse - Kindy Screenings\n\t\t\n12:45am (GMT) Mums & Bubs\n\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n16\n\t\n17\n\t\n18\n\t\n19\n\t\n20\n\t\n21\n\t\n22\n\n\t\t\n12:45am (GMT) Mums & Bubs\n\t\nYear 6 Loving for Life incursion\n9:00am (GMT) Loving for Life \u2013 Parent Session\n\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n23\n\t\n24\n\t\n25\n\t\n26\n\t\n27\n\t\n28\n\t\n29\n\n\t\t\n12:45am (GMT) Mums & Bubs\n\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n30\n\t\t\t\t\t\t\n\t\t\t\t\t\t\nv4.2.22"
+      },
+      {
+        "month": "2026-12",
+        "url": "https://events.timely.fun/37c47p6q/month?start_date=2026-12-01&timely_id=timely-iframe-embed-0",
+        "json_payload_count": 4,
+        "response_urls": [
+          {
+            "url": "https://events.timely.fun/37c47p6q/month?start_date=2026-12-01&timely_id=timely-iframe-embed-0",
+            "status": 200,
+            "content_type": "text/html; charset=utf-8"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/runtime.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/node_modules_altcha_dist_altcha_js.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/polyfills.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/main.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/styles.css",
+            "status": 200,
+            "content_type": "text/css"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/Poppins-Regular.ttf",
+            "status": 200,
+            "content_type": "font/ttf"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/common.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/src_app_layouts_month_month_module_ts.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/timely.ttf?3cenot",
+            "status": 200,
+            "content_type": "font/ttf"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/assets/i18n/en-US.json",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6921v899452056za200zd899452056&_p=1788622355099&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=1315246947&_eu=AAAAAGA&are=1&cid=2065466438.1788622355&ec_mode=a&frm=0&pscdl=noapi&rcb=1&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=6.17.0&uaw=0&ul=en-us%40posix&gaf=2&_s=1&tag_exp=115616985~115938466~115938469~118897920~118897930~120213116~120385422~120412527~120469145~120469153&sid=1788622355&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2026-12-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&epn.calendar_id=54716732&ep.event_category=general&tfd=846",
+            "status": 204,
+            "content_type": "text/plain"
+          },
+          {
+            "url": "https://events.timely.fun/api/calendars/54716732/events?group_by_date=1&timezone=Africa/Abidjan&view=month&start_date_utc=1796083200&end_date_utc=1798761599&per_page=1000&page=1",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://events.timely.fun/api/calendars/54716732/events?group_by_date=1&timezone=Africa/Abidjan&view=month&start_date_utc=1796083200&end_date_utc=1798761599&per_page=1000&page=1",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://events.timely.fun/api/calendars/54716732/filters/custom",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6921v899452056za200zd899452056&_p=1788622355099&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=1315246947&_eu=AAAAAGQ&are=1&cid=2065466438.1788622355&frm=0&pscdl=noapi&rcb=1&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=6.17.0&uaw=0&ul=en-us%40posix&gaf=2&tag_exp=115616985~115938466~115938469~118897920~118897930~120213116~120385422~120412527~120469145~120469153&sid=1788622355&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2026-12-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&_s=2&tfd=5852",
+            "status": 204,
+            "content_type": "text/plain"
+          }
+        ],
+        "event_link_count": 0,
+        "dom_match_count": 0,
+        "raw_matches_added": 0,
+        "body_contains_target": false,
+        "body_text_preview": "St John Bosco Community Calendar\nDecember 2026\n Africa/Abidjan \nSearch\nAdd To Calendar\nMonth\nSelect Calendar Language\n English (US) \nCategories\nOrganizers\nTags\nVenues\nMonday\nMon\t\nTuesday\nTue\t\nWednesday\nWed\t\nThursday\nThu\t\nFriday\nFri\t\nSaturday\nSat\t\nSunday\nSun\n\t\n1\n\t\n2\n\t\n3\n\t\n4\n\t\n5\n\t\n6\n\n\t\t\n12:45am (GMT) Mums & Bubs\n\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n7\n\t\n8\n\t\n9\n\t\n10\n\t\n11\n\t\n12\n\t\n13\n\n\t\t\n12:45am (GMT) Mums & Bubs\n\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n14\n\t\n15\n\t\n16\n\t\n17\n\t\n18\n\t\n19\n\t\n20\n\n\t\t\n12:45am (GMT) Mums & Bubs\n\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n21\n\t\n22\n\t\n23\n\t\n24\n\t\n25\n\t\n26\n\t\n27\n\n\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n28\n\t\n29\n\t\n30\n\t\n31\n\t\t\t\n\t\t\t\t\t\t\nv4.2.22"
+      },
+      {
+        "month": "2027-01",
+        "url": "https://events.timely.fun/37c47p6q/month?start_date=2027-01-01&timely_id=timely-iframe-embed-0",
+        "json_payload_count": 4,
+        "response_urls": [
+          {
+            "url": "https://events.timely.fun/37c47p6q/month?start_date=2027-01-01&timely_id=timely-iframe-embed-0",
+            "status": 200,
+            "content_type": "text/html; charset=utf-8"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/runtime.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/node_modules_altcha_dist_altcha_js.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/polyfills.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/styles.css",
+            "status": 200,
+            "content_type": "text/css"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/main.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/Poppins-Regular.ttf",
+            "status": 200,
+            "content_type": "font/ttf"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/common.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/src_app_layouts_month_month_module_ts.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/timely.ttf?3cenot",
+            "status": 200,
+            "content_type": "font/ttf"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/assets/i18n/en-US.json",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6921v899452056za200zd899452056&_p=1788622363822&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=22315248&_eu=AAAAAGA&are=1&cid=861021961.1788622364&ec_mode=a&frm=0&pscdl=noapi&rcb=11&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=6.17.0&uaw=0&ul=en-us%40posix&gaf=2&_s=1&tag_exp=115938466~115938469~118897920~118897930~120213116~120385423~120469145~120469153&sid=1788622364&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-01-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&epn.calendar_id=54716732&ep.event_category=general&tfd=723",
+            "status": 204,
+            "content_type": "text/plain"
+          },
+          {
+            "url": "https://events.timely.fun/api/calendars/54716732/filters/custom",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://events.timely.fun/api/calendars/54716732/events?group_by_date=1&timezone=Africa/Abidjan&view=month&start_date_utc=1798761600&end_date_utc=1801439999&per_page=1000&page=1",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://events.timely.fun/api/calendars/54716732/events?group_by_date=1&timezone=Africa/Abidjan&view=month&start_date_utc=1798761600&end_date_utc=1801439999&per_page=1000&page=1",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6921v899452056za200zd899452056&_p=1788622363822&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=22315248&_eu=AAAAAGQ&are=1&cid=861021961.1788622364&frm=0&pscdl=noapi&rcb=11&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=6.17.0&uaw=0&ul=en-us%40posix&gaf=2&tag_exp=115938466~115938469~118897920~118897930~120213116~120385423~120469145~120469153&sid=1788622364&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-01-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&_s=2&tfd=5729",
+            "status": 204,
+            "content_type": "text/plain"
+          }
+        ],
+        "event_link_count": 0,
+        "dom_match_count": 0,
+        "raw_matches_added": 0,
+        "body_contains_target": false,
+        "body_text_preview": "St John Bosco Community Calendar\nJanuary 2027\n Africa/Abidjan \nSearch\nAdd To Calendar\nMonth\nSelect Calendar Language\n English (US) \nCategories\nOrganizers\nTags\nVenues\nMonday\nMon\t\nTuesday\nTue\t\nWednesday\nWed\t\nThursday\nThu\t\nFriday\nFri\t\nSaturday\nSat\t\nSunday\nSun\n\t\t\t\t\n1\n\t\n2\n\t\n3\n\n\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n4\n\t\n5\n\t\n6\n\t\n7\n\t\n8\n\t\n9\n\t\n10\n\n\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n11\n\t\n12\n\t\n13\n\t\n14\n\t\n15\n\t\n16\n\t\n17\n\n\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n18\n\t\n19\n\t\n20\n\t\n21\n\t\n22\n\t\n23\n\t\n24\n\n\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n25\n\t\n26\n\t\n27\n\t\n28\n\t\n29\n\t\n30\n\t\n31\n\n\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\nv4.2.22"
+      },
+      {
+        "month": "2027-02",
+        "url": "https://events.timely.fun/37c47p6q/month?start_date=2027-02-01&timely_id=timely-iframe-embed-0",
+        "json_payload_count": 4,
+        "response_urls": [
+          {
+            "url": "https://events.timely.fun/37c47p6q/month?start_date=2027-02-01&timely_id=timely-iframe-embed-0",
+            "status": 200,
+            "content_type": "text/html; charset=utf-8"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/runtime.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/node_modules_altcha_dist_altcha_js.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/polyfills.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/styles.css",
+            "status": 200,
+            "content_type": "text/css"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/Poppins-Regular.ttf",
+            "status": 200,
+            "content_type": "font/ttf"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/main.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/src_app_layouts_month_month_module_ts.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/common.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/timely.ttf?3cenot",
+            "status": 200,
+            "content_type": "font/ttf"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/assets/i18n/en-US.json",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6921v899452056za200zd899452056&_p=1788622372500&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=2020983448&_eu=AAAAAGA&are=1&cid=264826610.1788622373&ec_mode=a&frm=0&pscdl=noapi&rcb=3&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=6.17.0&uaw=0&ul=en-us%40posix&gaf=2&_s=1&tag_exp=115616986~115938465~115938468~118897920~118897930~120213116~120385422~120469145~120469153&sid=1788622372&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-02-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&epn.calendar_id=54716732&ep.event_category=general&tfd=652",
+            "status": 204,
+            "content_type": "text/plain"
+          },
+          {
+            "url": "https://events.timely.fun/api/calendars/54716732/filters/custom",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://events.timely.fun/api/calendars/54716732/events?group_by_date=1&timezone=Africa/Abidjan&view=month&start_date_utc=1801440000&end_date_utc=1803859199&per_page=1000&page=1",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://events.timely.fun/api/calendars/54716732/events?group_by_date=1&timezone=Africa/Abidjan&view=month&start_date_utc=1801440000&end_date_utc=1803859199&per_page=1000&page=1",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6921v899452056za200zd899452056&_p=1788622372500&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=2020983448&_eu=AAAAAGQ&are=1&cid=264826610.1788622373&frm=0&pscdl=noapi&rcb=3&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=6.17.0&uaw=0&ul=en-us%40posix&gaf=2&tag_exp=115616986~115938465~115938468~118897920~118897930~120213116~120385422~120469145~120469153&sid=1788622372&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-02-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&_s=2&tfd=5658",
+            "status": 204,
+            "content_type": "text/plain"
+          }
+        ],
+        "event_link_count": 0,
+        "dom_match_count": 0,
+        "raw_matches_added": 0,
+        "body_contains_target": false,
+        "body_text_preview": "St John Bosco Community Calendar\nFebruary 2027\n Africa/Abidjan \nSearch\nAdd To Calendar\nMonth\nSelect Calendar Language\n English (US) \nCategories\nOrganizers\nTags\nVenues\nMonday\nMon\t\nTuesday\nTue\t\nWednesday\nWed\t\nThursday\nThu\t\nFriday\nFri\t\nSaturday\nSat\t\nSunday\nSun\n\n1\n\t\n2\n\t\n3\n\t\n4\n\t\n5\n\t\n6\n\t\n7\n\n\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n8\n\t\n9\n\t\n10\n\t\n11\n\t\n12\n\t\n13\n\t\n14\n\n\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n15\n\t\n16\n\t\n17\n\t\n18\n\t\n19\n\t\n20\n\t\n21\n\n\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n22\n\t\n23\n\t\n24\n\t\n25\n\t\n26\n\t\n27\n\t\n28\n\n\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\nv4.2.22"
+      },
+      {
+        "month": "2027-03",
+        "url": "https://events.timely.fun/37c47p6q/month?start_date=2027-03-01&timely_id=timely-iframe-embed-0",
+        "json_payload_count": 4,
+        "response_urls": [
+          {
+            "url": "https://events.timely.fun/37c47p6q/month?start_date=2027-03-01&timely_id=timely-iframe-embed-0",
+            "status": 200,
+            "content_type": "text/html; charset=utf-8"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/runtime.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/node_modules_altcha_dist_altcha_js.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/polyfills.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/styles.css",
+            "status": 200,
+            "content_type": "text/css"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/main.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/Poppins-Regular.ttf",
+            "status": 200,
+            "content_type": "font/ttf"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/common.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/src_app_layouts_month_month_module_ts.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/timely.ttf?3cenot",
+            "status": 200,
+            "content_type": "font/ttf"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/assets/i18n/en-US.json",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6921v899452056za200zd899452056&_p=1788622381193&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=1828865035&_eu=AAAAAGA&are=1&cid=88904720.1788622382&ec_mode=a&frm=0&pscdl=noapi&rcb=12&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=6.17.0&uaw=0&ul=en-us%40posix&gaf=2&_s=1&tag_exp=115938465~115938468~118897920~118897930~120213116~120385423~120420416~120469145~120469153&sid=1788622381&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-03-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&epn.calendar_id=54716732&ep.event_category=general&tfd=677",
+            "status": 204,
+            "content_type": "text/plain"
+          },
+          {
+            "url": "https://events.timely.fun/api/calendars/54716732/filters/custom",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://events.timely.fun/api/calendars/54716732/events?group_by_date=1&timezone=Africa/Abidjan&view=month&start_date_utc=1803859200&end_date_utc=1806537599&per_page=1000&page=1",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://events.timely.fun/api/calendars/54716732/events?group_by_date=1&timezone=Africa/Abidjan&view=month&start_date_utc=1803859200&end_date_utc=1806537599&per_page=1000&page=1",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6921v899452056za200zd899452056&_p=1788622381193&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=1828865035&_eu=AAAAAGQ&are=1&cid=88904720.1788622382&frm=0&pscdl=noapi&rcb=12&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=6.17.0&uaw=0&ul=en-us%40posix&gaf=2&tag_exp=115938465~115938468~118897920~118897930~120213116~120385423~120420416~120469145~120469153&sid=1788622381&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-03-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&_s=2&tfd=5683",
+            "status": 204,
+            "content_type": "text/plain"
+          }
+        ],
+        "event_link_count": 0,
+        "dom_match_count": 0,
+        "raw_matches_added": 0,
+        "body_contains_target": false,
+        "body_text_preview": "St John Bosco Community Calendar\nMarch 2027\n Africa/Abidjan \nSearch\nAdd To Calendar\nMonth\nSelect Calendar Language\n English (US) \nCategories\nOrganizers\nTags\nVenues\nMonday\nMon\t\nTuesday\nTue\t\nWednesday\nWed\t\nThursday\nThu\t\nFriday\nFri\t\nSaturday\nSat\t\nSunday\nSun\n\n1\n\t\n2\n\t\n3\n\t\n4\n\t\n5\n\t\n6\n\t\n7\n\n\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n8\n\t\n9\n\t\n10\n\t\n11\n\t\n12\n\t\n13\n\t\n14\n\n\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n15\n\t\n16\n\t\n17\n\t\n18\n\t\n19\n\t\n20\n\t\n21\n\n\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n22\n\t\n23\n\t\n24\n\t\n25\n\t\n26\n\t\n27\n\t\n28\n\n\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n29\n\t\n30\n\t\n31\n\t\t\t\t\n\t\t\t\t\t\t\nv4.2.22"
+      },
+      {
+        "month": "2027-04",
+        "url": "https://events.timely.fun/37c47p6q/month?start_date=2027-04-01&timely_id=timely-iframe-embed-0",
+        "json_payload_count": 4,
+        "response_urls": [
+          {
+            "url": "https://events.timely.fun/37c47p6q/month?start_date=2027-04-01&timely_id=timely-iframe-embed-0",
+            "status": 200,
+            "content_type": "text/html; charset=utf-8"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/runtime.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/node_modules_altcha_dist_altcha_js.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/polyfills.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/main.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/styles.css",
+            "status": 200,
+            "content_type": "text/css"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/Poppins-Regular.ttf",
+            "status": 200,
+            "content_type": "font/ttf"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/common.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/src_app_layouts_month_month_module_ts.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/timely.ttf?3cenot",
+            "status": 200,
+            "content_type": "font/ttf"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/assets/i18n/en-US.json",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6921v899452056za200zd899452056&_p=1788622389971&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=339929391&_eu=AAAAAGA&are=1&cid=2003082753.1788622390&ec_mode=a&frm=0&pscdl=noapi&rcb=1&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=6.17.0&uaw=0&ul=en-us%40posix&gaf=2&_s=1&tag_exp=115938465~115938468~118897920~118897930~120213116~120385422~120469145~120469153&sid=1788622390&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-04-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&epn.calendar_id=54716732&ep.event_category=general&tfd=762",
+            "status": 204,
+            "content_type": "text/plain"
+          },
+          {
+            "url": "https://events.timely.fun/api/calendars/54716732/events?group_by_date=1&timezone=Africa/Abidjan&view=month&start_date_utc=1806537600&end_date_utc=1809129599&per_page=1000&page=1",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://events.timely.fun/api/calendars/54716732/events?group_by_date=1&timezone=Africa/Abidjan&view=month&start_date_utc=1806537600&end_date_utc=1809129599&per_page=1000&page=1",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://events.timely.fun/api/calendars/54716732/filters/custom",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6921v899452056za200zd899452056&_p=1788622389971&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=339929391&_eu=AAAAAGQ&are=1&cid=2003082753.1788622390&frm=0&pscdl=noapi&rcb=1&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=6.17.0&uaw=0&ul=en-us%40posix&gaf=2&tag_exp=115938465~115938468~118897920~118897930~120213116~120385422~120469145~120469153&sid=1788622390&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-04-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&_s=2&tfd=5767",
+            "status": 204,
+            "content_type": "text/plain"
+          }
+        ],
+        "event_link_count": 0,
+        "dom_match_count": 0,
+        "raw_matches_added": 0,
+        "body_contains_target": false,
+        "body_text_preview": "St John Bosco Community Calendar\nApril 2027\n Africa/Abidjan \nSearch\nAdd To Calendar\nMonth\nSelect Calendar Language\n English (US) \nCategories\nOrganizers\nTags\nVenues\nMonday\nMon\t\nTuesday\nTue\t\nWednesday\nWed\t\nThursday\nThu\t\nFriday\nFri\t\nSaturday\nSat\t\nSunday\nSun\n\t\t\t\n1\n\t\n2\n\t\n3\n\t\n4\n\n\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n5\n\t\n6\n\t\n7\n\t\n8\n\t\n9\n\t\n10\n\t\n11\n\n\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n12\n\t\n13\n\t\n14\n\t\n15\n\t\n16\n\t\n17\n\t\n18\n\n\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n19\n\t\n20\n\t\n21\n\t\n22\n\t\n23\n\t\n24\n\t\n25\n\n\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n26\n\t\n27\n\t\n28\n\t\n29\n\t\n30\n\t\t\n\t\t\t\t\t\t\nv4.2.22"
+      },
+      {
+        "month": "2027-05",
+        "url": "https://events.timely.fun/37c47p6q/month?start_date=2027-05-01&timely_id=timely-iframe-embed-0",
+        "json_payload_count": 4,
+        "response_urls": [
+          {
+            "url": "https://events.timely.fun/37c47p6q/month?start_date=2027-05-01&timely_id=timely-iframe-embed-0",
+            "status": 200,
+            "content_type": "text/html; charset=utf-8"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/runtime.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/node_modules_altcha_dist_altcha_js.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/polyfills.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/styles.css",
+            "status": 200,
+            "content_type": "text/css"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/main.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/Poppins-Regular.ttf",
+            "status": 200,
+            "content_type": "font/ttf"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/common.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/src_app_layouts_month_month_module_ts.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/timely.ttf?3cenot",
+            "status": 200,
+            "content_type": "font/ttf"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/assets/i18n/en-US.json",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6930h2v899452056za200zd899452056&_p=1788622398659&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=1853048015&_eu=AAAAAGA&are=1&cid=418163045.1788622399&ec_mode=a&frm=0&pscdl=noapi&rcb=12&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=6.17.0&uaw=0&ul=en-us%40posix&gaf=2&_s=1&tag_exp=115938465~115938468~118897920~118897930~120213116~120385423~120469145~120469153~120914213&sid=1788622399&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-05-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&epn.calendar_id=54716732&ep.event_category=general&tfd=777",
+            "status": 204,
+            "content_type": "text/plain"
+          },
+          {
+            "url": "https://events.timely.fun/api/calendars/54716732/filters/custom",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://events.timely.fun/api/calendars/54716732/events?group_by_date=1&timezone=Africa/Abidjan&view=month&start_date_utc=1809129600&end_date_utc=1811807999&per_page=1000&page=1",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://events.timely.fun/api/calendars/54716732/events?group_by_date=1&timezone=Africa/Abidjan&view=month&start_date_utc=1809129600&end_date_utc=1811807999&per_page=1000&page=1",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6930h2v899452056za200zd899452056&_p=1788622398659&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=1853048015&_eu=AAAAAGQ&are=1&cid=418163045.1788622399&frm=0&pscdl=noapi&rcb=12&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=6.17.0&uaw=0&ul=en-us%40posix&gaf=2&tag_exp=115938465~115938468~118897920~118897930~120213116~120385423~120469145~120469153~120914213&sid=1788622399&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-05-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&_s=2&tfd=5782",
+            "status": 204,
+            "content_type": "text/plain"
+          }
+        ],
+        "event_link_count": 0,
+        "dom_match_count": 0,
+        "raw_matches_added": 0,
+        "body_contains_target": false,
+        "body_text_preview": "St John Bosco Community Calendar\nMay 2027\n Africa/Abidjan \nSearch\nAdd To Calendar\nMonth\nSelect Calendar Language\n English (US) \nCategories\nOrganizers\nTags\nVenues\nMonday\nMon\t\nTuesday\nTue\t\nWednesday\nWed\t\nThursday\nThu\t\nFriday\nFri\t\nSaturday\nSat\t\nSunday\nSun\n\t\t\t\t\t\n1\n\t\n2\n\n\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n3\n\t\n4\n\t\n5\n\t\n6\n\t\n7\n\t\n8\n\t\n9\n\n\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n10\n\t\n11\n\t\n12\n\t\n13\n\t\n14\n\t\n15\n\t\n16\n\n\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n17\n\t\n18\n\t\n19\n\t\n20\n\t\n21\n\t\n22\n\t\n23\n\n\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n24\n\t\n25\n\t\n26\n\t\n27\n\t\n28\n\t\n29\n\t\n30\n\n\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n31\n\t\t\t\t\t\t\n\t\t\t\t\t\t\nv4.2.22"
+      },
+      {
+        "month": "2027-06",
+        "url": "https://events.timely.fun/37c47p6q/month?start_date=2027-06-01&timely_id=timely-iframe-embed-0",
+        "json_payload_count": 4,
+        "response_urls": [
+          {
+            "url": "https://events.timely.fun/37c47p6q/month?start_date=2027-06-01&timely_id=timely-iframe-embed-0",
+            "status": 200,
+            "content_type": "text/html; charset=utf-8"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/runtime.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/node_modules_altcha_dist_altcha_js.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/polyfills.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/main.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/styles.css",
+            "status": 200,
+            "content_type": "text/css"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/Poppins-Regular.ttf",
+            "status": 200,
+            "content_type": "font/ttf"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/common.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/src_app_layouts_month_month_module_ts.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/timely.ttf?3cenot",
+            "status": 200,
+            "content_type": "font/ttf"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/assets/i18n/en-US.json",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6921h1v899452056za200zd899452056&_p=1788622407427&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=803996791&_eu=AAAAAGA&are=1&cid=134875352.1788622408&ec_mode=a&frm=0&pscdl=noapi&rcb=11&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=6.17.0&uaw=0&ul=en-us%40posix&gaf=2&_s=1&tag_exp=115616986~115938465~115938469~118897920~118897930~120213116~120385423~120469145~120469153&sid=1788622407&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-06-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&epn.calendar_id=54716732&ep.event_category=general&tfd=636",
+            "status": 204,
+            "content_type": "text/plain"
+          },
+          {
+            "url": "https://events.timely.fun/api/calendars/54716732/filters/custom",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://events.timely.fun/api/calendars/54716732/events?group_by_date=1&timezone=Africa/Abidjan&view=month&start_date_utc=1811808000&end_date_utc=1814399999&per_page=1000&page=1",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://events.timely.fun/api/calendars/54716732/events?group_by_date=1&timezone=Africa/Abidjan&view=month&start_date_utc=1811808000&end_date_utc=1814399999&per_page=1000&page=1",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6921h1v899452056za200zd899452056&_p=1788622407427&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=803996791&_eu=AAAAAGQ&are=1&cid=134875352.1788622408&frm=0&pscdl=noapi&rcb=11&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=6.17.0&uaw=0&ul=en-us%40posix&gaf=2&tag_exp=115616986~115938465~115938469~118897920~118897930~120213116~120385423~120469145~120469153&sid=1788622407&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-06-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&_s=2&tfd=5641",
+            "status": 204,
+            "content_type": "text/plain"
+          }
+        ],
+        "event_link_count": 0,
+        "dom_match_count": 0,
+        "raw_matches_added": 0,
+        "body_contains_target": false,
+        "body_text_preview": "St John Bosco Community Calendar\nJune 2027\n Africa/Abidjan \nSearch\nAdd To Calendar\nMonth\nSelect Calendar Language\n English (US) \nCategories\nOrganizers\nTags\nVenues\nMonday\nMon\t\nTuesday\nTue\t\nWednesday\nWed\t\nThursday\nThu\t\nFriday\nFri\t\nSaturday\nSat\t\nSunday\nSun\n\t\n1\n\t\n2\n\t\n3\n\t\n4\n\t\n5\n\t\n6\n\n\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n7\n\t\n8\n\t\n9\n\t\n10\n\t\n11\n\t\n12\n\t\n13\n\n\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n14\n\t\n15\n\t\n16\n\t\n17\n\t\n18\n\t\n19\n\t\n20\n\n\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n21\n\t\n22\n\t\n23\n\t\n24\n\t\n25\n\t\n26\n\t\n27\n\n\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n28\n\t\n29\n\t\n30\n\t\t\t\t\n\t\t\t\t\t\t\nv4.2.22"
+      },
+      {
+        "month": "2027-07",
+        "url": "https://events.timely.fun/37c47p6q/month?start_date=2027-07-01&timely_id=timely-iframe-embed-0",
+        "json_payload_count": 4,
+        "response_urls": [
+          {
+            "url": "https://events.timely.fun/37c47p6q/month?start_date=2027-07-01&timely_id=timely-iframe-embed-0",
+            "status": 200,
+            "content_type": "text/html; charset=utf-8"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/runtime.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/node_modules_altcha_dist_altcha_js.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/polyfills.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/styles.css",
+            "status": 200,
+            "content_type": "text/css"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/main.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/Poppins-Regular.ttf",
+            "status": 200,
+            "content_type": "font/ttf"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/common.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/src_app_layouts_month_month_module_ts.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/timely.ttf?3cenot",
+            "status": 200,
+            "content_type": "font/ttf"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/assets/i18n/en-US.json",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6921v899452056za200zd899452056&_p=1788622416096&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=1890792628&_eu=AAAAAGA&are=1&cid=1885333749.1788622416&ec_mode=a&frm=0&pscdl=noapi&rcb=9&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=6.17.0&uaw=0&ul=en-us%40posix&gaf=2&_s=1&tag_exp=115616985~115938466~115938469~118897920~118897930~120213116~120385423~120469145~120469153&sid=1788622416&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-07-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&epn.calendar_id=54716732&ep.event_category=general&tfd=663",
+            "status": 204,
+            "content_type": "text/plain"
+          },
+          {
+            "url": "https://events.timely.fun/api/calendars/54716732/filters/custom",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://events.timely.fun/api/calendars/54716732/events?group_by_date=1&timezone=Africa/Abidjan&view=month&start_date_utc=1814400000&end_date_utc=1817078399&per_page=1000&page=1",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://events.timely.fun/api/calendars/54716732/events?group_by_date=1&timezone=Africa/Abidjan&view=month&start_date_utc=1814400000&end_date_utc=1817078399&per_page=1000&page=1",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6921v899452056za200zd899452056&_p=1788622416096&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=1890792628&_eu=AAAAAGQ&are=1&cid=1885333749.1788622416&frm=0&pscdl=noapi&rcb=9&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=6.17.0&uaw=0&ul=en-us%40posix&gaf=2&tag_exp=115616985~115938466~115938469~118897920~118897930~120213116~120385423~120469145~120469153&sid=1788622416&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-07-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&_s=2&tfd=5668",
+            "status": 204,
+            "content_type": "text/plain"
+          }
+        ],
+        "event_link_count": 0,
+        "dom_match_count": 0,
+        "raw_matches_added": 0,
+        "body_contains_target": false,
+        "body_text_preview": "St John Bosco Community Calendar\nJuly 2027\n Africa/Abidjan \nSearch\nAdd To Calendar\nMonth\nSelect Calendar Language\n English (US) \nCategories\nOrganizers\nTags\nVenues\nMonday\nMon\t\nTuesday\nTue\t\nWednesday\nWed\t\nThursday\nThu\t\nFriday\nFri\t\nSaturday\nSat\t\nSunday\nSun\n\t\t\t\n1\n\t\n2\n\t\n3\n\t\n4\n\n\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n5\n\t\n6\n\t\n7\n\t\n8\n\t\n9\n\t\n10\n\t\n11\n\n\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n12\n\t\n13\n\t\n14\n\t\n15\n\t\n16\n\t\n17\n\t\n18\n\n\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n19\n\t\n20\n\t\n21\n\t\n22\n\t\n23\n\t\n24\n\t\n25\n\n\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n26\n\t\n27\n\t\n28\n\t\n29\n\t\n30\n\t\n31\n\t\n\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\nv4.2.22"
+      },
+      {
+        "month": "2027-08",
+        "url": "https://events.timely.fun/37c47p6q/month?start_date=2027-08-01&timely_id=timely-iframe-embed-0",
+        "json_payload_count": 4,
+        "response_urls": [
+          {
+            "url": "https://events.timely.fun/37c47p6q/month?start_date=2027-08-01&timely_id=timely-iframe-embed-0",
+            "status": 200,
+            "content_type": "text/html; charset=utf-8"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/runtime.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/node_modules_altcha_dist_altcha_js.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/polyfills.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/main.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/styles.css",
+            "status": 200,
+            "content_type": "text/css"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/Poppins-Regular.ttf",
+            "status": 200,
+            "content_type": "font/ttf"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/common.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/src_app_layouts_month_month_module_ts.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/timely.ttf?3cenot",
+            "status": 200,
+            "content_type": "font/ttf"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/assets/i18n/en-US.json",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6921v899452056za200zd899452056&_p=1788622424889&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=1069971817&_eu=AAAAAGA&are=1&cid=1555946409.1788622425&ec_mode=a&frm=0&pscdl=noapi&rcb=17&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=6.17.0&uaw=0&ul=en-us%40posix&gaf=2&_s=1&tag_exp=115938466~115938469~118897920~118897930~120213116~120385422~120469145~120469153&sid=1788622425&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-08-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&epn.calendar_id=54716732&ep.event_category=general&tfd=772",
+            "status": 204,
+            "content_type": "text/plain"
+          },
+          {
+            "url": "https://events.timely.fun/api/calendars/54716732/events?group_by_date=1&timezone=Africa/Abidjan&view=month&start_date_utc=1817078400&end_date_utc=1819756799&per_page=1000&page=1",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://events.timely.fun/api/calendars/54716732/events?group_by_date=1&timezone=Africa/Abidjan&view=month&start_date_utc=1817078400&end_date_utc=1819756799&per_page=1000&page=1",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://events.timely.fun/api/calendars/54716732/filters/custom",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6921v899452056za200zd899452056&_p=1788622424889&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=1069971817&_eu=AAAAAGQ&are=1&cid=1555946409.1788622425&frm=0&pscdl=noapi&rcb=17&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=6.17.0&uaw=0&ul=en-us%40posix&gaf=2&tag_exp=115938466~115938469~118897920~118897930~120213116~120385422~120469145~120469153&sid=1788622425&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-08-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&_s=2&tfd=5777",
+            "status": 204,
+            "content_type": "text/plain"
+          }
+        ],
+        "event_link_count": 0,
+        "dom_match_count": 0,
+        "raw_matches_added": 0,
+        "body_contains_target": false,
+        "body_text_preview": "St John Bosco Community Calendar\nAugust 2027\n Africa/Abidjan \nSearch\nAdd To Calendar\nMonth\nSelect Calendar Language\n English (US) \nCategories\nOrganizers\nTags\nVenues\nMonday\nMon\t\nTuesday\nTue\t\nWednesday\nWed\t\nThursday\nThu\t\nFriday\nFri\t\nSaturday\nSat\t\nSunday\nSun\n\t\t\t\t\t\t\n1\n\n\t\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Sunday Evening Eucharist\n\n\n2\n\t\n3\n\t\n4\n\t\n5\n\t\n6\n\t\n7\n\t\n8\n\n\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n9\n\t\n10\n\t\n11\n\t\n12\n\t\n13\n\t\n14\n\t\n15\n\n\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n16\n\t\n17\n\t\n18\n\t\n19\n\t\n20\n\t\n21\n\t\n22\n\n\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n23\n\t\n24\n\t\n25\n\t\n26\n\t\n27\n\t\n28\n\t\n29\n\n\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n30\n\t\n31\n\t\t\t\t\t\n\t\t\t\t\t\t\nv4.2.22"
+      },
+      {
+        "month": "2027-09",
+        "url": "https://events.timely.fun/37c47p6q/month?start_date=2027-09-01&timely_id=timely-iframe-embed-0",
+        "json_payload_count": 4,
+        "response_urls": [
+          {
+            "url": "https://events.timely.fun/37c47p6q/month?start_date=2027-09-01&timely_id=timely-iframe-embed-0",
+            "status": 200,
+            "content_type": "text/html; charset=utf-8"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/runtime.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/node_modules_altcha_dist_altcha_js.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/polyfills.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/styles.css",
+            "status": 200,
+            "content_type": "text/css"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/main.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/Poppins-Regular.ttf",
+            "status": 200,
+            "content_type": "font/ttf"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/common.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/src_app_layouts_month_month_module_ts.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/timely.ttf?3cenot",
+            "status": 200,
+            "content_type": "font/ttf"
+          },
+          {
+            "url": "https://events.timely.fun/4.2.22/assets/i18n/en-US.json",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6921v899452056za200zd899452056&_p=1788622433880&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=1739409267&_eu=AAAAAGA&are=1&cid=413822820.1788622434&ec_mode=a&frm=0&pscdl=noapi&rcb=18&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=6.17.0&uaw=0&ul=en-us%40posix&gaf=2&_s=1&tag_exp=115938466~115938469~118897920~118897930~120213116~120385423~120469145~120469153~120474863&sid=1788622434&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-09-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&epn.calendar_id=54716732&ep.event_category=general&tfd=973",
+            "status": 204,
+            "content_type": "text/plain"
+          },
+          {
+            "url": "https://events.timely.fun/api/calendars/54716732/filters/custom",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://events.timely.fun/api/calendars/54716732/events?group_by_date=1&timezone=Africa/Abidjan&view=month&start_date_utc=1819756800&end_date_utc=1822348799&per_page=1000&page=1",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://events.timely.fun/api/calendars/54716732/events?group_by_date=1&timezone=Africa/Abidjan&view=month&start_date_utc=1819756800&end_date_utc=1822348799&per_page=1000&page=1",
+            "status": 200,
+            "content_type": "application/json"
+          },
+          {
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6921v899452056za200zd899452056&_p=1788622433880&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=1739409267&_eu=AAAAAGQ&are=1&cid=413822820.1788622434&frm=0&pscdl=noapi&rcb=18&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=6.17.0&uaw=0&ul=en-us%40posix&gaf=2&tag_exp=115938466~115938469~118897920~118897930~120213116~120385423~120469145~120469153~120474863&sid=1788622434&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-09-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&_s=2&tfd=5978",
+            "status": 204,
+            "content_type": "text/plain"
+          }
+        ],
+        "event_link_count": 0,
+        "dom_match_count": 0,
+        "raw_matches_added": 0,
+        "body_contains_target": false,
+        "body_text_preview": "St John Bosco Community Calendar\nSeptember 2027\n Africa/Abidjan \nSearch\nAdd To Calendar\nMonth\nSelect Calendar Language\n English (US) \nCategories\nOrganizers\nTags\nVenues\nMonday\nMon\t\nTuesday\nTue\t\nWednesday\nWed\t\nThursday\nThu\t\nFriday\nFri\t\nSaturday\nSat\t\nSunday\nSun\n\t\t\n1\n\t\n2\n\t\n3\n\t\n4\n\t\n5\n\n\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n6\n\t\n7\n\t\n8\n\t\n9\n\t\n10\n\t\n11\n\t\n12\n\n\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n13\n\t\n14\n\t\n15\n\t\n16\n\t\n17\n\t\n18\n\t\n19\n\n\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n20\n\t\n21\n\t\n22\n\t\n23\n\t\n24\n\t\n25\n\t\n26\n\n\t\t\t\t\t\n11:30pm (GMT) Sunday Eucharist\n10:00am (GMT) Vigil Mass\n\t\n10:00am (GMT) Sunday Evening Eucharist\n\n\n27\n\t\n28\n\t\n29\n\t\n30\n\t\t\t\n\t\t\t\t\t\t\nv4.2.22"
+      }
+    ],
+    "discovery": {
+      "school_page": "https://www.stjohnbosco.wa.edu.au/calendar/",
+      "iframe_sources": [
+        "https://events.timely.fun/37c47p6q/?timely_id=timely-iframe-embed-0",
+        "https://events.timely.fun/37c47p6q/?timely_id=timely-iframe-embed-0-event-popup"
+      ],
+      "timely_sources": [
+        "https://events.timely.fun/37c47p6q/?timely_id=timely-iframe-embed-0",
+        "https://events.timely.fun/37c47p6q/?timely_id=timely-iframe-embed-0-event-popup"
+      ],
+      "calendar_id": "37c47p6q",
+      "used_fallback_id": false
+    }
   },
   "manual_fixtures": {
     "file": "manual_fixtures.json",
