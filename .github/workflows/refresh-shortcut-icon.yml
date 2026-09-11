@@ -1,0 +1,43 @@
+name: Refresh Finn and Tate shortcut icon
+
+on:
+  push:
+    paths:
+      - '.github/workflows/refresh-shortcut-icon.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Update icon references
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('docs/index.html')
+          s = p.read_text(encoding='utf-8')
+          old = '''  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="apple-touch-icon.png">
+'''
+          new = '''  <link rel="apple-touch-icon" sizes="180x180" href="ft-sports-icon-20260911.png">
+  <link rel="apple-touch-icon-precomposed" sizes="180x180" href="ft-sports-icon-20260911.png">
+  <link rel="icon" type="image/png" sizes="180x180" href="ft-sports-icon-20260911.png">
+'''
+          if old not in s:
+              raise SystemExit('Existing shortcut icon links not found')
+          p.write_text(s.replace(old, new, 1), encoding='utf-8')
+          PY
+      - name: Commit
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/index.html
+          git commit -m "Force-refresh Finn and Tate shortcut icon"
+          git push
