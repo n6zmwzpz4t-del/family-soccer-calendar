@@ -1,0 +1,52 @@
+name: Add Finn and Tate sports shortcut icon
+
+on:
+  push:
+    paths:
+      - '.github/workflows/add-sports-icon.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update-icon:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Add shortcut icon links
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          page = Path('docs/index.html')
+          html = page.read_text(encoding='utf-8')
+
+          if 'rel="apple-touch-icon"' not in html:
+              marker = '  <meta name="theme-color" content="#0a1635">\n'
+              links = (
+                  '  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">\n'
+                  '  <link rel="icon" type="image/png" href="apple-touch-icon.png">\n'
+                  '  <meta name="apple-mobile-web-app-title" content="Finn & Tate Sports">\n'
+              )
+              if marker not in html:
+                  raise SystemExit('Could not find theme-color marker in docs/index.html')
+              page.write_text(html.replace(marker, marker + links, 1), encoding='utf-8')
+          PY
+
+      - name: Commit update
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/index.html
+          git commit -m "Use sports icon for Finn and Tate website shortcut"
+          git push
