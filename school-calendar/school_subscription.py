@@ -47,6 +47,25 @@ def plain(value):
     return BeautifulSoup(str(value or ''), 'html.parser').get_text(' ', strip=True)
 
 
+def display_title(title):
+    # Timely sometimes publishes its event titles in capitals. Calendar apps
+    # control the actual font, but the subscription controls title casing.
+    if not title.isupper():
+        return title
+    small = {'and', 'at', 'by', 'for', 'from', 'in', 'of', 'on', 'the', 'to', 'with'}
+    acronyms = {'ACC', 'ATAR', 'ANZAC', 'NAPLAN', 'OLNA', 'SJBC', 'WA', 'WACE', 'SEAS', 'STEM', 'PP'}
+    words = title.title()
+    def case_word(match):
+        word = match.group(0)
+        upper = word.upper()
+        if upper in acronyms:
+            return upper
+        if word.lower() in small and match.start() != 0:
+            return word.lower()
+        return word
+    return re.sub(r'\b[A-Za-z]+\b', case_word, words)
+
+
 def years_in(text):
     result = set()
     for match in YEAR_GROUP.finditer(text):
@@ -161,7 +180,7 @@ def normalise_feed(raw, config, now):
         for key in ('UID', 'DTSTART', 'DTEND', 'DURATION', 'RRULE', 'RDATE', 'EXDATE', 'RECURRENCE-ID', 'STATUS', 'LOCATION', 'URL'):
             if key in original:
                 event[key] = copy.deepcopy(original[key])
-        event.add('summary', ('Student-free day' if closed else title) + ' — ' + ' & '.join(names))
+        event.add('summary', ('Student-free day' if closed else display_title(title)) + ' — ' + ' & '.join(names))
         event.add('description', 'Applies to: '+ ' and '.join(names) + '.\n' +
                   ('No school for students.' if closed else clean_description(original.get('DESCRIPTION'))))
         output.append(event)
