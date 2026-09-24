@@ -1,6 +1,11 @@
 name: Refresh School Subscription Calendar
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'school-calendar/**'
+      - '.github/workflows/school-calendar.yml'
 permissions:
   contents: write
   pages: write
