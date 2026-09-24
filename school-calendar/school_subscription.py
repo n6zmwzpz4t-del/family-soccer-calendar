@@ -18,6 +18,7 @@ PERTH = ZoneInfo('Australia/Perth')
 FEED_URL = 'https://timelyapp.time.ly/api/calendars/54716732/export?format=ics&no_html=true'
 TERM_URL = 'https://www.stjohnbosco.wa.edu.au/term-dates-and-day-structures/'
 RELIGION = re.compile(r'\b(mass|eucharist\w*|confirmation|communion|reconciliation|liturgy|liturgies|liturgical|prayer|rosary|sacrament\w*|pentecost|lent|advent|ash wednesday|holy\s+\w+|catholic|religious education|rea|cpaf|archbishop|lifelink|vinnies|jubilee cross|ministry|retreat|loving for life|christmas|nativity|baptism|blessing|ascension|assumption|all saints|all souls|st[ .]*valentine.?s day|feast day|stations of the cross|sacramental)\b', re.I)
+FRIENDS_MEETING = re.compile(r'\b(?:friends of st john bosco|fsjb)\b.*\bmeetings?\b|\bmeetings?\b.*\b(?:friends of st john bosco|fsjb)\b', re.I)
 CLOSURE = re.compile(r'\b(student[ -]free|pupil[ -]free|staff development|professional development|teacher training)\b', re.I)
 YEAR_PREFIX = r'(?:years?|yrs?|y)\s*'
 YEAR_GROUP = re.compile(r'\b'+YEAR_PREFIX+r'(\d{1,2}(?:(?:\s*(?:-|–|—|to|&|and|,|/|\+)\s*)(?:'+YEAR_PREFIX+r')?\d{1,2})*)', re.I)
@@ -142,6 +143,9 @@ def normalise_feed(raw, config, now):
         if start.year > now.year+1:
             continue
         closed = bool(CLOSURE.search(title))
+        if FRIENDS_MEETING.search(title):
+            exclusions.append({'title': title, 'reason': 'Friends of St John Bosco meeting'})
+            continue
         if not closed and RELIGION.search(title+' '+tags_of(original)):
             exclusions.append({'title': title, 'reason': 'religious'})
             continue
