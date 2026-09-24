@@ -1,0 +1,58 @@
+name: Refresh School Subscription Calendar
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+  pages: write
+concurrency:
+  group: school-subscription-calendar
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+          cache: pip
+          cache-dependency-path: school-calendar/requirements.txt
+      - run: pip install -r school-calendar/requirements.txt
+      - name: Build school calendar from public sources
+        run: python school-calendar/school_subscription.py --config school-calendar/config.json --output docs/school.ics
+      - name: Publish only the school calendar
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/school.ics
+          if git diff --cached --quiet; then
+            echo 'School calendar unchanged.'
+          else
+            git commit -m 'Refresh public SJBC school calendar'
+            for attempt in 1 2 3; do
+              git pull --rebase origin main
+              if git push origin HEAD:main; then
+                break
+              fi
+              if [ "$attempt" = 3 ]; then exit 1; fi
+            done
+          fi
+      - name: Refresh the existing GitHub Pages publication
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api --method POST "repos/$GITHUB_REPOSITORY/pages/builds"
+      - name: Record source check
+        run: |
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          from pathlib import Path
+          r=json.loads(Path('docs/school.report.json').read_text())
+          print(f'Successfully checked both school sources at {r["generated_at"]}; {r["event_count"]} calendar entries.')
+          print('Subscription: https://n6zmwzpz4t-del.github.io/family-soccer-calendar/school.ics')
+          PY
