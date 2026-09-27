@@ -1,0 +1,27 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.adamwyatt.subtitlefinder'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId "com.adamwyatt.subtitlefinder"
+        minSdk 22
+        targetSdk 30
+        versionCode 1
+        versionName "1.0.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
