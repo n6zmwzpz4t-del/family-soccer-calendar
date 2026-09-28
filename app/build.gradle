@@ -6,16 +6,29 @@ android {
     namespace 'com.adamwyatt.subtitlefinder'
     compileSdk 35
 
+    signingConfigs {
+        stable {
+            storeFile file('../subtitlefinder.keystore')
+            storePassword 'subtitlefinder2026'
+            keyAlias 'subtitlefinder'
+            keyPassword 'subtitlefinder2026'
+        }
+    }
+
     defaultConfig {
         applicationId "com.adamwyatt.subtitlefinder"
         minSdk 22
         targetSdk 30
-        versionCode 2
-        versionName "1.1.0"
+        versionCode 3
+        versionName "1.2.0"
     }
 
     buildTypes {
+        debug {
+            signingConfig signingConfigs.stable
+        }
         release {
+            signingConfig signingConfigs.stable
             minifyEnabled false
         }
     }
