@@ -335,7 +335,7 @@ public class MainActivity extends Activity {
         int year = o.optInt("year", 0);
         int count = o.optInt("subtitles_count", -1);
         String type = firstNonBlank(o.optString("type", ""), "movie");
-        String imdb = o.optString("imdb_id", "");
+        String imdb = firstNonBlank(o.optString("imdb_id", ""), "");
         found.add(DisplayItem.forTitle(new TitleItem(sdId, name, year, count, type, imdb)));
     }
 
@@ -988,6 +988,16 @@ public class MainActivity extends Activity {
                 meta.append(" • Select to download");
                 secondary.setText(meta.toString());
             }
+
+            final DisplayItem clickItem = row;
+            box.setOnClickListener(v -> {
+                if (clickItem == null) return;
+                if (clickItem.title != null) {
+                    fetchSubtitlesForTitle(clickItem.title);
+                } else if (clickItem.subtitle != null) {
+                    confirmDownload(clickItem.subtitle);
+                }
+            });
 
             return box;
         }
