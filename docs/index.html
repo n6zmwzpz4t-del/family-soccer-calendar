@@ -1354,6 +1354,9 @@
             start,
             end,
             allDay,
+            timeWindow: decodeIcs(property(block, "X-TIME-WINDOW")),
+            notes: decodeIcs(property(block, "X-NOTES")),
+            leagueUrl: (description.match(/https:\/\/www\.theproperplayer\.com\/6-a-side-league\b/i) || [])[0] || "",
             sport,
             person,
             sourceType,
@@ -1381,7 +1384,7 @@
         .replace(/^⚽\s*/, "")
         .replace(/^🥎\s*/, "")
         .replace(/^🏫\s*/, "")
-        .replace(/\s*\|\s*(?:KO|Start)\s+\d{1,2}:\d{2}(?:am|pm)$/i, "")
+        .replace(/\s*\|\s*(?:KO|Start|Window from)\s+\d{1,2}:\d{2}(?:am|pm)$/i, "")
         .trim();
     }
 
@@ -1827,7 +1830,8 @@
         event.sport === "school_soccer" ? "🏫" : "⚽";
       const sport =
         event.sport === "softball" ? "Softball" :
-        event.sport === "school_soccer" ? "School Soccer" : "Club Soccer";
+        event.sport === "school_soccer" ? "School Soccer" :
+        event.leagueUrl ? "6-a-side Soccer" : "Club Soccer";
 
       return `
         <article class="fixture ${event.sport}">
@@ -1842,7 +1846,7 @@
             <h3>${escapeHtml(cleanSummary(event.summary))}</h3>
 
             <div class="meta">
-              ${event.allDay ? `<span>🕒 Time TBC</span>` : `<span>
+              ${event.timeWindow ? `<span>🕒 ${escapeHtml(event.timeWindow)}</span>` : event.allDay ? `<span>🕒 Time TBC</span>` : `<span>
                 🕒 ${escapeHtml(formatTime(event.start))}
                 ${event.end ? ` – ${escapeHtml(formatTime(event.end))}` : ""}
               </span>`}
@@ -1850,6 +1854,9 @@
               ${round ? `<span>🏆 ${escapeHtml(round)}</span>` : ""}
               ${weatherMarkup(event)}
             </div>
+
+            ${event.timeWindow && event.notes ? `<p>${escapeHtml(event.notes)}</p>` : ""}
+            ${event.leagueUrl ? `<div class="fixture-actions"><a class="text-link" href="${escapeHtml(event.leagueUrl)}" target="_blank" rel="noopener">League information</a></div>` : ""}
 
             ${
               event.squadiUrl
@@ -2106,7 +2113,7 @@
             <h3 class="next-title">${escapeHtml(cleanSummary(next.summary))}</h3>
             <div class="meta">
               <span>📅 ${escapeHtml(formatDate(next.start,true))}</span>
-              <span>🕒 ${next.allDay ? "Time TBC" : escapeHtml(formatTime(next.start))}</span>
+              <span>🕒 ${next.timeWindow ? escapeHtml(next.timeWindow) : next.allDay ? "Time TBC" : escapeHtml(formatTime(next.start))}</span>
               ${locationMarkup(next)}
               ${weatherMarkup(next)}
             </div>

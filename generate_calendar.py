@@ -5259,6 +5259,7 @@ def load_manual_fixtures(
                 "sport_icon": clean(item.get("sport_icon")) or "🏅",
                 "sport_name": clean(item.get("sport_name")),
                 "time_label": clean(item.get("time_label")) or "Start",
+                "time_window": clean(item.get("time_window")),
                 "display_title": clean(item.get("display_title")),
                 "all_day": item.get("all_day") is True,
                 "status": clean(item.get("status")).upper() or "CONFIRMED",
@@ -5526,7 +5527,7 @@ def build_calendar(
             round_text,
             result_text,
             notes,
-            ((("Open school calendar" if clean(fixture.get("source_type")) == "school_calendar" else "Open in Squadi") + ": " + source_url) if source_url else ""),
+            ((("Open school calendar" if clean(fixture.get("source_type")) == "school_calendar" else "Open in Squadi" if "registration.squadi.com/" in source_url else "Source") + ": " + source_url) if source_url else ""),
         ]
         description = "\n".join(filter(None, description_lines))
 
@@ -5578,6 +5579,12 @@ def build_calendar(
             "X-SOURCE-TYPE:" + escape_ics(clean(fixture.get("source_type"))),
             "X-ALL-DAY:" + ("TRUE" if all_day else "FALSE"),
         ]
+
+        if clean(fixture.get("time_window")):
+            event_lines.extend([
+                "X-TIME-WINDOW:" + escape_ics(clean(fixture["time_window"])),
+                "X-NOTES:" + escape_ics(notes),
+            ])
 
         if home_score and away_score:
             event_lines.extend(
