@@ -5251,6 +5251,7 @@ def load_manual_fixtures(
                 "field": normalise_location(clean(item.get("field"))),
                 "round": clean(item.get("round")),
                 "source_id": source_id,
+                "uid": clean(item.get("uid")),
                 "label": label,
                 "source_url": clean(item.get("source_url")),
                 "latitude": coordinates[0] if coordinates else None,
@@ -5494,7 +5495,7 @@ def build_calendar(
             f"{fixture['label']}|{fixture['source_id']}|{start.isoformat()}|"
             f"{fixture['home']}|{fixture['away']}"
         )
-        uid = (
+        uid = clean(fixture.get("uid")) or (
             hashlib.sha256(uid_seed.encode("utf-8")).hexdigest()[:24]
             + "@family-soccer-calendar"
         )
@@ -5581,10 +5582,12 @@ def build_calendar(
         ]
 
         if clean(fixture.get("time_window")):
-            event_lines.extend([
-                "X-TIME-WINDOW:" + escape_ics(clean(fixture["time_window"])),
-                "X-NOTES:" + escape_ics(notes),
-            ])
+            event_lines.append(
+                "X-TIME-WINDOW:" + escape_ics(clean(fixture["time_window"]))
+            )
+
+        if notes:
+            event_lines.append("X-NOTES:" + escape_ics(notes))
 
         if home_score and away_score:
             event_lines.extend(

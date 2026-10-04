@@ -474,6 +474,23 @@
       font-size: .88rem;
     }
 
+    .league-notice {
+      margin-bottom: 18px;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      background: var(--blue-soft);
+      font-size: .88rem;
+      line-height: 1.5;
+    }
+
+    .fixture-note {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: .84rem;
+      line-height: 1.55;
+    }
+
     .sport-switch,
     .content-switch {
       display: flex;
@@ -1356,7 +1373,7 @@
             allDay,
             timeWindow: decodeIcs(property(block, "X-TIME-WINDOW")),
             notes: decodeIcs(property(block, "X-NOTES")),
-            leagueUrl: (description.match(/https:\/\/www\.theproperplayer\.com\/6-a-side-league\b/i) || [])[0] || "",
+            leagueUrl: (description.match(/https:\/\/(?:tpp-6aside\.netlify\.app\/?|www\.theproperplayer\.com\/6-a-side-league\b)/i) || [])[0] || "",
             sport,
             person,
             sourceType,
@@ -1855,8 +1872,8 @@
               ${weatherMarkup(event)}
             </div>
 
-            ${event.timeWindow && event.notes ? `<p>${escapeHtml(event.notes)}</p>` : ""}
-            ${event.leagueUrl ? `<div class="fixture-actions"><a class="text-link" href="${escapeHtml(event.leagueUrl)}" target="_blank" rel="noopener">League information</a></div>` : ""}
+            ${(event.timeWindow || event.leagueUrl) && event.notes ? `<p class="fixture-note">${escapeHtml(event.notes)}</p>` : ""}
+            ${event.leagueUrl ? `<div class="fixture-actions"><a class="text-link" href="${escapeHtml(event.leagueUrl)}" target="_blank" rel="noopener">Live fixtures, results &amp; ladder</a></div>` : ""}
 
             ${
               event.squadiUrl
@@ -2188,8 +2205,14 @@
           )
           .sort((a,b) => a.start - b.start);
 
+        const byeNotice = person === "finn" && sport === "soccer" &&
+          now < new Date("2026-10-13T00:00:00+08:00") &&
+          fixtures.some(event => event.leagueUrl)
+            ? `<div class="league-notice">⚽ <strong>U14 The Army — Round 1 bye</strong><br>No game on Monday 12 October. Finn's first match is Monday 19 October, 6:30pm on Pitch 4.</div>`
+            : "";
+
         return fixtures.length
-          ? `<div class="fixtures">${fixtures.map(fixtureCard).join("")}</div>`
+          ? `${byeNotice}<div class="fixtures">${fixtures.map(fixtureCard).join("")}</div>`
           : `
             <div class="empty">
               <span class="icon">📅</span>
