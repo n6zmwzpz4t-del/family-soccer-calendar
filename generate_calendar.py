@@ -12,6 +12,7 @@ from zoneinfo import ZoneInfo
 
 from dateutil import parser as dateparser
 from playwright.async_api import async_playwright
+from teeball import refresh_teeball_fixtures
 
 
 ROOT = Path(__file__).resolve().parent
@@ -5177,7 +5178,7 @@ async def scrape_school_soccer(
 def load_manual_fixtures(
     timezone: ZoneInfo,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
-    """Load manually maintained fixtures, such as Tate's softball games."""
+    """Load manually maintained fixtures and dated placeholders."""
 
     if not MANUAL_FIXTURES.exists():
         return [], {
@@ -5697,15 +5698,10 @@ async def main() -> None:
             soccer_ladders
         )
 
-        try:
-            ddmsa_softball = await scrape_ddmsa_softball(browser)
-            write_ddmsa_softball_data(ddmsa_softball)
-        except Exception as exc:
-            # Do not allow a temporary DDMSA outage to break the soccer
-            # calendar or erase the last successfully published softball data.
-            print(f"DDMSA warning: {exc}")
-
         await browser.close()
+
+    teeball_fixtures, teeball_debug = refresh_teeball_fixtures(timezone)
+    all_fixtures.extend(teeball_fixtures)
 
     manual_fixtures, manual_debug = load_manual_fixtures(timezone)
     (
@@ -5748,6 +5744,7 @@ async def main() -> None:
                 ),
                 "teams": debug_teams,
                 "school_soccer": school_debug,
+                "teeball": teeball_debug,
                 "manual_fixtures": manual_debug,
                 "manual_fixture_count": len(published_manual_fixtures),
                 "fixtures": [

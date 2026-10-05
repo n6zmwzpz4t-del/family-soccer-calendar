@@ -477,6 +477,7 @@
                 <option value="club_soccer">⚽ Club Soccer</option>
                 <option value="school_soccer">🏫 School Soccer</option>
                 <option value="softball">🥎 Softball</option>
+                <option value="teeball">🥎 TeeBall</option>
                 <option value="other">🏅 Other</option>
               </select>
             </label>
@@ -668,6 +669,12 @@
           time_label: "Start",
           duration: 90
         },
+        teeball: {
+          sport_icon: "🥎",
+          sport_name: "TeeBall",
+          time_label: "Start",
+          duration: 60
+        },
         other: {
           sport_icon: "🏅",
           sport_name: "Sport",
@@ -684,6 +691,7 @@
 
       if (name.includes("school soccer")) return "school_soccer";
       if (name.includes("softball")) return "softball";
+      if (name.includes("teeball") || name.includes("tee-ball")) return "teeball";
       if (name.includes("soccer")) return "club_soccer";
       return "other";
     }

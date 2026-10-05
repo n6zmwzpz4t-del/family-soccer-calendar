@@ -9,7 +9,7 @@ on:
       - "docs/school.ics"
       - "docs/fixtures.ics"
       - "docs/debug.json"
-      - "docs/softball.json"
+      - "docs/teeball.json"
       - "docs/soccer_ladders.json"
 
 permissions:
@@ -62,10 +62,10 @@ jobs:
               touch /tmp/fixtures-before.ics
             fi
 
-            if [ -f docs/softball.json ]; then
-              cp docs/softball.json /tmp/softball-before.json
+            if [ -f docs/teeball.json ]; then
+              cp docs/teeball.json /tmp/teeball-before.json
             else
-              printf '{}\n' > /tmp/softball-before.json
+              printf '{}\n' > /tmp/teeball-before.json
             fi
 
             if [ -f docs/soccer_ladders.json ]; then
@@ -74,7 +74,7 @@ jobs:
               printf '{}\n' > /tmp/soccer-ladders-before.json
             fi
 
-            # Check Squadi and DDMSA, then regenerate local published data.
+            # Check Squadi and Thornlie TeeBall, then regenerate local published data.
             python generate_calendar.py
 
             # DTSTAMP changes every run and is not a meaningful fixture change.
@@ -87,7 +87,7 @@ jobs:
               > /tmp/fixtures-after-compare.ics
 
             calendar_changed=0
-            softball_changed=0
+            teeball_changed=0
             soccer_ladders_changed=0
 
             if ! cmp -s \
@@ -97,12 +97,12 @@ jobs:
               calendar_changed=1
             fi
 
-            if [ -f docs/softball.json ]; then
+            if [ -f docs/teeball.json ]; then
               if ! cmp -s \
-                /tmp/softball-before.json \
-                docs/softball.json
+                /tmp/teeball-before.json \
+                docs/teeball.json
               then
-                softball_changed=1
+                teeball_changed=1
               fi
             fi
 
@@ -116,7 +116,7 @@ jobs:
             fi
 
             if [ "$calendar_changed" -eq 0 ] \
-              && [ "$softball_changed" -eq 0 ] \
+              && [ "$teeball_changed" -eq 0 ] \
               && [ "$soccer_ladders_changed" -eq 0 ]
             then
               echo "No meaningful sports-data changes detected."
@@ -124,10 +124,10 @@ jobs:
 
               git restore docs/fixtures.ics docs/debug.json
 
-              if git ls-files --error-unmatch docs/softball.json >/dev/null 2>&1; then
-                git restore docs/softball.json
+              if git ls-files --error-unmatch docs/teeball.json >/dev/null 2>&1; then
+                git restore docs/teeball.json
               else
-                rm -f docs/softball.json
+                rm -f docs/teeball.json
               fi
 
               if git ls-files --error-unmatch docs/soccer_ladders.json >/dev/null 2>&1; then
@@ -141,13 +141,13 @@ jobs:
 
             echo "Sports-data changes detected."
             echo "Calendar changed: $calendar_changed"
-            echo "DDMSA softball changed: $softball_changed"
+            echo "TeeBall changed: $teeball_changed"
             echo "Squadi ladders changed: $soccer_ladders_changed"
 
             git add docs/fixtures.ics docs/debug.json
 
-            if [ -f docs/softball.json ]; then
-              git add docs/softball.json
+            if [ -f docs/teeball.json ]; then
+              git add docs/teeball.json
             fi
 
             if [ -f docs/soccer_ladders.json ]; then
