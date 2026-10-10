@@ -1154,6 +1154,7 @@
     const ICS_URL = "fixtures.ics";
     const SOFTBALL_URL = "teeball.json";
     const SOCCER_LADDERS_URL = "soccer_ladders.json";
+    const SIXASIDE_URL = "sixaside.json";
 
     const WEATHER_DAYS = 7;
     const WEATHER_CACHE_MINUTES = 30;
@@ -1175,8 +1176,8 @@
     const state = {
       page: "upcoming",
       personSport: {
-        finn: "soccer",
-        tate: "soccer"
+        finn: "sixaside",
+        tate: "sixaside"
       },
       personView: {
         finn: "fixtures",
@@ -1185,6 +1186,7 @@
       fixtures: [],
       teeball: null,
       ladders: null,
+      sixaside: null,
       homeWeather: null,
       homeWeatherStatus: "",
       loadedAt: null
@@ -1358,6 +1360,8 @@
               : sportProperty.includes("teeball") || sportProperty.includes("tee-ball") ||
                 sourceType === "thornlie_teeball"
               ? "teeball"
+              : sportProperty.includes("6-a-side") || sourceType === "proper_player_sixaside"
+              ? "sixaside"
               : "soccer";
 
           const personProperty = decodeIcs(property(block, "X-PERSON")).toLowerCase();
@@ -1916,6 +1920,9 @@
               ${event.squadiUrl
                 ? ` • <a href="${escapeHtml(event.squadiUrl)}" target="_blank" rel="noopener">Squadi</a>`
                 : ""}
+              ${event.leagueUrl
+                ? ` • <a href="${escapeHtml(event.leagueUrl)}" target="_blank" rel="noopener">The Proper Player</a>`
+                : ""}
             </div>
           </div>
 
@@ -1997,6 +2004,80 @@
         </div>`;
     }
 
+    function sixAsidePlayer(person) {
+      return state.sixaside?.players?.[person] || null;
+    }
+
+    function sixAsideIntro(person) {
+      const player = sixAsidePlayer(person);
+      if (!player) return "";
+      const draw = state.sixaside.draw;
+      const cached = state.sixaside.draw_status === "cached" || state.sixaside.results_status === "cached";
+      const byes = (draw.byes || []).filter(b => b.div === player.division && b.team === player.team);
+      const byeText = byes.map(bye => {
+        const date = draw.dates.find(d => String(d.round) === String(bye.round))?.date;
+        if (!date) return "";
+        const [day, month, year] = date.split("/");
+        const start = new Date(`${year}-${month}-${day}T00:00:00+08:00`);
+        if (new Date(start.getTime() + 86400000) < new Date()) return "";
+        return `<br>Round ${escapeHtml(bye.round)} bye — no game on ${escapeHtml(formatDate(start, true))}.`;
+      }).join("");
+      return `<div class="league-notice">
+        <strong>${escapeHtml(player.division)} ${escapeHtml(player.team)}</strong><br>
+        Fixtures, results and ladder update automatically from
+        <a href="${escapeHtml(state.sixaside.source_url)}" target="_blank" rel="noopener">The Proper Player</a>.
+        ${draw.generated ? `<br>Official draw updated ${escapeHtml(draw.generated)}.` : ""}
+        ${cached ? "<br>The league feed is temporarily unavailable. Showing the last published data." : ""}
+        ${state.personView[person] === "fixtures" ? byeText : ""}
+      </div>`;
+    }
+
+    function sixAsideResultsMarkup(person) {
+      const player = sixAsidePlayer(person);
+      if (!player) return `<div class="empty">6-a-side results are temporarily unavailable.</div>`;
+      const scores = state.sixaside.results || {};
+      const games = state.sixaside.draw.games
+        .filter(g => g.div === player.division && scores[g.id] != null)
+        .sort((a, b) => new Date(b.start) - new Date(a.start));
+      if (!games.length) {
+        return `<div class="empty"><span class="icon">⚽</span>No ${escapeHtml(player.division)} results have been published yet. Scores will appear here when the league posts them.</div>`;
+      }
+      const cards = games.map(game => {
+        const score = scores[game.id];
+        return soccerResultCard({
+          summary: `${game.home} vs ${game.away}`,
+          start: new Date(game.start), description: `Round ${game.round}`,
+          homeScore: String(score.h), awayScore: String(score.a),
+          leagueUrl: state.sixaside.source_url
+        });
+      }).join("");
+      return `<div class="section-title">${escapeHtml(player.division)} division results</div><div class="result-list">${cards}</div>`;
+    }
+
+    function sixAsideLadderMarkup(person) {
+      const player = sixAsidePlayer(person);
+      const ladder = (state.sixaside?.ladders || []).find(l => l.division === player?.division);
+      if (!ladder?.rows?.length) return `<div class="empty">The 6-a-side ladder is temporarily unavailable.</div>`;
+      const rows = ladder.rows.map(row => `<tr class="${row.team === player.team ? "highlight-soccer" : ""}">
+        <td>${escapeHtml(row.position)}</td><td>${escapeHtml(row.team)}</td>
+        <td>${row.played}</td><td>${row.won}</td><td>${row.drawn}</td><td>${row.lost}</td>
+        <td>${row.for}</td><td>${row.against}</td><td>${row.difference}</td><td>${row.points}</td>
+      </tr>`).join("");
+      const position = ladder.rows.find(row => row.team === player.team)?.position;
+      return `<div class="ladder-card">
+        <div class="ladder-head"><h3>⚽ ${escapeHtml(ladder.label)} — 6-a-side</h3>
+          ${ladder.played && position ? `<span class="position-pill">#${position}</span>` : ""}
+        </div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Pos</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>For</th><th>Ag</th><th>Diff</th><th>Pts</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table></div>
+        <p class="fixture-note">${ladder.played ? `${ladder.played} of ${ladder.total} games played.` : "No results yet; all teams have zero points. Positions are alphabetical until games are played."}
+          3 points for a win, 1 for a draw; ties are settled by goal difference, then goals scored. The top two play the grand final in Week 10.</p>
+        <div class="source">Source: <a href="${escapeHtml(state.sixaside.source_url)}" target="_blank" rel="noopener">The Proper Player</a></div>
+      </div>`;
+    }
+
     function pageHeading(title, subtitle) {
       return `
         <div class="page-head">
@@ -2062,6 +2143,9 @@
             <button data-sport="soccer" class="${current === "soccer" ? "active" : ""}">
               ⚽ Club Soccer
             </button>
+            <button data-sport="sixaside" class="${current === "sixaside" ? "active" : ""}">
+              ⚽ 6-a-side
+            </button>
             <button data-sport="school_soccer" class="${current === "school_soccer" ? "active" : ""}">
               🏫 School Soccer
             </button>
@@ -2071,7 +2155,10 @@
       return `
         <div class="sport-switch">
           <button data-sport="soccer" class="${current === "soccer" ? "active" : ""}">
-            ⚽ Soccer
+            ⚽ Club Soccer
+          </button>
+          <button data-sport="sixaside" class="${current === "sixaside" ? "active" : ""}">
+            ⚽ 6-a-side
           </button>
           <button data-sport="teeball" class="teeball ${current === "teeball" ? "active" : ""}">
             🥎 TeeBall
@@ -2110,6 +2197,14 @@
       const view = state.personView[person];
       const now = new Date();
 
+      const leagueIntro = sport === "sixaside" ? sixAsideIntro(person) : "";
+      if (sport === "sixaside" && view === "results") {
+        return leagueIntro + sixAsideResultsMarkup(person);
+      }
+      if (sport === "sixaside" && view === "ladder") {
+        return leagueIntro + sixAsideLadderMarkup(person);
+      }
+
       if (view === "fixtures") {
         const fixtures = state.fixtures
           .filter(
@@ -2120,18 +2215,13 @@
           )
           .sort((a,b) => a.start - b.start);
 
-        const byeNotice = person === "finn" && sport === "soccer" &&
-          now < new Date("2026-10-13T00:00:00+08:00") &&
-          fixtures.some(event => event.leagueUrl)
-            ? `<div class="league-notice">⚽ <strong>U14 The Army — Round 1 bye</strong><br>No game on Monday 12 October. Finn's first match is Monday 19 October, 6:30pm on Pitch 4.</div>`
-            : "";
-
         return fixtures.length
-          ? `${byeNotice}<div class="fixtures">${fixtures.map(fixtureCard).join("")}</div>`
+          ? `${leagueIntro}<div class="fixtures">${fixtures.map(fixtureCard).join("")}</div>`
           : `
+            ${leagueIntro}
             <div class="empty">
               <span class="icon">📅</span>
-              No future ${sport === "teeball" ? "TeeBall" : escapeHtml(sport)} fixtures are currently listed.
+              No future ${sport === "teeball" ? "TeeBall" : sport === "sixaside" ? "6-a-side" : sport === "school_soccer" ? "school soccer" : "club soccer"} fixtures are currently listed.
             </div>`;
       }
 
@@ -2187,7 +2277,9 @@
       const sport = state.personSport[person];
 
       const subtitle =
-        person === "finn" && sport === "school_soccer"
+        sport === "sixaside"
+          ? `6-a-side Soccer — ${sixAsidePlayer(person)?.division || (person === "finn" ? "U14" : "U12")} ${sixAsidePlayer(person)?.team || (person === "finn" ? "The Army" : "The Academy")}`
+          : person === "finn" && sport === "school_soccer"
           ? "School Soccer — St John Bosco College fixtures"
           : person === "finn"
           ? "Club Soccer — fixtures, results and ladder"
@@ -2263,11 +2355,12 @@
       const cacheKey = Date.now();
 
       try {
-        const [icsResponse, teeballResponse, ladderResponse] =
+        const [icsResponse, teeballResponse, ladderResponse, sixAsideResponse] =
           await Promise.all([
             fetch(`${ICS_URL}?v=${cacheKey}`, { cache: "no-store" }),
             fetch(`${SOFTBALL_URL}?v=${cacheKey}`, { cache: "no-store" }),
-            fetch(`${SOCCER_LADDERS_URL}?v=${cacheKey}`, { cache: "no-store" })
+            fetch(`${SOCCER_LADDERS_URL}?v=${cacheKey}`, { cache: "no-store" }),
+            fetch(`${SIXASIDE_URL}?v=${cacheKey}`, { cache: "no-store" }).catch(() => ({ ok: false }))
           ]);
 
         if (!icsResponse.ok) {
@@ -2282,6 +2375,10 @@
 
         state.ladders = ladderResponse.ok
           ? await ladderResponse.json()
+          : null;
+
+        state.sixaside = sixAsideResponse.ok
+          ? await sixAsideResponse.json().catch(() => null)
           : null;
 
         state.loadedAt = new Date();

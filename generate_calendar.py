@@ -13,6 +13,7 @@ from zoneinfo import ZoneInfo
 from dateutil import parser as dateparser
 from playwright.async_api import async_playwright
 from teeball import refresh_teeball_fixtures
+from sixaside import refresh_sixaside_fixtures
 
 
 ROOT = Path(__file__).resolve().parent
@@ -5703,6 +5704,9 @@ async def main() -> None:
     teeball_fixtures, teeball_debug = refresh_teeball_fixtures(timezone)
     all_fixtures.extend(teeball_fixtures)
 
+    sixaside_fixtures, sixaside_debug = refresh_sixaside_fixtures(timezone)
+    all_fixtures.extend(sixaside_fixtures)
+
     manual_fixtures, manual_debug = load_manual_fixtures(timezone)
     (
         published_manual_fixtures,
@@ -5745,6 +5749,7 @@ async def main() -> None:
                 "teams": debug_teams,
                 "school_soccer": school_debug,
                 "teeball": teeball_debug,
+                "sixaside": sixaside_debug,
                 "manual_fixtures": manual_debug,
                 "manual_fixture_count": len(published_manual_fixtures),
                 "fixtures": [
