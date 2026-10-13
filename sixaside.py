@@ -200,15 +200,13 @@ def calendar_records(draw: dict[str, Any], results: dict[str, Any], previous: di
     assigned = set()
     for player in PLAYERS.values():
         label, division, team = player["label"], player["division"], player["team"]
-        kit = next(t["colour"] for t in draw["teams"][division] if t["name"] == team)
         games = [g for g in draw["games"] if g["div"] == division and team in (g["home"], g["away"])]
         if not games:
             raise ValueError(f"The online draw has no games for {team}")
         incoming = []
         for game in games:
             score = results.get(game["id"], {})
-            notes = (f"{division} — {team}. Kit: {kit}; shin pads required. "
-                     "2 × 18-minute halves; calendar reserves 45 minutes including half-time.")
+            notes = ""
             if game.get("bonus"):
                 notes += " Bonus game."
             if game.get("changed"):
@@ -228,7 +226,7 @@ def calendar_records(draw: dict[str, Any], results: dict[str, Any], previous: di
                 "time_label": "KO", "all_day": not timed, "duration_minutes": 45,
                 "reminder_minutes": 90 if timed else 0,
                 "status": "CANCELLED" if cancelled else "CONFIRMED" if timed else "TENTATIVE",
-                "notes": notes, "display_title": f"{division} {game['home']} vs {game['away']} — 6-a-side",
+                "notes": notes.strip(), "display_title": f"{division} {game['home']} vs {game['away']} — 6-a-side",
                 "home_score": str(score["h"]) if score else "",
                 "away_score": str(score["a"]) if score else "",
             })
@@ -242,8 +240,7 @@ def calendar_records(draw: dict[str, Any], results: dict[str, Any], previous: di
                 "time_label": "Window from", "time_window": "5pm–8pm · finals kick-off TBC",
                 "duration_minutes": 180, "reminder_minutes": 90, "all_day": False,
                 "status": "TENTATIVE", "display_title": f"{division} {team} — 6-a-side finals / placing — Placeholder",
-                "notes": (f"Finals and placing games on Monday 14 December. Draw published after Round 9. "
-                          f"{division} {team}. Kit: {kit}; shin pads required. "
+                "notes": ("Finals and placing games on Monday 14 December. Draw published after Round 9. "
                           "5pm–8pm is a provisional window; kick-off, opponent and pitch TBC."),
                 "home_score": "", "away_score": "",
             })

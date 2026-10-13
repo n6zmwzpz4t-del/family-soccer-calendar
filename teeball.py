@@ -78,11 +78,7 @@ def parse_teeball_fixtures(
             if ground.casefold() in {"sutherlands oval", "sutherlands park"}
             else ground
         )
-        notes = f"Under 13 — {TEAM_NAME}. {snapshot['season']}. Playing time: 60 minutes."
-        if start.weekday() == 4 and time == "17:00":
-            notes += " Friday game: arrive by 4:30pm."
-        if not time:
-            notes += " Start time has not been published."
+        notes = "" if time else "Start time has not been published."
         cancelled = status in {"cancelled", "canceled"}
         fixtures.append({
             "label": "Tate", "source_id": source_id, "uid": uid,
