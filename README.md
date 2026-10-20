@@ -17,6 +17,16 @@ are retained when games move, change pitch, or replace a finals placeholder;
 withdrawn games are published as cancelled. December 14 finals remain tentative
 until a team-specific draw is published. The subscription URL stays the same.
 
+Finn also plays Boys U14 for **6 Shooters** in Armadale SC Summer 6-a-Side.
+`asc_sixaside.py` reads the public Firestore documents used by
+https://tournifyapp.com/live/asc-6-a-side and retains only that team's assigned
+fixtures in `docs/asc_sixaside.json`. Matches use Tournify's published local
+date, pitch, venue, start/end times and scores, with 90-minute reminders.
+Rescheduling preserves calendar UIDs; withdrawn matches are marked cancelled.
+The last valid draw remains available during a source outage. Finals appear
+when Tournify assigns the team. The website's **ASC 6-a-side** tab is separate
+from Finn's Proper Player fixtures.
+
 Calendar URL after GitHub Pages is enabled:
 
 `https://n6zmwzpz4t-del.github.io/family-soccer-calendar/fixtures.ics`

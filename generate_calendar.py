@@ -14,6 +14,7 @@ from dateutil import parser as dateparser
 from playwright.async_api import async_playwright
 from teeball import refresh_teeball_fixtures
 from sixaside import refresh_sixaside_fixtures
+from asc_sixaside import refresh_asc_fixtures
 
 
 ROOT = Path(__file__).resolve().parent
@@ -5707,6 +5708,9 @@ async def main() -> None:
     sixaside_fixtures, sixaside_debug = refresh_sixaside_fixtures(timezone)
     all_fixtures.extend(sixaside_fixtures)
 
+    asc_fixtures, asc_debug = refresh_asc_fixtures(timezone)
+    all_fixtures.extend(asc_fixtures)
+
     manual_fixtures, manual_debug = load_manual_fixtures(timezone)
     (
         published_manual_fixtures,
@@ -5750,6 +5754,7 @@ async def main() -> None:
                 "school_soccer": school_debug,
                 "teeball": teeball_debug,
                 "sixaside": sixaside_debug,
+                "asc_sixaside": asc_debug,
                 "manual_fixtures": manual_debug,
                 "manual_fixture_count": len(published_manual_fixtures),
                 "fixtures": [

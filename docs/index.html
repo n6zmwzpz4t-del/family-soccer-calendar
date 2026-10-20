@@ -1176,7 +1176,7 @@
     const state = {
       page: "upcoming",
       personSport: {
-        finn: "sixaside",
+        finn: "asc_sixaside",
         tate: "sixaside"
       },
       personView: {
@@ -1360,6 +1360,8 @@
               : sportProperty.includes("teeball") || sportProperty.includes("tee-ball") ||
                 sourceType === "thornlie_teeball"
               ? "teeball"
+              : sourceType === "tournify_asc_sixaside" || sportProperty === "asc 6-a-side soccer"
+              ? "asc_sixaside"
               : sportProperty.includes("6-a-side") || sourceType === "proper_player_sixaside"
               ? "sixaside"
               : "soccer";
@@ -1379,6 +1381,7 @@
             timeWindow: decodeIcs(property(block, "X-TIME-WINDOW")),
             notes: decodeIcs(property(block, "X-NOTES")),
             leagueUrl: (description.match(/https:\/\/(?:tpp-6aside\.netlify\.app\/?|www\.theproperplayer\.com\/6-a-side-league\b)/i) || [])[0] || "",
+            ascUrl: (description.match(/https:\/\/tournifyapp\.com\/live\/asc-6-a-side(?:\/team\/[a-z0-9]+)?/i) || [])[0] || "",
             sport,
             person,
             sourceType,
@@ -1855,6 +1858,7 @@
       const sport =
         event.sport === "teeball" ? "TeeBall" :
         event.sport === "school_soccer" ? "School Soccer" :
+        event.sport === "asc_sixaside" ? "ASC 6-a-side" :
         event.leagueUrl ? "6-a-side Soccer" : "Club Soccer";
 
       return `
@@ -1882,6 +1886,7 @@
             ${(event.timeWindow || event.leagueUrl || event.sport === "teeball") && event.notes ? `<p class="fixture-note">${escapeHtml(event.notes)}</p>` : ""}
             ${event.leagueUrl ? `<div class="fixture-actions"><a class="text-link" href="${escapeHtml(event.leagueUrl)}" target="_blank" rel="noopener">Live fixtures, results &amp; ladder</a></div>` : ""}
             ${event.fixtureUrl ? `<div class="fixture-actions"><a class="text-link" href="${escapeHtml(event.fixtureUrl)}" target="_blank" rel="noopener">View official TeeBall fixtures</a></div>` : ""}
+            ${event.ascUrl ? `<div class="fixture-actions"><a class="text-link" href="${escapeHtml(event.ascUrl)}" target="_blank" rel="noopener">View in Tournify</a></div>` : ""}
 
             ${
               event.squadiUrl
@@ -1922,6 +1927,9 @@
                 : ""}
               ${event.leagueUrl
                 ? ` • <a href="${escapeHtml(event.leagueUrl)}" target="_blank" rel="noopener">The Proper Player</a>`
+                : ""}
+              ${event.ascUrl
+                ? ` • <a href="${escapeHtml(event.ascUrl)}" target="_blank" rel="noopener">Tournify</a>`
                 : ""}
             </div>
           </div>
@@ -2143,8 +2151,11 @@
             <button data-sport="soccer" class="${current === "soccer" ? "active" : ""}">
               ⚽ Club Soccer
             </button>
+            <button data-sport="asc_sixaside" class="${current === "asc_sixaside" ? "active" : ""}">
+              ⚽ ASC 6-a-side
+            </button>
             <button data-sport="sixaside" class="${current === "sixaside" ? "active" : ""}">
-              ⚽ 6-a-side
+              ⚽ Proper Player
             </button>
             <button data-sport="school_soccer" class="${current === "school_soccer" ? "active" : ""}">
               🏫 School Soccer
@@ -2169,7 +2180,7 @@
     function contentButtons(person) {
       const current = state.personView[person];
 
-      if (state.personSport[person] === "teeball") {
+      if (["teeball", "asc_sixaside"].includes(state.personSport[person])) {
         return `<div class="content-switch">
           <button data-content="fixtures" class="${current === "fixtures" ? "active" : ""}">Fixtures</button>
           <button data-content="results" class="${current === "results" ? "active" : ""}">Results</button>
@@ -2221,7 +2232,7 @@
             ${leagueIntro}
             <div class="empty">
               <span class="icon">📅</span>
-              No future ${sport === "teeball" ? "TeeBall" : sport === "sixaside" ? "6-a-side" : sport === "school_soccer" ? "school soccer" : "club soccer"} fixtures are currently listed.
+              No future ${sport === "teeball" ? "TeeBall" : sport === "asc_sixaside" ? "ASC 6-a-side" : sport === "sixaside" ? "6-a-side" : sport === "school_soccer" ? "school soccer" : "club soccer"} fixtures are currently listed.
             </div>`;
       }
 
@@ -2240,12 +2251,16 @@
           : `
             <div class="empty">
               <span class="icon">${sport === "teeball" ? "🥎" : "⚽"}</span>
-              No past ${sport === "teeball" ? "TeeBall" : "soccer"} games are currently available.
+              No past ${sport === "teeball" ? "TeeBall" : sport === "asc_sixaside" ? "ASC 6-a-side" : "soccer"} games are currently available.
             </div>`;
       }
 
       if (sport === "school_soccer") {
         return `<div class="empty"><span class="icon">🏫</span>School soccer fixtures are supplied by the St John Bosco College calendar.</div>`;
+      }
+
+      if (sport === "asc_sixaside") {
+        return `<div class="empty">View the ASC 6-a-side standings on <a href="https://tournifyapp.com/live/asc-6-a-side" target="_blank" rel="noopener">Tournify</a>.</div>`;
       }
 
       return sport === "teeball"
@@ -2277,7 +2292,9 @@
       const sport = state.personSport[person];
 
       const subtitle =
-        sport === "sixaside"
+        sport === "asc_sixaside"
+          ? "ASC 6-a-side — 6 Shooters, Boys U14"
+          : sport === "sixaside"
           ? `6-a-side Soccer — ${sixAsidePlayer(person)?.division || (person === "finn" ? "U14" : "U12")} ${sixAsidePlayer(person)?.team || (person === "finn" ? "The Army" : "The Academy")}`
           : person === "finn" && sport === "school_soccer"
           ? "School Soccer — St John Bosco College fixtures"

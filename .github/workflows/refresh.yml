@@ -11,6 +11,7 @@ on:
       - "docs/debug.json"
       - "docs/teeball.json"
       - "docs/sixaside.json"
+      - "docs/asc_sixaside.json"
       - "docs/soccer_ladders.json"
 
 permissions:
@@ -84,7 +85,13 @@ jobs:
               printf '{}\n' > /tmp/sixaside-before.json
             fi
 
-            # Check Squadi, Thornlie TeeBall and The Proper Player's draw/scores.
+            if [ -f docs/asc_sixaside.json ]; then
+              cp docs/asc_sixaside.json /tmp/asc-sixaside-before.json
+            else
+              printf '{}\n' > /tmp/asc-sixaside-before.json
+            fi
+
+            # Check Squadi, TeeBall, The Proper Player and ASC Tournify.
             python generate_calendar.py
 
             # DTSTAMP changes every run and is not a meaningful fixture change.
@@ -100,6 +107,7 @@ jobs:
             teeball_changed=0
             soccer_ladders_changed=0
             sixaside_changed=0
+            asc_sixaside_changed=0
 
             if ! cmp -s \
               /tmp/fixtures-before-compare.ics \
@@ -132,9 +140,16 @@ jobs:
               fi
             fi
 
+            if [ -f docs/asc_sixaside.json ]; then
+              if ! cmp -s /tmp/asc-sixaside-before.json docs/asc_sixaside.json; then
+                asc_sixaside_changed=1
+              fi
+            fi
+
             if [ "$calendar_changed" -eq 0 ] \
               && [ "$teeball_changed" -eq 0 ] \
               && [ "$sixaside_changed" -eq 0 ] \
+              && [ "$asc_sixaside_changed" -eq 0 ] \
               && [ "$soccer_ladders_changed" -eq 0 ]
             then
               echo "No meaningful sports-data changes detected."
@@ -160,6 +175,12 @@ jobs:
                 rm -f docs/sixaside.json
               fi
 
+              if git ls-files --error-unmatch docs/asc_sixaside.json >/dev/null 2>&1; then
+                git restore docs/asc_sixaside.json
+              else
+                rm -f docs/asc_sixaside.json
+              fi
+
               exit 0
             fi
 
@@ -168,6 +189,7 @@ jobs:
             echo "TeeBall changed: $teeball_changed"
             echo "Squadi ladders changed: $soccer_ladders_changed"
             echo "6-a-side fixtures/results/ladders changed: $sixaside_changed"
+            echo "ASC 6-a-side changed: $asc_sixaside_changed"
 
             git add docs/fixtures.ics docs/debug.json
 
@@ -181,6 +203,10 @@ jobs:
 
             if [ -f docs/sixaside.json ]; then
               git add docs/sixaside.json
+            fi
+
+            if [ -f docs/asc_sixaside.json ]; then
+              git add docs/asc_sixaside.json
             fi
 
             git commit -m "Refresh Finn and Tate sports data"
