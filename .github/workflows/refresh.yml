@@ -42,7 +42,8 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Install Playwright
-        run: playwright install --with-deps chromium
+        # The Ubuntu runner already includes Chromium's system libraries.
+        run: playwright install chromium
 
       - name: Check six-a-side feed and calendar identities
         run: python -m unittest discover -s tests -v
