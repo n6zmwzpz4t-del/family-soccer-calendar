@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-28T20:18:38.916694+08:00",
+  "generated_at": "2026-11-28T20:33:47.922413+08:00",
   "fixture_count": 84,
   "coordinate_fixture_count": 38,
   "teams": [
@@ -17,10 +17,6 @@
           "status": 200
         },
         {
-          "url": "https://api.squadi.com/common/common/reference/year",
-          "status": 200
-        },
-        {
           "url": "https://api.squadi.com/common/common/reference/year?organisationUniqueKey=f524913b-317c-4011-8f66-e4eb3f101ebe&scope=1",
           "status": 200
         },
@@ -33,11 +29,15 @@
           "status": 200
         },
         {
-          "url": "https://api.squadi.com/users/api/organisations/all",
+          "url": "https://api.squadi.com/livescores/division?competitionKey=fafe940b-0a16-474a-9ac8-9dbf00035b0c",
           "status": 200
         },
         {
-          "url": "https://api.squadi.com/livescores/division?competitionKey=fafe940b-0a16-474a-9ac8-9dbf00035b0c",
+          "url": "https://api.squadi.com/common/common/reference/year",
+          "status": 200
+        },
+        {
+          "url": "https://api.squadi.com/users/api/organisations/all",
           "status": 200
         },
         {
@@ -310,11 +310,6 @@
             "content_type": "text/html; charset=utf-8"
           },
           {
-            "url": "https://events.timely.fun/5.4.1/runtime.js",
-            "status": 200,
-            "content_type": "text/javascript"
-          },
-          {
             "url": "https://events.timely.fun/5.4.1/node_modules_altcha_dist_altcha_js.js",
             "status": 200,
             "content_type": "text/javascript"
@@ -325,14 +320,19 @@
             "content_type": "text/javascript"
           },
           {
-            "url": "https://events.timely.fun/5.4.1/styles.css",
+            "url": "https://events.timely.fun/5.4.1/runtime.js",
             "status": 200,
-            "content_type": "text/css"
+            "content_type": "text/javascript"
           },
           {
             "url": "https://events.timely.fun/5.4.1/main.js",
             "status": 200,
             "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/5.4.1/styles.css",
+            "status": 200,
+            "content_type": "text/css"
           },
           {
             "url": "https://events.timely.fun/5.4.1/Poppins-Regular.ttf",
@@ -355,7 +355,7 @@
             "content_type": "font/ttf"
           },
           {
-            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bh1v899452056za200zd899452056xf1&_p=1795868196336&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=2047942163&_eu=AAAAAGA&are=1&cid=163639306.1795868197&ec_mode=a&frm=0&pscdl=noapi&rcb=15&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&_s=1&tag_exp=115616986~115938465~115938468~120213116~120385423~120469145~120469153~121246026~121246034&sid=1795868196&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2026-11-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&epn.calendar_id=54716732&ep.event_category=general&tfd=720",
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bh1v899452056za200zd899452056xf1&_p=1795869108558&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=1334257766&_eu=AAAAAGA&are=1&cid=1594867064.1795869109&ec_mode=a&frm=0&pscdl=noapi&rcb=18&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&_s=1&tag_exp=115616985~115938465~115938468~120213116~120385423~120469145~120469153~121246026~121246034&sid=1795869108&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2026-11-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&epn.calendar_id=54716732&ep.event_category=general&tfd=573",
             "status": 204,
             "content_type": "text/plain"
           },
@@ -375,7 +375,7 @@
             "content_type": "application/json"
           },
           {
-            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bh1v899452056za200zd899452056xf1&_p=1795868196336&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=2047942163&_eu=AAAAAGQ&are=1&cid=163639306.1795868197&frm=0&pscdl=noapi&rcb=15&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&tag_exp=115616986~115938465~115938468~120213116~120385423~120469145~120469153~121246026~121246034&sid=1795868196&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2026-11-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&_s=2&tfd=5726",
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bh1v899452056za200zd899452056xf1&_p=1795869108558&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=1334257766&_eu=AAAAAGQ&are=1&cid=1594867064.1795869109&frm=0&pscdl=noapi&rcb=18&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&tag_exp=115616985~115938465~115938468~120213116~120385423~120469145~120469153~121246026~121246034&sid=1795869108&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2026-11-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&_s=2&tfd=5579",
             "status": 204,
             "content_type": "text/plain"
           }
@@ -412,14 +412,14 @@
             "content_type": "text/javascript"
           },
           {
-            "url": "https://events.timely.fun/5.4.1/styles.css",
-            "status": 200,
-            "content_type": "text/css"
-          },
-          {
             "url": "https://events.timely.fun/5.4.1/main.js",
             "status": 200,
             "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/5.4.1/styles.css",
+            "status": 200,
+            "content_type": "text/css"
           },
           {
             "url": "https://events.timely.fun/5.4.1/Poppins-Regular.ttf",
@@ -442,7 +442,7 @@
             "content_type": "font/ttf"
           },
           {
-            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bh1v899452056za200zd899452056xf1&_p=1795868205140&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=440655004&_eu=AAAAAGA&are=1&cid=1368967277.1795868205&ec_mode=a&frm=0&pscdl=noapi&rcb=9&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&_s=1&tag_exp=115616986~115938465~115938469~120213116~120385422~120469145~120469153~121246026~121246034~123785232&sid=1795868205&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2026-12-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&epn.calendar_id=54716732&ep.event_category=general&tfd=780",
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bh1h1v899452056za200zd899452056xf1&_p=1795869117222&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=827573550&_eu=AAAAAGA&are=1&cid=2012311753.1795869118&ec_mode=a&frm=0&pscdl=noapi&rcb=19&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&_s=1&tag_exp=115938465~115938468~120213116~120385422~120469145~120469153~121246026~121246034&sid=1795869117&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2026-12-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&epn.calendar_id=54716732&ep.event_category=general&tfd=651",
             "status": 204,
             "content_type": "text/plain"
           },
@@ -462,7 +462,7 @@
             "content_type": "application/json"
           },
           {
-            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bh1v899452056za200zd899452056xf1&_p=1795868205140&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=440655004&_eu=AAAAAGQ&are=1&cid=1368967277.1795868205&frm=0&pscdl=noapi&rcb=9&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&tag_exp=115616986~115938465~115938469~120213116~120385422~120469145~120469153~121246026~121246034~123785232&sid=1795868205&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2026-12-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&_s=2&tfd=5787",
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bh1h1v899452056za200zd899452056xf1&_p=1795869117222&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=827573550&_eu=AAAAAGQ&are=1&cid=2012311753.1795869118&frm=0&pscdl=noapi&rcb=19&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&tag_exp=115938465~115938468~120213116~120385422~120469145~120469153~121246026~121246034&sid=1795869117&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2026-12-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&_s=2&tfd=5657",
             "status": 204,
             "content_type": "text/plain"
           }
@@ -499,6 +499,11 @@
             "content_type": "text/javascript"
           },
           {
+            "url": "https://events.timely.fun/5.4.1/main.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
             "url": "https://events.timely.fun/5.4.1/styles.css",
             "status": 200,
             "content_type": "text/css"
@@ -507,11 +512,6 @@
             "url": "https://events.timely.fun/5.4.1/Poppins-Regular.ttf",
             "status": 200,
             "content_type": "font/ttf"
-          },
-          {
-            "url": "https://events.timely.fun/5.4.1/main.js",
-            "status": 200,
-            "content_type": "text/javascript"
           },
           {
             "url": "https://events.timely.fun/5.4.1/common.js",
@@ -529,7 +529,7 @@
             "content_type": "font/ttf"
           },
           {
-            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bi0h2v899452056za200zd899452056xf1&_p=1795868214014&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=1800475702&_eu=AAAAAGA&are=1&cid=1192216985.1795868214&ec_mode=a&frm=0&pscdl=noapi&rcb=12&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&_s=1&tag_exp=115938465~115938468~120213116~120385423~120469145~120469153~121246026~121246034&sid=1795868214&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-01-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&epn.calendar_id=54716732&ep.event_category=general&tfd=876",
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bh1v899452056za200zd899452056xf1&_p=1795869125813&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=615787466&_eu=AAAAAGA&are=1&cid=1743556267.1795869126&ec_mode=a&frm=0&pscdl=noapi&rcb=11&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&_s=1&tag_exp=115938465~115938469~120213116~120385423~120469145~120469153~121246026~121246034~123785234&sid=1795869126&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-01-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&epn.calendar_id=54716732&ep.event_category=general&tfd=600",
             "status": 204,
             "content_type": "text/plain"
           },
@@ -549,7 +549,7 @@
             "content_type": "application/json"
           },
           {
-            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bi0h2v899452056za200zd899452056xf1&_p=1795868214014&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=1800475702&_eu=AAAAAGQ&are=1&cid=1192216985.1795868214&frm=0&pscdl=noapi&rcb=12&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&tag_exp=115938465~115938468~120213116~120385423~120469145~120469153~121246026~121246034&sid=1795868214&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-01-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&_s=2&tfd=5883",
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bh1v899452056za200zd899452056xf1&_p=1795869125813&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=615787466&_eu=AAAAAGQ&are=1&cid=1743556267.1795869126&frm=0&pscdl=noapi&rcb=11&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&tag_exp=115938465~115938469~120213116~120385423~120469145~120469153~121246026~121246034~123785234&sid=1795869126&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-01-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&_s=2&tfd=5607",
             "status": 204,
             "content_type": "text/plain"
           }
@@ -586,14 +586,14 @@
             "content_type": "text/javascript"
           },
           {
-            "url": "https://events.timely.fun/5.4.1/styles.css",
-            "status": 200,
-            "content_type": "text/css"
-          },
-          {
             "url": "https://events.timely.fun/5.4.1/main.js",
             "status": 200,
             "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/5.4.1/styles.css",
+            "status": 200,
+            "content_type": "text/css"
           },
           {
             "url": "https://events.timely.fun/5.4.1/Poppins-Regular.ttf",
@@ -616,7 +616,7 @@
             "content_type": "font/ttf"
           },
           {
-            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bi0h2v899452056za200zd899452056xf1&_p=1795868222681&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=2080022641&_eu=AAAAAGA&are=1&cid=970093523.1795868223&ec_mode=a&frm=0&pscdl=noapi&rcb=4&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&_s=1&tag_exp=115938466~115938468~120213116~120385423~120469145~120469153~121246026~121246034&sid=1795868223&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-02-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&epn.calendar_id=54716732&ep.event_category=general&tfd=648",
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bh1v899452056za200zd899452056xf1&_p=1795869134416&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=669920697&_eu=AAAAAGA&are=1&cid=1885738944.1795869135&ec_mode=a&frm=0&pscdl=noapi&rcb=16&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&_s=1&tag_exp=115938466~115938468~120213116~120385423~120469145~120469153~121246026~121246034~123785233&sid=1795869134&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-02-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&epn.calendar_id=54716732&ep.event_category=general&tfd=576",
             "status": 204,
             "content_type": "text/plain"
           },
@@ -636,7 +636,7 @@
             "content_type": "application/json"
           },
           {
-            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bi0h2v899452056za200zd899452056xf1&_p=1795868222681&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=2080022641&_eu=AAAAAGQ&are=1&cid=970093523.1795868223&frm=0&pscdl=noapi&rcb=4&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&tag_exp=115938466~115938468~120213116~120385423~120469145~120469153~121246026~121246034&sid=1795868223&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-02-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&_s=2&tfd=5654",
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bh1v899452056za200zd899452056xf1&_p=1795869134416&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=669920697&_eu=AAAAAGQ&are=1&cid=1885738944.1795869135&frm=0&pscdl=noapi&rcb=16&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&tag_exp=115938466~115938468~120213116~120385423~120469145~120469153~121246026~121246034~123785233&sid=1795869134&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-02-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&_s=2&tfd=5583",
             "status": 204,
             "content_type": "text/plain"
           }
@@ -663,12 +663,17 @@
             "content_type": "text/javascript"
           },
           {
+            "url": "https://events.timely.fun/5.4.1/polyfills.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
             "url": "https://events.timely.fun/5.4.1/node_modules_altcha_dist_altcha_js.js",
             "status": 200,
             "content_type": "text/javascript"
           },
           {
-            "url": "https://events.timely.fun/5.4.1/polyfills.js",
+            "url": "https://events.timely.fun/5.4.1/main.js",
             "status": 200,
             "content_type": "text/javascript"
           },
@@ -676,11 +681,6 @@
             "url": "https://events.timely.fun/5.4.1/styles.css",
             "status": 200,
             "content_type": "text/css"
-          },
-          {
-            "url": "https://events.timely.fun/5.4.1/main.js",
-            "status": 200,
-            "content_type": "text/javascript"
           },
           {
             "url": "https://events.timely.fun/5.4.1/Poppins-Regular.ttf",
@@ -703,7 +703,7 @@
             "content_type": "font/ttf"
           },
           {
-            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bh1v899452056za200zd899452056xf1&_p=1795868231276&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=1416750693&_eu=AAAAAGA&are=1&cid=1164657030.1795868232&ec_mode=a&frm=0&pscdl=noapi&rcb=16&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&_s=1&tag_exp=115616985~115938465~115938469~119793973~120213116~120385422~120469145~120469153~121246026~121246034~123785232&sid=1795868231&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-03-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&epn.calendar_id=54716732&ep.event_category=general&tfd=588",
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bh1h1v899452056za200zd899452056xf1&_p=1795869142959&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=1120922099&_eu=AAAAAGA&are=1&cid=1759084026.1795869143&ec_mode=a&frm=0&pscdl=noapi&rcb=6&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&_s=1&tag_exp=115616985~115938465~115938469~119793974~120213116~120385423~120469145~120469153~121246026~121246034&sid=1795869143&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-03-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&epn.calendar_id=54716732&ep.event_category=general&tfd=526",
             "status": 204,
             "content_type": "text/plain"
           },
@@ -723,7 +723,7 @@
             "content_type": "application/json"
           },
           {
-            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bh1v899452056za200zd899452056xf1&_p=1795868231276&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=1416750693&_eu=AAAAAGQ&are=1&cid=1164657030.1795868232&frm=0&pscdl=noapi&rcb=16&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&tag_exp=115616985~115938465~115938469~119793973~120213116~120385422~120469145~120469153~121246026~121246034~123785232&sid=1795868231&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-03-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&_s=2&tfd=5594",
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bh1h1v899452056za200zd899452056xf1&_p=1795869142959&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=1120922099&_eu=AAAAAGQ&are=1&cid=1759084026.1795869143&frm=0&pscdl=noapi&rcb=6&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&tag_exp=115616985~115938465~115938469~119793974~120213116~120385423~120469145~120469153~121246026~121246034&sid=1795869143&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-03-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&_s=2&tfd=5532",
             "status": 204,
             "content_type": "text/plain"
           }
@@ -760,14 +760,14 @@
             "content_type": "text/javascript"
           },
           {
-            "url": "https://events.timely.fun/5.4.1/styles.css",
-            "status": 200,
-            "content_type": "text/css"
-          },
-          {
             "url": "https://events.timely.fun/5.4.1/main.js",
             "status": 200,
             "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/5.4.1/styles.css",
+            "status": 200,
+            "content_type": "text/css"
           },
           {
             "url": "https://events.timely.fun/5.4.1/Poppins-Regular.ttf",
@@ -790,7 +790,7 @@
             "content_type": "font/ttf"
           },
           {
-            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bh1v899452056za200zd899452056xf1&_p=1795868239934&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=1083881600&_eu=AAAAAGA&are=1&cid=1329197923.1795868240&ec_mode=a&frm=0&pscdl=noapi&rcb=2&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&_s=1&tag_exp=115938466~115938468~119404696~120213116~120385423~120469145~120469153~121246026~121246034&sid=1795868240&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-04-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&epn.calendar_id=54716732&ep.event_category=general&tfd=652",
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bh1v899452056za200zd899452056xf1&_p=1795869151524&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=586158004&_eu=AAAAAGA&are=1&cid=736061248.1795869152&ec_mode=a&frm=0&pscdl=noapi&rcb=13&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&_s=1&tag_exp=115938465~115938468~120213116~120385423~120469145~120469153~121246026~121246034&sid=1795869151&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-04-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&epn.calendar_id=54716732&ep.event_category=general&tfd=566",
             "status": 204,
             "content_type": "text/plain"
           },
@@ -810,7 +810,7 @@
             "content_type": "application/json"
           },
           {
-            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bh1v899452056za200zd899452056xf1&_p=1795868239934&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=1083881600&_eu=AAAAAGQ&are=1&cid=1329197923.1795868240&frm=0&pscdl=noapi&rcb=2&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&tag_exp=115938466~115938468~119404696~120213116~120385423~120469145~120469153~121246026~121246034&sid=1795868240&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-04-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&_s=2&tfd=5658",
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bh1v899452056za200zd899452056xf1&_p=1795869151524&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=586158004&_eu=AAAAAGQ&are=1&cid=736061248.1795869152&frm=0&pscdl=noapi&rcb=13&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&tag_exp=115938465~115938468~120213116~120385423~120469145~120469153~121246026~121246034&sid=1795869151&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-04-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&_s=2&tfd=5572",
             "status": 204,
             "content_type": "text/plain"
           }
@@ -877,7 +877,7 @@
             "content_type": "font/ttf"
           },
           {
-            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bh1v899452056za200zd899452056xf1&_p=1795868248603&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=1846472385&_eu=AAAAAGA&are=1&cid=771727273.1795868249&ec_mode=a&frm=0&pscdl=noapi&rcb=13&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&_s=1&tag_exp=115938466~115938468~120213116~120385423~120469145~120469153~121246026~121246034&sid=1795868248&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-05-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&epn.calendar_id=54716732&ep.event_category=general&tfd=663",
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bi0h2v899452056za200zd899452056xf1&_p=1795869160101&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=649606341&_eu=AAAAAGA&are=1&cid=832331540.1795869160&ec_mode=a&frm=0&pscdl=noapi&rcb=16&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&_s=1&tag_exp=115938465~115938468~120213116~120385422~120469145~120469153~121246026~121246034&sid=1795869160&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-05-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&epn.calendar_id=54716732&ep.event_category=general&tfd=567",
             "status": 204,
             "content_type": "text/plain"
           },
@@ -897,7 +897,7 @@
             "content_type": "application/json"
           },
           {
-            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bh1v899452056za200zd899452056xf1&_p=1795868248603&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=1846472385&_eu=AAAAAGQ&are=1&cid=771727273.1795868249&frm=0&pscdl=noapi&rcb=13&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&tag_exp=115938466~115938468~120213116~120385423~120469145~120469153~121246026~121246034&sid=1795868248&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-05-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&_s=2&tfd=5670",
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bi0h2v899452056za200zd899452056xf1&_p=1795869160101&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=649606341&_eu=AAAAAGQ&are=1&cid=832331540.1795869160&frm=0&pscdl=noapi&rcb=16&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&tag_exp=115938465~115938468~120213116~120385422~120469145~120469153~121246026~121246034&sid=1795869160&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-05-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&_s=2&tfd=5573",
             "status": 204,
             "content_type": "text/plain"
           }
@@ -924,12 +924,17 @@
             "content_type": "text/javascript"
           },
           {
+            "url": "https://events.timely.fun/5.4.1/polyfills.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
             "url": "https://events.timely.fun/5.4.1/node_modules_altcha_dist_altcha_js.js",
             "status": 200,
             "content_type": "text/javascript"
           },
           {
-            "url": "https://events.timely.fun/5.4.1/polyfills.js",
+            "url": "https://events.timely.fun/5.4.1/main.js",
             "status": 200,
             "content_type": "text/javascript"
           },
@@ -937,11 +942,6 @@
             "url": "https://events.timely.fun/5.4.1/styles.css",
             "status": 200,
             "content_type": "text/css"
-          },
-          {
-            "url": "https://events.timely.fun/5.4.1/main.js",
-            "status": 200,
-            "content_type": "text/javascript"
           },
           {
             "url": "https://events.timely.fun/5.4.1/Poppins-Regular.ttf",
@@ -964,7 +964,7 @@
             "content_type": "font/ttf"
           },
           {
-            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bh1v899452056za200zd899452056xf1&_p=1795868257444&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=839898023&_eu=AAAAAGA&are=1&cid=1334992031.1795868258&ec_mode=a&frm=0&pscdl=noapi&rcb=7&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&_s=1&tag_exp=115616986~115938466~115938469~119793974~120213116~120385423~120469145~120469153~121246026~121246034~123785234&sid=1795868257&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-06-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&epn.calendar_id=54716732&ep.event_category=general&tfd=830",
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bh1v899452056za200zd899452056xf1&_p=1795869168657&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=1746339113&_eu=AAAAAGA&are=1&cid=1768117649.1795869169&ec_mode=a&frm=0&pscdl=noapi&rcb=2&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&_s=1&tag_exp=115938466~115938468~119860442~120213116~120385422~120469145~120469153~121246026~121246034&sid=1795869168&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-06-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&epn.calendar_id=54716732&ep.event_category=general&tfd=546",
             "status": 204,
             "content_type": "text/plain"
           },
@@ -984,7 +984,7 @@
             "content_type": "application/json"
           },
           {
-            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bh1v899452056za200zd899452056xf1&_p=1795868257444&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=839898023&_eu=AAAAAGQ&are=1&cid=1334992031.1795868258&frm=0&pscdl=noapi&rcb=7&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&tag_exp=115616986~115938466~115938469~119793974~120213116~120385423~120469145~120469153~121246026~121246034~123785234&sid=1795868257&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-06-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&_s=2&tfd=5837",
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bh1v899452056za200zd899452056xf1&_p=1795869168657&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=1746339113&_eu=AAAAAGQ&are=1&cid=1768117649.1795869169&frm=0&pscdl=noapi&rcb=2&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&tag_exp=115938466~115938468~119860442~120213116~120385422~120469145~120469153~121246026~121246034&sid=1795869168&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-06-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&_s=2&tfd=5552",
             "status": 204,
             "content_type": "text/plain"
           }
@@ -1021,14 +1021,14 @@
             "content_type": "text/javascript"
           },
           {
-            "url": "https://events.timely.fun/5.4.1/styles.css",
-            "status": 200,
-            "content_type": "text/css"
-          },
-          {
             "url": "https://events.timely.fun/5.4.1/main.js",
             "status": 200,
             "content_type": "text/javascript"
+          },
+          {
+            "url": "https://events.timely.fun/5.4.1/styles.css",
+            "status": 200,
+            "content_type": "text/css"
           },
           {
             "url": "https://events.timely.fun/5.4.1/Poppins-Regular.ttf",
@@ -1051,7 +1051,7 @@
             "content_type": "font/ttf"
           },
           {
-            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bh1v899452056za200zd899452056xf1&_p=1795868266113&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=2122033584&_eu=AAAAAGA&are=1&cid=782771983.1795868266&ec_mode=a&frm=0&pscdl=noapi&rcb=4&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&_s=1&tag_exp=115938465~115938469~120213116~120385422~120469145~120469153~121246026~121246034~121284208&sid=1795868266&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-07-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&epn.calendar_id=54716732&ep.event_category=general&tfd=656",
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bh1v899452056za200zd899452056xf1&_p=1795869177196&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=33806691&_eu=AAAAAGA&are=1&cid=1606032270.1795869178&ec_mode=a&frm=0&pscdl=noapi&rcb=10&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&_s=1&tag_exp=115616986~115938466~115938468~120213116~120385422~120469145~120469153~121246026~121246034&sid=1795869177&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-07-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&epn.calendar_id=54716732&ep.event_category=general&tfd=532",
             "status": 204,
             "content_type": "text/plain"
           },
@@ -1071,7 +1071,7 @@
             "content_type": "application/json"
           },
           {
-            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bh1v899452056za200zd899452056xf1&_p=1795868266113&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=2122033584&_eu=AAAAAGQ&are=1&cid=782771983.1795868266&frm=0&pscdl=noapi&rcb=4&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&tag_exp=115938465~115938469~120213116~120385422~120469145~120469153~121246026~121246034~121284208&sid=1795868266&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-07-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&_s=2&tfd=5663",
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bh1v899452056za200zd899452056xf1&_p=1795869177196&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=33806691&_eu=AAAAAGQ&are=1&cid=1606032270.1795869178&frm=0&pscdl=noapi&rcb=10&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&tag_exp=115616986~115938466~115938468~120213116~120385422~120469145~120469153~121246026~121246034&sid=1795869177&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-07-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&_s=2&tfd=5538",
             "status": 204,
             "content_type": "text/plain"
           }
@@ -1098,12 +1098,17 @@
             "content_type": "text/javascript"
           },
           {
+            "url": "https://events.timely.fun/5.4.1/polyfills.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
             "url": "https://events.timely.fun/5.4.1/node_modules_altcha_dist_altcha_js.js",
             "status": 200,
             "content_type": "text/javascript"
           },
           {
-            "url": "https://events.timely.fun/5.4.1/polyfills.js",
+            "url": "https://events.timely.fun/5.4.1/main.js",
             "status": 200,
             "content_type": "text/javascript"
           },
@@ -1111,11 +1116,6 @@
             "url": "https://events.timely.fun/5.4.1/styles.css",
             "status": 200,
             "content_type": "text/css"
-          },
-          {
-            "url": "https://events.timely.fun/5.4.1/main.js",
-            "status": 200,
-            "content_type": "text/javascript"
           },
           {
             "url": "https://events.timely.fun/5.4.1/Poppins-Regular.ttf",
@@ -1138,16 +1138,16 @@
             "content_type": "font/ttf"
           },
           {
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bh1v899452056za200zd899452056xf1&_p=1795869185783&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=763096791&_eu=AAAAAGA&are=1&cid=601433075.1795869186&ec_mode=a&frm=0&pscdl=noapi&rcb=14&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&_s=1&tag_exp=115616986~115938466~115938469~120213116~120385423~120469145~120469153~121246026~121246034&sid=1795869186&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-08-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&epn.calendar_id=54716732&ep.event_category=general&tfd=583",
+            "status": 204,
+            "content_type": "text/plain"
+          },
+          {
             "url": "https://events.timely.fun/api/calendars/54716732/filters/custom",
             "status": 200,
             "content_type": "application/json"
           },
           {
-            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bh1v899452056za200zd899452056xf1&_p=1795868274905&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=1928045682&_eu=AAAAAGA&are=1&cid=522989893.1795868275&ec_mode=a&frm=0&pscdl=noapi&rcb=17&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&_s=1&tag_exp=115938466~115938468~120213116~120385422~120469145~120469153~121246026~121246034&sid=1795868275&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-08-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&epn.calendar_id=54716732&ep.event_category=general&tfd=909",
-            "status": 204,
-            "content_type": "text/plain"
-          },
-          {
             "url": "https://events.timely.fun/api/calendars/54716732/events?group_by_date=1&timezone=Africa/Abidjan&view=month&start_date_utc=1817078400&end_date_utc=1819756799&per_page=1000&page=1",
             "status": 200,
             "content_type": "application/json"
@@ -1158,7 +1158,7 @@
             "content_type": "application/json"
           },
           {
-            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bh1v899452056za200zd899452056xf1&_p=1795868274905&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=1928045682&_eu=AAAAAGQ&are=1&cid=522989893.1795868275&frm=0&pscdl=noapi&rcb=17&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&tag_exp=115938466~115938468~120213116~120385422~120469145~120469153~121246026~121246034&sid=1795868275&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-08-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&_s=2&tfd=5915",
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bh1v899452056za200zd899452056xf1&_p=1795869185783&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=763096791&_eu=AAAAAGQ&are=1&cid=601433075.1795869186&frm=0&pscdl=noapi&rcb=14&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&tag_exp=115616986~115938466~115938469~120213116~120385423~120469145~120469153~121246026~121246034&sid=1795869186&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-08-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&_s=2&tfd=5589",
             "status": 204,
             "content_type": "text/plain"
           }
@@ -1185,12 +1185,17 @@
             "content_type": "text/javascript"
           },
           {
+            "url": "https://events.timely.fun/5.4.1/node_modules_altcha_dist_altcha_js.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
             "url": "https://events.timely.fun/5.4.1/polyfills.js",
             "status": 200,
             "content_type": "text/javascript"
           },
           {
-            "url": "https://events.timely.fun/5.4.1/node_modules_altcha_dist_altcha_js.js",
+            "url": "https://events.timely.fun/5.4.1/main.js",
             "status": 200,
             "content_type": "text/javascript"
           },
@@ -1198,11 +1203,6 @@
             "url": "https://events.timely.fun/5.4.1/styles.css",
             "status": 200,
             "content_type": "text/css"
-          },
-          {
-            "url": "https://events.timely.fun/5.4.1/main.js",
-            "status": 200,
-            "content_type": "text/javascript"
           },
           {
             "url": "https://events.timely.fun/5.4.1/Poppins-Regular.ttf",
@@ -1225,7 +1225,7 @@
             "content_type": "font/ttf"
           },
           {
-            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bh1v899452056za200zd899452056xf1&_p=1795868283694&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=638439085&_eu=AAAAAGA&are=1&cid=1397476265.1795868284&ec_mode=a&frm=0&pscdl=noapi&rcb=1&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&_s=1&tag_exp=115938466~115938469~120213116~120385423~120469145~120469153~121246026~121246034~123785232&sid=1795868284&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-09-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&epn.calendar_id=54716732&ep.event_category=general&tfd=775",
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bi0h2v899452056za200zd899452056xf1&_p=1795869194337&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=494317734&_eu=AAAAAGA&are=1&cid=2011751104.1795869195&ec_mode=a&frm=0&pscdl=noapi&rcb=13&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&_s=1&tag_exp=115938465~115938468~120213116~120385423~120469145~120469153~121246026~121246034~123785232&sid=1795869194&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-09-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&epn.calendar_id=54716732&ep.event_category=general&tfd=560",
             "status": 204,
             "content_type": "text/plain"
           },
@@ -1235,11 +1235,6 @@
             "content_type": "application/json"
           },
           {
-            "url": "https://www.googletagmanager.com/a?v=3&t=l&pid=1342904906&rv=6bh1&tag_exp=115938466~115938469~120213116~120385423~120469145~120469153~121246026~121246034~123785232&u=AAAAAAAAAAAAACCA&h=Ag&gtm=45je6bh1v899452056za200zd899452056xf1&ccid=99452056&cid=G-3M6N5587SG&l=L425.S6.Y1.B17.E192.I496.TC21.HTC0.C2~gtm.init_consent.S2.V1.E150.TS5ogtdma.TI10.TE0~gtm.init.S0.V0.E147.TS5ogtautoevents.TI14.TE0.TS5ogt1pdatav2.TI12.TE0.TS5ccdgafirst.TI30.TE0.TS5setproductsettings.TI29.TE0.TS5ogtgooglesignals.TI28.TE0.TS5ccdgaregscope.TI27.TE0.TS5ccdemdownload.TI25.TE0.TS5ccdemform.TI24.TE0.TS5ccdemoutboundclick.TI23.TE0.TS5ccdempageview.TI22.TE0.TS5ccdemsitesearch.TI21.TE0.TS5ccdemvideo.TI20.TE0.TS5ccdconversionmarking.TI19.TE0.TS5ccdadd1pdata.TI18.TE0.TS5ccdadd1pdata.TI17.TE0.TS5ccdaddecs.TI26.TE11.TS5ccdautoredact.TI16.TE9.TS5ccdgalast.TI15.TE9~gtm.js.S0.V0.E142.TS5gct.TI8.TE0~*.S0.V0.E140.TS5destga.TI6.TE1~gtm.dom.S0.V0.E1~*.S0.V0.E105~*.S0.V0.E105~*.S0.V0.E102~gtm.load.S0.V0.E0~GA352.356.359",
-            "status": 200,
-            "content_type": "text/html"
-          },
-          {
             "url": "https://events.timely.fun/api/calendars/54716732/events?group_by_date=1&timezone=Africa/Abidjan&view=month&start_date_utc=1819756800&end_date_utc=1822348799&per_page=1000&page=1",
             "status": 200,
             "content_type": "application/json"
@@ -1250,7 +1245,7 @@
             "content_type": "application/json"
           },
           {
-            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bh1v899452056za200zd899452056xf1&_p=1795868283694&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=638439085&_eu=AAAAAGQ&are=1&cid=1397476265.1795868284&frm=0&pscdl=noapi&rcb=1&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&tag_exp=115938466~115938469~120213116~120385423~120469145~120469153~121246026~121246034~123785232&sid=1795868284&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-09-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&_s=2&tfd=5782",
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bi0h2v899452056za200zd899452056xf1&_p=1795869194337&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=494317734&_eu=AAAAAGQ&are=1&cid=2011751104.1795869195&frm=0&pscdl=noapi&rcb=13&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&tag_exp=115938465~115938468~120213116~120385423~120469145~120469153~121246026~121246034~123785232&sid=1795869194&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-09-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&_s=2&tfd=5566",
             "status": 204,
             "content_type": "text/plain"
           }
@@ -1277,12 +1272,17 @@
             "content_type": "text/javascript"
           },
           {
+            "url": "https://events.timely.fun/5.4.1/node_modules_altcha_dist_altcha_js.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
             "url": "https://events.timely.fun/5.4.1/polyfills.js",
             "status": 200,
             "content_type": "text/javascript"
           },
           {
-            "url": "https://events.timely.fun/5.4.1/node_modules_altcha_dist_altcha_js.js",
+            "url": "https://events.timely.fun/5.4.1/main.js",
             "status": 200,
             "content_type": "text/javascript"
           },
@@ -1290,11 +1290,6 @@
             "url": "https://events.timely.fun/5.4.1/styles.css",
             "status": 200,
             "content_type": "text/css"
-          },
-          {
-            "url": "https://events.timely.fun/5.4.1/main.js",
-            "status": 200,
-            "content_type": "text/javascript"
           },
           {
             "url": "https://events.timely.fun/5.4.1/Poppins-Regular.ttf",
@@ -1317,7 +1312,7 @@
             "content_type": "font/ttf"
           },
           {
-            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bh1v899452056za200zd899452056xf1&_p=1795868292445&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=1056004664&_eu=AAAAAGA&are=1&cid=2141765337.1795868293&ec_mode=a&frm=0&pscdl=noapi&rcb=10&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&_s=1&tag_exp=115938465~115938469~120213116~120385422~120469145~120469153~121246026~121246034&sid=1795868292&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-10-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&epn.calendar_id=54716732&ep.event_category=general&tfd=743",
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bh1v899452056za200zd899452056xf1&_p=1795869202960&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=179085702&_eu=AAAAAGA&are=1&cid=156961174.1795869203&ec_mode=a&frm=0&pscdl=noapi&rcb=12&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&_s=1&tag_exp=115938465~115938469~120213116~120385423~120469145~120469153~121246026~121246034&sid=1795869203&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-10-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&epn.calendar_id=54716732&ep.event_category=general&tfd=600",
             "status": 204,
             "content_type": "text/plain"
           },
@@ -1337,7 +1332,7 @@
             "content_type": "application/json"
           },
           {
-            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bh1v899452056za200zd899452056xf1&_p=1795868292445&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=1056004664&_eu=AAAAAGQ&are=1&cid=2141765337.1795868293&frm=0&pscdl=noapi&rcb=10&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&tag_exp=115938465~115938469~120213116~120385422~120469145~120469153~121246026~121246034&sid=1795868292&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-10-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&_s=2&tfd=5749",
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bh1v899452056za200zd899452056xf1&_p=1795869202960&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=179085702&_eu=AAAAAGQ&are=1&cid=156961174.1795869203&frm=0&pscdl=noapi&rcb=12&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&tag_exp=115938465~115938469~120213116~120385423~120469145~120469153~121246026~121246034&sid=1795869203&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-10-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&_s=2&tfd=5606",
             "status": 204,
             "content_type": "text/plain"
           }
@@ -1364,12 +1359,17 @@
             "content_type": "text/javascript"
           },
           {
+            "url": "https://events.timely.fun/5.4.1/polyfills.js",
+            "status": 200,
+            "content_type": "text/javascript"
+          },
+          {
             "url": "https://events.timely.fun/5.4.1/node_modules_altcha_dist_altcha_js.js",
             "status": 200,
             "content_type": "text/javascript"
           },
           {
-            "url": "https://events.timely.fun/5.4.1/polyfills.js",
+            "url": "https://events.timely.fun/5.4.1/main.js",
             "status": 200,
             "content_type": "text/javascript"
           },
@@ -1377,11 +1377,6 @@
             "url": "https://events.timely.fun/5.4.1/styles.css",
             "status": 200,
             "content_type": "text/css"
-          },
-          {
-            "url": "https://events.timely.fun/5.4.1/main.js",
-            "status": 200,
-            "content_type": "text/javascript"
           },
           {
             "url": "https://events.timely.fun/5.4.1/Poppins-Regular.ttf",
@@ -1404,7 +1399,7 @@
             "content_type": "font/ttf"
           },
           {
-            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bh1v899452056za200zd899452056xf1&_p=1795868301214&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=1811586644&_eu=AAAAAGA&are=1&cid=575521783.1795868302&ec_mode=a&frm=0&pscdl=noapi&rcb=5&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&_s=1&tag_exp=115616985~115938465~115938468~118012007~120213116~120385422~120469145~120469153~121246026~121246034&sid=1795868301&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-11-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&epn.calendar_id=54716732&ep.event_category=general&tfd=764",
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bi0h2v899452056za200zd899452056xf1&_p=1795869211500&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=1911064673&_eu=AAAAAGA&are=1&cid=450384356.1795869212&ec_mode=a&frm=0&pscdl=noapi&rcb=13&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&_s=1&tag_exp=115616985~115938466~115938469~120213116~120385422~120469145~120469153~121246026~121246034&sid=1795869211&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-11-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&epn.calendar_id=54716732&ep.event_category=general&tfd=537",
             "status": 204,
             "content_type": "text/plain"
           },
@@ -1424,7 +1419,7 @@
             "content_type": "application/json"
           },
           {
-            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bh1v899452056za200zd899452056xf1&_p=1795868301214&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=1811586644&_eu=AAAAAGQ&are=1&cid=575521783.1795868302&frm=0&pscdl=noapi&rcb=5&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&tag_exp=115616985~115938465~115938468~118012007~120213116~120385422~120469145~120469153~121246026~121246034&sid=1795868301&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-11-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&_s=2&tfd=5771",
+            "url": "https://analytics.google.com/g/collect?v=2&tid=G-3M6N5587SG&gtm=45je6bi0h2v899452056za200zd899452056xf1&_p=1795869211500&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=1911064673&_eu=AAAAAGQ&are=1&cid=450384356.1795869212&frm=0&pscdl=noapi&rcb=13&sr=1440x1600&uaa=x86&uab=64&uafvl=Not%253BA%253DBrand%3B99.0.0.0%7CHeadlessChrome%3B139.0.7258.5%7CChromium%3B139.0.7258.5&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=en-us%40posix&gaf=2&tag_exp=115616985~115938466~115938469~120213116~120385422~120469145~120469153~121246026~121246034&sid=1795869211&sct=1&seg=0&dl=https%3A%2F%2Fevents.timely.fun%2F37c47p6q%2Fmonth%3Fstart_date%3D2027-11-01%26timely_id%3Dtimely-iframe-embed-0&dt=St%20John%20Bosco%20Community%20Calendar&_s=2&tfd=5543",
             "status": 204,
             "content_type": "text/plain"
           }
